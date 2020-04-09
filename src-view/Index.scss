@@ -1,0 +1,242 @@
+// * { box-sizing: border-box; }
+
+html {
+	height: 100%;
+}
+
+body {
+	height: 100%;
+	padding: 0; /* Override */
+	background-color: var(--vscode-menu-background); // Borrowed from Explorer background
+	display: flex;
+	flex-direction: column;
+}
+
+// ^^ Move to index.html ^^
+
+#root {
+	flex: 1 1 auto;
+	display: flex;
+	flex-direction: column;
+	background-color: var(--vscode-editor-background); // Restore from pre-body
+	overflow: hidden;
+}
+
+.flexFill { flex: 1 1 }
+
+.ellipsis {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.svZeroData {
+	flex: 1 1 auto;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+
+	& > div {
+		color: var(--vscode-button-foreground);
+		background: var(--vscode-button-background);
+		width: 200px;
+		padding: 4px;
+		line-height: 1.4em;
+		text-align: center;
+		cursor: default;
+	}
+}
+
+.svBadge {
+    padding: 4px 5px 2px; // VSCode is 3px 5px
+    border-radius: 11px;
+    font-size: 11px;
+    min-width: 18px;
+    min-height: 18px;
+    line-height: 11px;
+    font-weight: 400;
+    text-align: center;
+    display: inline-block;
+    box-sizing: border-box;
+}
+
+.svListPane {
+	flex: 1 1 auto;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	outline: none;
+
+	.svListHeader {
+		display: flex;
+		align-items: center;
+	
+		& > .twisties {
+			width: 20px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			transform-origin: center;
+			color: inherit;
+			flex-shrink: 0;
+		}
+
+		.codicon {
+			line-height: 35px;
+			width: 35px;
+			cursor: pointer;
+			// &:hover { background-color: var(--vscode-list-hoverBackground); }
+		}
+	}
+
+	.svListTableScroller {
+		flex: 1 1 auto;
+		overflow-y: overlay;
+		margin-top: 12px - 4px; // 4px optical to compensate for TH line height.
+	}
+}
+
+.svListItem {
+	line-height: 22px;
+
+	cursor: pointer;
+	&:hover:not(.svItemSelected) { background-color: var(--vscode-list-hoverBackground); }
+}
+
+.svSecondary {
+	// VS Code has 0.7 here but 0.6 in other places.
+	// Opacity causing z-order issues with position: sticky, so using manually calced color.
+	// Need to solve calc relative to theme.
+	color: rgb(139, 139, 139);
+}
+
+.svListTable {
+	width: 100%;
+	line-height: 22px;
+	border-spacing: 0;
+	table-layout: fixed; // Otherwise will overshoot 100%.
+	cursor: pointer;
+	user-select: none;
+
+	thead {
+		td:hover { background-color: var(--vscode-list-hoverBackground); }
+
+		td {
+			position: relative; // For resize handle.
+			position: sticky;
+			top: 0;
+			background-color: var(--vscode-editor-background);
+
+			.svCell { padding-bottom: 2px; }
+		}
+	}
+
+	tbody tr {
+		// Redundant with .svListItem?
+		&:hover:not(.svItemSelected) { background-color: var(--vscode-list-hoverBackground); }
+	}
+
+	td {
+		padding: 0 0 0 8px;
+
+		&:first-child { padding-left: 16px; }
+
+		& > .svCell {
+			@extend .ellipsis;
+			display: flex;
+			align-items: center;
+	
+			& > * + * {
+				margin-left: 6px;
+			}
+		}
+	}
+
+	.svBadge {
+		margin-left: 10px;
+		background-color: var(--vscode-badge-background);
+    	color: var(--vscode-badge-foreground);
+	}
+
+	.svGroup {
+		padding-right: 8px;
+	}
+
+	.svItemSelected {
+		background-color: var(--vscode-list-inactiveSelectionBackground);
+	}
+
+	.codicon-error    { color: var(--vscode-problemsErrorIcon-foreground); }
+	.codicon-warning  { color: var(--vscode-problemsWarningIcon-foreground); }
+	.codicon-info     { color: var(--vscode-problemsInfoIcon-foreground); }
+	.codicon-issues   { color: var(--vscode-problemsInfoIcon-foreground); }
+	.codicon-question { color: var(--vscode-problemsInfoIcon-foreground); }
+}
+
+.svTabs {
+	display: flex;
+	padding: 0 12px;
+	user-select: none;
+
+	& > div {
+		cursor: pointer;
+		padding: 4px 10px 3px;
+
+		& > div {
+			border-bottom: 1px solid transparent;
+			text-transform: uppercase;
+			font-size: 11px;
+			line-height: 27px;
+			color: var(--vscode-panelTitle-activeForeground);
+			@extend .svSecondary;
+	
+			&.svTabSelected {
+				color: var(--vscode-panelTitle-activeForeground);
+				border-bottom-color: var(--vscode-panelTitle-activeForeground);
+			}
+		}
+	}
+}
+
+.svDetailsPane {
+	box-sizing: border-box;
+	flex: 0 0 auto;
+	
+	overflow-y: overlay;
+
+	.svDetailsBody {
+		padding: 12px 22px;
+
+		&.svDetailsBodyCodeflow {
+			// margin: 0 -22px;
+			& > .svListItem {
+				// padding: 0 22px;
+				display: flex;
+				white-space: nowrap;
+			}
+		}
+
+		.svDetailsMessage {
+			margin-bottom: 16px;
+		}
+	
+		.svDetailsInfo {
+			display: grid;
+			grid-template-columns: 130px auto;
+			grid-column-gap: 4px;
+			grid-row-gap: 4px;
+
+			span:nth-child(odd) {
+				@extend .svSecondary;
+			}
+		}
+	}
+}
+
+.svResizer {
+	flex: 0 0 auto;
+	background-color: var(--vscode-editorGroup-border);
+	height: 1px;
+	position: relative; // For handle.
+}

@@ -1,0 +1,8 @@
+{
+	"compilerOptions": {
+		"module": "commonjs",
+		"target": "es2019", // Convenience to match src-view
+		"sourceMap": true,
+		"outDir": "../out",
+	}
+}
