@@ -55,12 +55,14 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 @observer class Index extends Component<{ store: Store }> {
 	private vscode = acquireVsCodeApi()
 
-	@observable.ref public selected = undefined as Result
+	@observable.ref private selectedIndex = 0
+	private selectedIndexMax = 0
+
 	constructor(props) {
 		super(props)
 		autorun(() => {
 			const results = this.props.store.resultsGroupedSorted
-			this.selected = results[0]
+			this.selectedIndex = 0
 			this.vscode.postMessage({ command: 'updateTitle', count: results.length })
 		})
 	}
@@ -77,20 +79,17 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 
 	@action.bound private onKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
 		if (!(e.key === 'ArrowUp' || e.key === 'ArrowDown')) return
-		const {store} = this.props
-		const results = store.resultsGroupedSorted
-		let i = results.indexOf(this.selected)
 		if (e.key === 'ArrowUp') {
-			this.selected = results[Math.max(i - 1, 0)]
+			this.selectedIndex = Math.max(0, this.selectedIndex - 1)
 		}
 		if (e.key === 'ArrowDown') {
-			this.selected = results[Math.min(i + 1, results.length - 1)]
+			this.selectedIndex = Math.min(this.selectedIndexMax, this.selectedIndex + 1)
 		}
 	}
 
 	render() {
 		const {store} = this.props
-		if (!store.results.length || !this.selected) {
+		if (!store.results.length) {
 			return <div className="svZeroData">
 				<div onClick={() => this.vscode.postMessage({ command: 'open' })}>
 					Open a SARIF file
@@ -99,104 +98,118 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 		}
 
 		const {groupBy, groupings, groupsSorted, sortColumn, sortDir} = store
-		const {selected, detailsPaneHeight} = this
+		const {detailsPaneHeight} = this
 		const columns = Object.keys(groupings).filter(col => col !== groupBy)
-		return <>
-			<div tabIndex={0} ref={ref => ref?.focus()} className="svListPane" onKeyDown={this.onKeyDown}>
-				<div className="svListHeader">
-					<TabBar titles={store.tabs} selection={store.selectedTab} />
-					<div className="flexFill"></div>
-					<Icon name="collapse-all" onClick={() => store.groupsSorted.forEach(group => group.expanded = false)} />
-					<Icon name="folder-opened" onClick={() => this.vscode.postMessage({ command: 'open' })} />
-				</div>
-				<div className="svListTableScroller">
-					<table className="svListTable">
-						<colgroup>
-							<col width="30" />
-							{columns.map((col, i, cols) => {
-								if (i === cols.length - 1) return null
-								return <col key={col} width={this.columnWidth(col).get()} />
-							})}
-						</colgroup>
-						<thead>
-							<tr>
-								<td className="svSpacer"><span className="svCell">&nbsp;</span></td>{/* svCell and nbsp to get matching height */}
-								{columns.map((col, i, cols) =>
-									<td key={col}>
-										<span className="svCell svSecondary"
-											onClick={action(() => {
-												store.sortColumn = col
-												store.sortDir = sortDir === SortDir.Asc
-													? SortDir.Dsc
-													: SortDir.Asc
-											})}>
-												{col}
-												{sortColumn === col && <Icon name={sortDir} />}
-											</span>
-										{i < cols.length - 1 && <ResizeHandle size={this.columnWidth(col)} horizontal />}
-									</td>
-								)}
-							</tr>
-						</thead>
-						<tbody>
-							{groupsSorted.map((group, i) => {
-								const {expanded, title, results} = group
-								return <Fragment key={i}>
-									<tr>{/* Group Row */}
-										<td colSpan={columns.length + 1}><span className="svCell svGroup"
-											onClick={() => group.expanded = !expanded}>
-											<div className={`twisties codicon codicon-chevron-${expanded ? 'down' : 'right'}`}></div>
-											<div className="ellipsis">{title}</div>
-											<Badge text={results.length} />
-										</span></td>
-									</tr>
-									{expanded && results.map((result, i) => {
-										const levelToIcon = {
-											error: 'error',
-											warning: 'warning',
-											info: 'info',
-											none: 'issues',
-											undefined: 'question',
-										}
-										return <tr key={i} onClick={e => this.selected = result}
-											className={(result === selected) ? 'svItemSelected' : undefined}>{/* Result Row */}
-											
-											<td className="svSpacer"></td>
-											{columns.map((col, i) =>
-												<td key={col}><span className="svCell">
-													{i === 0 && <span className={`codicon codicon-${levelToIcon[result.level]}`} />}
-													{(() => {
-														switch (col) {
-															case 'Line':
-																return <span>{result._line < 0 ? '—' : result._line}</span>
-															case 'File':
-																return <span className="ellipsis" title={result._uri}>{result._file}</span>
-															case 'Message':
-																return <span className="ellipsis">{result._message}</span>
-															case 'Rule':
-																return <>
-																	<span>{result._rule?.name ?? '—'}</span>
-																	<span className="svSecondary">{result.ruleId}</span>
-																</>
-															default:
-																return <span>—</span>
-														}
-													})()}
-												</span></td>
-											)}
-										</tr>
-									})}
-								</Fragment>
-							})}
-						</tbody>	
-					</table>
-				</div>
+		let rowIndex = -1
+		let selected = null as Result // Null when index = -1 (after group collapse)
+
+		const listPane = <div tabIndex={0} ref={ref => ref?.focus()} className="svListPane" onKeyDown={this.onKeyDown}>
+			<div className="svListHeader">
+				<TabBar titles={store.tabs} selection={store.selectedTab} />
+				<div className="flexFill"></div>
+				<Icon name="collapse-all" onClick={() => store.groupsSorted.forEach(group => group.expanded = false)} />
+				<Icon name="folder-opened" onClick={() => this.vscode.postMessage({ command: 'open' })} />
 			</div>
+			<div className="svListTableScroller">
+				<table className="svListTable">
+					<colgroup>
+						<col width="30" />
+						{columns.map((col, i, cols) => {
+							if (i === cols.length - 1) return null
+							return <col key={col} width={this.columnWidth(col).get()} />
+						})}
+					</colgroup>
+					<thead>
+						<tr>
+							<td className="svSpacer"><span className="svCell">&nbsp;</span></td>{/* svCell and nbsp to get matching height */}
+							{columns.map((col, i, cols) =>
+								<td key={col}>
+									<span className="svCell svSecondary"
+										onClick={action(() => {
+											store.sortColumn = col
+											store.sortDir = sortDir === SortDir.Asc
+												? SortDir.Dsc
+												: SortDir.Asc
+										})}>
+											{col}
+											{sortColumn === col && <Icon name={sortDir} />}
+										</span>
+									{i < cols.length - 1 && <ResizeHandle size={this.columnWidth(col)} horizontal />}
+								</td>
+							)}
+						</tr>
+					</thead>
+					<tbody>
+						{groupsSorted.map((group, i) => {
+							const {expanded, title, results} = group
+							return <Fragment key={i}>
+								<tr>{/* Group Row */}
+									<td colSpan={columns.length + 1}><span className="svCell svGroup"
+										onClick={() => {
+											this.selectedIndex = -1
+											group.expanded = !expanded
+										}}>
+										<div className={`twisties codicon codicon-chevron-${expanded ? 'down' : 'right'}`}></div>
+										<div className="ellipsis">{title}</div>
+										<Badge text={results.length} />
+									</span></td>
+								</tr>
+								{expanded && results.map((result, i) => {
+									rowIndex++
+									const index = rowIndex // Closure.
+									const isSelected = this.selectedIndex === index
+									if (isSelected) selected = result
+
+									const levelToIcon = {
+										error: 'error',
+										warning: 'warning',
+										info: 'info',
+										none: 'issues',
+										undefined: 'question',
+									}
+									return <tr key={i} onClick={e => this.selectedIndex = index}
+										className={isSelected ? 'svItemSelected' : undefined}>{/* Result Row */}
+										
+										<td className="svSpacer"></td>
+										{columns.map((col, i) =>
+											<td key={col}><span className="svCell">
+												{i === 0 && <span className={`codicon codicon-${levelToIcon[result.level]}`} />}
+												{(() => {
+													switch (col) {
+														case 'Line':
+															return <span>{result._line < 0 ? '—' : result._line}</span>
+														case 'File':
+															return <span className="ellipsis" title={result._uri}>{result._file}</span>
+														case 'Message':
+															return <span className="ellipsis">{result._message}</span>
+														case 'Rule':
+															return <>
+																<span>{result._rule?.name ?? '—'}</span>
+																<span className="svSecondary">{result.ruleId}</span>
+															</>
+														default:
+															return <span>—</span>
+													}
+												})()}
+											</span></td>
+										)}
+									</tr>
+								})}
+							</Fragment>
+						})}
+					</tbody>	
+				</table>
+			</div>
+		</div>
+
+		this.selectedIndexMax = rowIndex
+		return <>
+			{listPane}
 			<div className="svResizer">
 				<ResizeHandle size={detailsPaneHeight} />
 			</div>
 			<div className="svDetailsPane" style={{ height: detailsPaneHeight.get() }}>
-				<TabPanel titles={['Info', 'Code Flow']}>
+				{selected && <TabPanel titles={['Info', 'Code Flow']}>
 					<div className="svDetailsBody --svDetailsBodyInfo">
 						<div className="svDetailsMessage">{selected._message}</div>
 						<div className="svDetailsInfo">
@@ -228,7 +241,7 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 							: <span className="svSecondary">None</span>
 						}
 					</div>
-				</TabPanel>
+				</TabPanel>}
 			</div>
 		</>
 	}
