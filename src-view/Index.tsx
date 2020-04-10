@@ -135,9 +135,7 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 									<span className="svCell svSecondary"
 										onClick={action(() => {
 											store.sortColumn = col
-											store.sortDir = sortDir === SortDir.Asc
-												? SortDir.Dsc
-												: SortDir.Asc
+											store.sortDir = SortDir.reverse(sortDir)
 										})}>
 											{col}
 											{sortColumn === col && <Icon name={sortDir} />}

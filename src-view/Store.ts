@@ -58,6 +58,11 @@ export enum SortDir {
 	Asc = 'arrow-down',
 	Dsc = 'arrow-up',
 }
+export namespace SortDir {
+	export function reverse(dir: SortDir) {
+		return dir === SortDir.Asc ? SortDir.Dsc : SortDir.Asc
+	}
+}
 
 class Group {
 	@observable expanded = true
