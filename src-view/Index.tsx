@@ -17,6 +17,14 @@ class Badge extends PureComponent<{ text: { toString: () => string } }> {
 	}
 }
 
+const levelToIcon = {
+	error: 'error',
+	warning: 'warning',
+	info: 'info',
+	none: 'issues',
+	undefined: 'question',
+}
+
 class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void }> {
 	render() {
 		const {name: iconName, onClick} = this.props
@@ -159,14 +167,6 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 									const index = rowIndex // Closure.
 									const isSelected = this.selectedIndex === index
 									if (isSelected) selected = result
-
-									const levelToIcon = {
-										error: 'error',
-										warning: 'warning',
-										info: 'info',
-										none: 'issues',
-										undefined: 'question',
-									}
 									return <tr key={i} onClick={e => this.selectedIndex = index}
 										className={isSelected ? 'svItemSelected' : undefined}>{/* Result Row */}
 										
