@@ -424,7 +424,18 @@
 	<body class="vscode-dark">
 		<div id="root" style="margin: 50px 300px;"></div>
 		<script>
-			window.acquireVsCodeApi = (() => ({ postMessage: message => console.log('mock', message) }))
+			window.acquireVsCodeApi = (() => ({ postMessage: message => {
+				const {command} = message
+				if (command === 'updateTitle') {
+					document.title = `${message.count} SARIF Result(s)`
+					return
+				}
+				if (command === 'open') {
+					postMessage({ command: 'demo' })
+					return
+				}
+				console.log('unknown message', message)
+			} }))
 		</script>
 		<script src="index.js"></script>
 	</body>

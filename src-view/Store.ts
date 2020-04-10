@@ -1,8 +1,12 @@
 import { observable, computed } from 'mobx'
-import { Result, Run, Location } from 'sarif'
+import { Result, Run, Location, Log } from 'sarif'
 import './extension'
 
 declare module 'sarif' {
+	interface Log {
+		_uri?: string
+	}
+
 	interface Run {
 		_augmented?: boolean
 	}
@@ -71,7 +75,12 @@ class Group {
 }
 
 export class Store {
-	@observable.ref public runs = []
+	@observable.shallow public logs = [] as Log[]
+
+	@computed public get runs() {
+		return this.logs.map(log => log.runs).flat()
+	}
+
 	@computed public get results() {
 		augmentRuns(this.runs)
 		return this.runs.map(run => run.results).flat()
@@ -80,11 +89,12 @@ export class Store {
 	@observable public sortColumn = 'Line'
 	@observable public sortDir = SortDir.Asc
 
-	public tabs = ['Locations', 'Rules']
+	public tabs = ['Locations', 'Rules', 'Logs']
 	public selectedTab = observable.box(this.tabs[0])
 	public mapTabToGroup = {
 		Locations: 'File',
 		Rules: 'Rule',
+		Logs: 'File', // Temporary incorrect.
 	}
 	@computed public get groupBy() {
 		return this.mapTabToGroup[this.selectedTab.get()]

@@ -111,6 +111,22 @@ body {
 	color: rgb(139, 139, 139);
 }
 
+.svLogsPane {
+	.svListItem {
+		padding: 0 22px;
+		display: flex;
+		align-items: center;
+		cursor: default;
+		& > * + * {
+			margin-left: 6px;
+		}
+
+		& > :nth-child(2) {
+			flex: 1 1 auto;
+		}
+	}
+}
+
 .svListTable {
 	width: 100%;
 	line-height: 22px;

@@ -112,7 +112,7 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 			</div>
 		}
 
-		const {groupBy, groupings, groupsSorted, sortColumn, sortDir} = store
+		const {logs, selectedTab, groupBy, groupings, groupsSorted, sortColumn, sortDir} = store
 		const {detailsPaneHeight} = this
 		const columns = Object.keys(groupings).filter(col => col !== groupBy)
 		let rowIndex = -1
@@ -126,84 +126,96 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 				<Icon name="folder-opened" onClick={() => this.vscode.postMessage({ command: 'open' })} />
 			</div>
 			<div className="svListTableScroller">
-				<table className="svListTable">
-					<colgroup>
-						<col width="30" />
-						{columns.map((col, i, cols) => {
-							if (i === cols.length - 1) return null
-							return <col key={col} width={this.columnWidth(col).get()} />
+				{selectedTab.get() === 'Logs'
+					? <div className="svLogsPane">
+						{logs.map((log, i) => {
+							const parts = log._uri.split('/')
+							const name = parts.pop()
+							return <div key={i} className="svListItem">
+								<div className="">{name}</div>
+								<div className="ellipsis svSecondary">{parts.join('/')}</div>
+								<Icon name="close" />
+							</div>
 						})}
-					</colgroup>
-					<thead>
-						<tr>
-							<td className="svSpacer"><span className="svCell">&nbsp;</span></td>{/* svCell and nbsp to get matching height */}
-							{columns.map((col, i, cols) =>
-								<td key={col}>
-									<span className="svCell svSecondary"
-										onClick={action(() => {
-											store.sortColumn = col
-											store.sortDir = SortDir.reverse(sortDir)
-										})}>
-											{col}
-											{sortColumn === col && <Icon name={sortDir} />}
-										</span>
-									{i < cols.length - 1 && <ResizeHandle size={this.columnWidth(col)} horizontal />}
-								</td>
-							)}
-						</tr>
-					</thead>
-					<tbody>
-						{groupsSorted.map((group, i) => {
-							const {expanded, title, results} = group
-							return <Fragment key={i}>
-								<tr>{/* Group Row */}
-									<td colSpan={columns.length + 1}><span className="svCell svGroup"
-										onClick={() => {
-											this.selectedIndex = -1
-											group.expanded = !expanded
-										}}>
-										<div className={`twisties codicon codicon-chevron-${expanded ? 'down' : 'right'}`}></div>
-										<div className="ellipsis">{title}</div>
-										<Badge text={results.length} />
-									</span></td>
-								</tr>
-								{expanded && results.map((result, i) => {
-									rowIndex++
-									const index = rowIndex // Closure.
-									const isSelected = this.selectedIndex === index
-									if (isSelected) selected = result
-									return <tr key={i} onClick={e => this.selectedIndex = index}
-										className={isSelected ? 'svItemSelected' : undefined}>{/* Result Row */}
-										
-										<td className="svSpacer"></td>
-										{columns.map((col, i) =>
-											<td key={col}><span className="svCell">
-												{i === 0 && <span className={`codicon codicon-${levelToIcon[result.level]}`} />}
-												{(() => {
-													switch (col) {
-														case 'Line':
-															return <span>{result._line < 0 ? '—' : result._line}</span>
-														case 'File':
-															return <span className="ellipsis" title={result._uri}>{result._file}</span>
-														case 'Message':
-															return <span className="ellipsis">{result._message}</span>
-														case 'Rule':
-															return <>
-																<span>{result._rule?.name ?? '—'}</span>
-																<span className="svSecondary">{result.ruleId}</span>
-															</>
-														default:
-															return <span>—</span>
-													}
-												})()}
-											</span></td>
-										)}
+					</div>
+					: <table className="svListTable">
+						<colgroup>
+							<col width="30" />
+							{columns.map((col, i, cols) => {
+								if (i === cols.length - 1) return null
+								return <col key={col} width={this.columnWidth(col).get()} />
+							})}
+						</colgroup>
+						<thead>
+							<tr>
+								<td className="svSpacer"><span className="svCell">&nbsp;</span></td>{/* svCell and nbsp to get matching height */}
+								{columns.map((col, i, cols) =>
+									<td key={col}>
+										<span className="svCell svSecondary"
+											onClick={action(() => {
+												store.sortColumn = col
+												store.sortDir = SortDir.reverse(sortDir)
+											})}>
+												{col}
+												{sortColumn === col && <Icon name={sortDir} />}
+											</span>
+										{i < cols.length - 1 && <ResizeHandle size={this.columnWidth(col)} horizontal />}
+									</td>
+								)}
+							</tr>
+						</thead>
+						<tbody>
+							{groupsSorted.map((group, i) => {
+								const {expanded, title, results} = group
+								return <Fragment key={i}>
+									<tr>{/* Group Row */}
+										<td colSpan={columns.length + 1}><span className="svCell svGroup"
+											onClick={() => {
+												this.selectedIndex = -1
+												group.expanded = !expanded
+											}}>
+											<div className={`twisties codicon codicon-chevron-${expanded ? 'down' : 'right'}`}></div>
+											<div className="ellipsis">{title}</div>
+											<Badge text={results.length} />
+										</span></td>
 									</tr>
-								})}
-							</Fragment>
-						})}
-					</tbody>	
-				</table>
+									{expanded && results.map((result, i) => {
+										rowIndex++
+										const index = rowIndex // Closure.
+										const isSelected = this.selectedIndex === index
+										if (isSelected) selected = result
+										return <tr key={i} onClick={e => this.selectedIndex = index}
+											className={isSelected ? 'svItemSelected' : undefined}>{/* Result Row */}
+											
+											<td className="svSpacer"></td>
+											{columns.map((col, i) =>
+												<td key={col}><span className="svCell">
+													{i === 0 && <span className={`codicon codicon-${levelToIcon[result.level]}`} />}
+													{(() => {
+														switch (col) {
+															case 'Line':
+																return <span>{result._line < 0 ? '—' : result._line}</span>
+															case 'File':
+																return <span className="ellipsis" title={result._uri}>{result._file}</span>
+															case 'Message':
+																return <span className="ellipsis">{result._message}</span>
+															case 'Rule':
+																return <>
+																	<span>{result._rule?.name ?? '—'}</span>
+																	<span className="svSecondary">{result.ruleId}</span>
+																</>
+															default:
+																return <span>—</span>
+														}
+													})()}
+												</span></td>
+											)}
+										</tr>
+									})}
+								</Fragment>
+							})}
+						</tbody>	
+					</table>}
 			</div>
 		</div>
 
@@ -252,13 +264,25 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 	}
 
 	@action.bound private async onMessage(event: MessageEvent) {
-		if (event.origin === 'http://localhost:8000') return
+		// if (event.origin === 'http://localhost:8000') return
+		if (!event.data) return // Ignore mysterious empty message
+		if (event.data?.source) return // Ignore 'react-devtools-*'
+		if (event.data?.type) return // Ignore 'webpackOk'
+		
+		const {store} = this.props
+
+		if (event.data?.command === 'demo') {
+			if (!sampleLogs.length) return
+			store.logs.push(sampleLogs.shift())
+			return
+		}
+
 		const path = event.data
 		if (path) {
-			const {store} = this.props
 			const response = await fetch(path)
 			const log = await response.json() as Log
-			store.runs = log.runs
+			log._uri = path
+			store.logs.push(log)
 		}
 	}
 
