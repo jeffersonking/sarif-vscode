@@ -9,7 +9,14 @@ import './codicon.css'
 import './Index.scss'
 import { ResizeHandle } from './Index.ResizeHandle'
 import { Store, SortDir, parseLocation } from './Store'
-import { runs } from './Store.samples'
+
+import logA from '../samples/AndroidStudio.Multirun.EmbeddedManifestFile.sarif.json'
+import logB from '../samples/BinSkim.ErorResultsAndNotifications.sarif.json'
+import logP from '../samples/Prefast.Converted.KeyEvents.sarif.json'
+;(logA as Log)._uri = '/Users/jeff/projects/vscode-hello/samples/AndroidStudio.Multirun.EmbeddedManifestFile.sarif.json'
+;(logB as Log)._uri = '/Users/jeff/projects/vscode-hello/samples/BinSkim.ErorResultsAndNotifications.sarif.json'
+;(logB as Log)._uri = '/Users/jeff/projects/vscode-hello/samples/Prefast.Converted.KeyEvents.sarif.json'
+const sampleLogs = [logA, logB, logP] as Log[]
 
 class Badge extends PureComponent<{ text: { toString: () => string } }> {
 	render() {
@@ -265,7 +272,6 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 }
 
 const store = new Store()
-store.runs = runs
 ReactDOM.render(
 	<Index store={store} />,
 	document.getElementById('root')
