@@ -100,7 +100,7 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 		if (!store.results.length) {
 			return <div className="svZeroData">
 				<div onClick={() => this.vscode.postMessage({ command: 'open' })}>
-					Open a SARIF file
+					Open SARIF file
 				</div>
 			</div>
 		}
