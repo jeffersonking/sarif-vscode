@@ -1,17 +1,21 @@
-import { Run, Location } from 'sarif'
+import { Location, Log } from 'sarif'
 
+// Underscored members are ptional in the source files, but required after preprocessing.
 declare module 'sarif' {
 	interface Log {
 		_uri?: string
+		_augmented?: boolean
 	}
 
 	interface Run {
-		_augmented?: boolean
+		_log?: Log
+		_index?: number
 		_implicitBase?: string
 	}
 
-	// Underscored members are ptional in the source files, but required after preprocessing.
 	interface Result {
+		_run?: Run
+		_index?: number
 		_file?: string
 		_path?: string
 		_line?: number
@@ -34,14 +38,18 @@ export function parseLocation(location?: Location) {
 	return { uri, line }
 }
 
-export function augmentRuns(runs: Run[]) {
-	runs.forEach(run => {
-		if (run._augmented) return
+export function augmentLog(log: Log) {
+	if (log._augmented) return
+	log._augmented = true
+	log.runs.forEach((run, i) => {
+		run._log = log
+		run._index = i
 
-		run._augmented = true
 		let implicitBase = undefined as string[]
+		run.results.forEach((result, i) => {
+			result._run = run
+			result._index = i
 
-		run.results.forEach(result => {
 			const {uri, line} = parseLocation(result.locations?.[0])
 			result._uri = uri ?? '—'
 			result._line = line
