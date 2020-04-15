@@ -14,9 +14,11 @@ import { parseLocation } from '../src-shared'
 import logA from '../samples/AndroidStudio.Multirun.EmbeddedManifestFile.sarif.json'
 import logB from '../samples/BinSkim.ErorResultsAndNotifications.sarif.json'
 import logP from '../samples/Prefast.Converted.KeyEvents.sarif.json'
-;(logA as Log)._uri = '/Users/jeff/projects/vscode-hello/samples/AndroidStudio.Multirun.EmbeddedManifestFile.sarif.json'
+import logS from '../samples/Semme.sarif-sdk.csharp.sarif.json'
+(logA as Log)._uri = '/Users/jeff/projects/vscode-hello/samples/AndroidStudio.Multirun.EmbeddedManifestFile.sarif.json'
 ;(logB as Log)._uri = '/Users/jeff/projects/vscode-hello/samples/BinSkim.ErorResultsAndNotifications.sarif.json'
 ;(logB as Log)._uri = '/Users/jeff/projects/vscode-hello/samples/Prefast.Converted.KeyEvents.sarif.json'
+;(logS as Log)._uri = '/Users/jeff/projects/vscode-hello/samples/Semme.sarif-sdk.csharp.sarif.json'
 const sampleLogs = [logA, logB, logP] as Log[]
 
 class Badge extends PureComponent<{ text: { toString: () => string } }> {
@@ -296,6 +298,8 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 }
 
 const store = new Store()
+// store.logs.push(sampleLogs.shift())
+// store.logs.push(logS as Log)
 ReactDOM.render(
 	<Index store={store} />,
 	document.getElementById('root')
