@@ -6,3 +6,5 @@ package-lock.json
 out
 *.txt
 src-view-dev/index.js
+samples
+samples-demo
