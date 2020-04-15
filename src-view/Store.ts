@@ -1,7 +1,7 @@
-import { observable, computed } from 'mobx'
+import { observable, computed, intercept } from 'mobx'
 import { Result, Log } from 'sarif'
 import '../src-shared/extension'
-import { augmentRuns } from '../src-shared'
+import { augmentLog } from '../src-shared'
 
 export enum SortDir {
 	Asc = 'arrow-down',
@@ -22,12 +22,19 @@ class Group {
 export class Store {
 	@observable.shallow public logs = [] as Log[]
 
-	@computed public get runs() {
+	constructor() {
+		intercept(this.logs, (change: any) => {
+			if (change.type !== 'splice') throw new Error(`Unexpected change type. ${change.type}`)
+			change.added.forEach(augmentLog)
+			return change
+		})
+	}
+
+	@computed private get runs() {
 		return this.logs.map(log => log.runs).flat()
 	}
 
 	@computed public get results() {
-		augmentRuns(this.runs)
 		return this.runs.map(run => run.results).flat()
 	}
 	
