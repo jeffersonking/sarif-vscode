@@ -5,9 +5,18 @@ export {}
 type Selector<T> = (_: T) => number | string
 
 declare global {
+	interface ArrayConstructor {
+		commonLength(a: any[], b: any[]): number
+	}
 	interface Array<T> {
 		sortBy<T>(this: T[], selector: Selector<T>, descending?: boolean): Array<T> // Not a copy
 	}
+}
+
+Array.commonLength = function(a: any[], b: any[]): number {
+	let i = 0
+	for (; a[i] === b[i]; i++) {}
+	return i
 }
 
 Array.prototype.sortBy = function<T>(selector: Selector<T>, descending = false) {
