@@ -133,7 +133,7 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 					? <div className="svLogsPane">
 						{logs.map((log, i) => {
 							const parts = log._uri.split('/')
-							const name = parts.pop()
+							const name = parts?.pop() ?? '—'
 							return <div key={i} className="svListItem">
 								<div className="">{name}</div>
 								<div className="ellipsis svSecondary">{parts.join('/')}</div>
@@ -187,7 +187,12 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 										const index = rowIndex // Closure.
 										const isSelected = this.selectedIndex === index
 										if (isSelected) selected = result
-										return <tr key={i} onClick={e => this.selectedIndex = index}
+										return <tr key={i}
+											onClick={e => {
+												this.selectedIndex = index
+												const id = [result._run._log._uri, result._run._index, result._index]
+												this.vscode.postMessage({ command: 'present', id })
+											}}
 											className={isSelected ? 'svItemSelected' : undefined}>{/* Result Row */}
 											
 											<td className="svSpacer"></td>
@@ -279,11 +284,11 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 			return
 		}
 
-		const path = event.data
-		if (path) {
-			const response = await fetch(path)
+		const {uri, webviewUri} = event.data
+		if (uri && webviewUri) {
+			const response = await fetch(webviewUri)
 			const log = await response.json() as Log
-			log._uri = path
+			log._uri = uri
 			store.logs.push(log)
 		}
 	}
