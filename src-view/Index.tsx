@@ -249,8 +249,7 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 								.filter(tfLocation => tfLocation.location)
 								.map((tfLocation, i) => {
 								const {message, physicalLocation} = tfLocation.location
-								const uri = new URL(physicalLocation.artifactLocation.uri)
-								const fileName = uri.pathname.split('/').pop()
+									const fileName = physicalLocation?.artifactLocation?.uri?.split('/').pop() ?? '—'
 								return <div key={i} className="svListItem">
 									<div className="ellipsis">{message?.text ?? '—'}</div>
 									<div className="svSecondary">{fileName} [{physicalLocation.region.startLine}]</div>
