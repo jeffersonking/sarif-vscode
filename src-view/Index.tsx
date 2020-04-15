@@ -9,7 +9,7 @@ import './codicon.css'
 import './Index.scss'
 import { ResizeHandle } from './Index.ResizeHandle'
 import { Store, SortDir } from './Store'
-import { parseLocation } from '../src-shared/shared'
+import { parseLocation } from '../src-shared'
 
 import logA from '../samples/AndroidStudio.Multirun.EmbeddedManifestFile.sarif.json'
 import logB from '../samples/BinSkim.ErorResultsAndNotifications.sarif.json'

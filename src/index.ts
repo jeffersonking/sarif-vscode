@@ -1,5 +1,5 @@
 import * as path from 'path'
-import { ExtensionContext, window, ViewColumn, Uri, workspace } from 'vscode'
+import { augmentRuns } from '../src-shared'
 
 export async function activate(context: ExtensionContext) {
 	const title = 'SARIF Result'
