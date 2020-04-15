@@ -26,11 +26,11 @@ declare module 'sarif' {
 	}
 }
 
+// console.log(format(`'{0}' was not evaluated for check '{2}' as the analysis is not relevant based on observed metadata: {1}.`, ['x', 'y', 'z']))
 function format(template: string, args?: string[]) {
 	if (!args) return template
 	return template.replace(/{(\d+)}/g, (_, group) => args[group])
 }
-// console.log(format(`'{0}' was not evaluated for check '{2}' as the analysis is not relevant based on observed metadata: {1}.`, ['x', 'y', 'z']))
 
 export function parseLocation(location?: Location) {
 	const ploc = location?.physicalLocation
@@ -69,9 +69,6 @@ export function augmentLog(log: Log) {
 					endColumn ?? 0
 				]
 			}
-
-			// Note: new URL('folder/file1.txt') fails
-			// result._file = (uri && new URL(uri).pathname.split('/').pop()) ?? '—'
 
 			const parts = uri?.split('/')
 			implicitBase = // Base calc (inclusive of dash for now)
