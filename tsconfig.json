@@ -3,7 +3,6 @@
 		"module": "commonjs",
 		"target": "es2019",
 		"sourceMap": true,
-		"rootDirs": ["src", "src-view"],
 		
 		"experimentalDecorators": true,
 		"esModuleInterop": true,

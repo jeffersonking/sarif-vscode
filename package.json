@@ -12,7 +12,7 @@
 	"activationEvents": [
 		"*"
 	],
-	"main": "./out/index.js",
+	"main": "./out/src/index.js",
 	"contributes": {
 		"commands": [
 			{
@@ -24,9 +24,9 @@
 	"scripts": {
 		"start": "webpack-dev-server --mode development",
 		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -p ./",
+		"compile": "tsc -p ./tsconifg.src.json",
 		"postinstall": "node ./node_modules/vscode/bin/install",
-		"build": "npx webpack && tsc -p ./src"
+		"build": "npx webpack && tsc -p ./tsconifg.src.json"
 	},
 	"devDependencies": {
 		"@types/mocha": "^2.2.42",
