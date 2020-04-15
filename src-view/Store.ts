@@ -46,7 +46,7 @@ export class Store {
 	}
 
 	public groupings = { // aka columns
-		File:    result => result._file,
+		File:    result => `${result._file} — ${result._path}`,
 		Line:    _      => '', // Not ever expected to be grouped.
 		Rule:    result => result.ruleId, // React.renderToString
 		Message: result => result._message,
