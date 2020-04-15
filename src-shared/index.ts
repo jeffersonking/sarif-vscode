@@ -20,6 +20,7 @@ declare module 'sarif' {
 		_path?: string
 		_line?: number
 		_uri?: string
+		_region?: [number, number, number, number]
 		_rule?: ReportingDescriptor
 		_message?: string
 	}
@@ -53,6 +54,21 @@ export function augmentLog(log: Log) {
 			const {uri, line} = parseLocation(result.locations?.[0])
 			result._uri = uri ?? '—'
 			result._line = line
+
+			const region = result.locations?.[0]?.physicalLocation?.region
+			if (region) {
+				let {startLine, startColumn, endLine, endColumn} = region
+				if (startLine) startLine-- // Lines are 1-based so no need to check undef.
+				if (startColumn) startColumn--
+				if (endLine) endLine--
+				if (endColumn) endColumn--
+				result._region = [
+					startLine ?? 0,
+					startColumn ?? 0,
+					endLine ?? startLine ?? 0,
+					endColumn ?? 0
+				]
+			}
 
 			// Note: new URL('folder/file1.txt') fails
 			// result._file = (uri && new URL(uri).pathname.split('/').pop()) ?? '—'
