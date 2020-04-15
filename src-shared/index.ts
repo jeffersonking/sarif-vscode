@@ -20,7 +20,7 @@ declare module 'sarif' {
 		_path?: string
 		_line?: number
 		_uri?: string
-		_region?: [number, number, number, number]
+		_region?: number | [number, number, number, number]
 		_rule?: ReportingDescriptor
 		_message?: string
 	}
@@ -55,20 +55,28 @@ export function augmentLog(log: Log) {
 			result._uri = uri ?? '—'
 			result._line = line
 
-			const region = result.locations?.[0]?.physicalLocation?.region
-			if (region) {
+			result._region = (() => {
+				const region = result.locations?.[0]?.physicalLocation?.region
+				if (!region) return undefined
+
 				let {startLine, startColumn, endLine, endColumn} = region
-				if (startLine) startLine-- // Lines are 1-based so no need to check undef.
-				if (startColumn) startColumn--
-				if (endLine) endLine--
+				if (!startLine) return undefined // Lines are 1-based so no need to check undef.
+
+				startLine--
+				if (!startColumn) return startLine
+
+				startColumn--
 				if (endColumn) endColumn--
-				result._region = [
-					startLine ?? 0,
-					startColumn ?? 0,
-					endLine ?? startLine ?? 0,
-					endColumn ?? 0
-				]
-			}
+				if (endLine) endLine--
+				return [
+					startLine,
+					startColumn,
+					endLine ?? startLine,
+					endColumn ?? (startColumn + 1)
+				] as [number, number, number, number]
+			})()
+
+
 
 			const parts = uri?.split('/')
 			implicitBase = // Base calc (inclusive of dash for now)
