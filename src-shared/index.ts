@@ -76,8 +76,6 @@ export function augmentLog(log: Log) {
 				] as [number, number, number, number]
 			})()
 
-
-
 			const parts = uri?.split('/')
 			implicitBase = // Base calc (inclusive of dash for now)
 				implicitBase?.slice(0, Array.commonLength(implicitBase, parts ?? []))
