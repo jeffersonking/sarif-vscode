@@ -93,7 +93,7 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 		return this.columnWidths.get(name)
 	}
 
-	private detailsPaneHeight = observable.box(400)
+	private detailsPaneHeight = observable.box(250)
 
 	@action.bound private onKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
 		if (!(e.key === 'ArrowUp' || e.key === 'ArrowDown')) return
