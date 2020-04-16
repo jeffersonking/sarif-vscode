@@ -5,6 +5,7 @@ declare module 'sarif' {
 	interface Log {
 		_uri?: string
 		_augmented?: boolean
+		_distinct?: Map<string, string> // Technically per Run, practially does't matter right now.
 	}
 
 	interface Run {
@@ -32,9 +33,26 @@ function format(template: string, args?: string[]) {
 	return template.replace(/{(\d+)}/g, (_, group) => args[group])
 }
 
+export function mapDistinct(pairs: [string, string][]): Map<string, string> {
+	const distinct = new Map<string, string>()
+	for (const [key, value] of pairs) {
+		if (distinct.has(key)) {
+			const otherValue = distinct.get(key)
+			if (value !== otherValue) distinct.set(key, undefined)
+		} else {
+			distinct.set(key, value)
+		}
+	}
+	for (const [key, value] of distinct) {
+		if (!value) distinct.delete(key)
+	}
+	return distinct
+}
+
 export function augmentLog(log: Log) {
 	if (log._augmented) return
 	log._augmented = true
+	const fileAndUris = [] as [string, string][]
 	log.runs.forEach((run, i) => {
 		run._log = log
 		run._index = i
@@ -52,8 +70,12 @@ export function augmentLog(log: Log) {
 			implicitBase = // Base calc (inclusive of dash for now)
 				implicitBase?.slice(0, Array.commonLength(implicitBase, parts ?? []))
 				?? parts
-			result._file = parts?.pop() ?? '—'
+			const file = parts?.pop()
+			result._file = file ?? '—'
 			result._path = parts?.join('/') ?? '—'
+			if (file && uri) {
+				fileAndUris.push([file, uri])
+			}
 
 			result._region = (() => {
 				const region = ploc?.region
@@ -87,4 +109,5 @@ export function augmentLog(log: Log) {
 			result._path = result._uri.replace(run._implicitBase + '/', '') // End slash ok?
 		}
 	})
+	log._distinct = mapDistinct(fileAndUris)
 }
