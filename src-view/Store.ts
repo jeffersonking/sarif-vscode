@@ -14,7 +14,7 @@ export namespace SortDir {
 }
 
 class Group {
-	@observable expanded = false
+	@observable expanded = true
 	public results = [] as Result[]
 	constructor(readonly title: string) {}
 }
