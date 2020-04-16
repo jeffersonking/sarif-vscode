@@ -44,8 +44,7 @@ export function augmentLog(log: Log) {
 			result._run = run
 			result._index = i
 
-			const location = result.locations?.[0]
-			const ploc = location?.physicalLocation
+			const ploc = result.locations?.[0]?.physicalLocation
 
 			const uri = ploc?.artifactLocation?.uri
 			result._uri = uri ?? '—'
@@ -57,7 +56,7 @@ export function augmentLog(log: Log) {
 			result._path = parts?.join('/') ?? '—'
 
 			result._region = (() => {
-				const region = result.locations?.[0]?.physicalLocation?.region
+				const region = ploc?.region
 				if (!region) return undefined
 
 				let {startLine, startColumn, endLine, endColumn} = region
