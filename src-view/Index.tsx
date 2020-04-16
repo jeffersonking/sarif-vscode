@@ -9,7 +9,6 @@ import './codicon.css'
 import './Index.scss'
 import { ResizeHandle } from './Index.ResizeHandle'
 import { Store, SortDir } from './Store'
-import { parseLocation } from '../src-shared'
 
 import logA from '../samples/AndroidStudio.Multirun.EmbeddedManifestFile.sarif.json'
 import logB from '../samples/BinSkim.ErorResultsAndNotifications.sarif.json'
@@ -247,10 +246,6 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 							<span>Level</span>				<span>{selected.level}</span>
 							<span>Kind</span>				<span>{selected.kind ?? '—'}</span>
 							<span>Baseline State</span>		<span>{selected.baselineState ?? '—'}</span>
-							<span>Locations</span>			<span>{selected.locations?.map((loc, i) => {
-								const {uri, line} = parseLocation(loc)
-								return <div key={i}>{uri ?? '—'} {line}</div>
-							})}</span>
 						</div>
 					</div>
 					<div className="svDetailsBody svDetailsBodyCodeflow">

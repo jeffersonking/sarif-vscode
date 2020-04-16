@@ -32,7 +32,7 @@ function format(template: string, args?: string[]) {
 	return template.replace(/{(\d+)}/g, (_, group) => args[group])
 }
 
-export function parseLocation(location?: Location) {
+function parseLocation(location?: Location) {
 	const ploc = location?.physicalLocation
 	const uri = ploc?.artifactLocation?.uri
 	const line = ploc?.region?.startLine ?? -1
