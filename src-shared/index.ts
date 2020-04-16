@@ -1,4 +1,6 @@
-import { Location, Log } from 'sarif'
+import { Log } from 'sarif'
+
+export type ResultId = [string, number, number]
 
 // Underscored members are ptional in the source files, but required after preprocessing.
 declare module 'sarif' {
@@ -9,14 +11,11 @@ declare module 'sarif' {
 	}
 
 	interface Run {
-		_log?: Log
-		_index?: number
 		_implicitBase?: string
 	}
 
 	interface Result {
-		_run?: Run
-		_index?: number
+		_id?: ResultId
 		_file?: string
 		_path?: string
 		_line?: number
@@ -53,14 +52,11 @@ export function augmentLog(log: Log) {
 	if (log._augmented) return
 	log._augmented = true
 	const fileAndUris = [] as [string, string][]
-	log.runs.forEach((run, i) => {
-		run._log = log
-		run._index = i
+	log.runs.forEach((run, runIndex) => {
 
 		let implicitBase = undefined as string[]
-		run.results.forEach((result, i) => {
-			result._run = run
-			result._index = i
+		run.results.forEach((result, resultIndex) => {
+			result._id = [log._uri, runIndex, resultIndex]
 
 			const ploc = result.locations?.[0]?.physicalLocation
 

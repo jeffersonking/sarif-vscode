@@ -192,8 +192,7 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 										return <tr key={i}
 											onClick={e => {
 												this.selectedIndex = index
-												const id = [result._run._log._uri, result._run._index, result._index]
-												this.vscode.postMessage({ command: 'present', id })
+												this.vscode.postMessage({ command: 'present', id: result._id })
 											}}
 											className={isSelected ? 'svItemSelected' : undefined}>{/* Result Row */}
 											
