@@ -49,6 +49,12 @@ export function augmentLog(log: Log) {
 
 			const uri = ploc?.artifactLocation?.uri
 			result._uri = uri ?? '—'
+			const parts = uri?.split('/')
+			implicitBase = // Base calc (inclusive of dash for now)
+				implicitBase?.slice(0, Array.commonLength(implicitBase, parts ?? []))
+				?? parts
+			result._file = parts?.pop() ?? '—'
+			result._path = parts?.join('/') ?? '—'
 
 			result._region = (() => {
 				const region = result.locations?.[0]?.physicalLocation?.region
@@ -72,12 +78,6 @@ export function augmentLog(log: Log) {
 			})()
 			result._line = result._region?.[0] ?? result._region ?? -1 // _line is sugar for _region
 
-			const parts = uri?.split('/')
-			implicitBase = // Base calc (inclusive of dash for now)
-				implicitBase?.slice(0, Array.commonLength(implicitBase, parts ?? []))
-				?? parts
-			result._file = parts?.pop() ?? '—'
-			result._path = parts?.join('/') ?? '—'
 			result._rule = run.tool.driver.rules?.[result.ruleIndex] // If result.ruleIndex is undefined, that's okay.
 			const template = result._rule?.messageStrings?.[result.message.id].text ?? result.message.text ?? '—'
 			result._message = format(template, result.message.arguments)
