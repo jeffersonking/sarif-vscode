@@ -75,6 +75,7 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 
 	@observable.ref private selectedIndex = 0
 	private selectedIndexMax = 0
+	private resultToIndexMap = new Map<Result, number>()
 
 	constructor(props) {
 		super(props)
@@ -120,6 +121,7 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 		const columns = Object.keys(groupings).filter(col => col !== groupBy)
 		let rowIndex = -1
 		let selected = null as Result // Null when index = -1 (after group collapse)
+		this.resultToIndexMap.clear()
 
 		const listPane = <div tabIndex={0} ref={ref => ref?.focus()} className="svListPane" onKeyDown={this.onKeyDown}>
 			<div className="svListHeader">
@@ -187,6 +189,7 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 										const index = rowIndex // Closure.
 										const isSelected = this.selectedIndex === index
 										if (isSelected) selected = result
+										this.resultToIndexMap.set(result, rowIndex)
 										return <tr key={i}
 											onClick={e => {
 												this.selectedIndex = index
@@ -255,13 +258,13 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 							? selected.codeFlows[0]?.threadFlows?.[0].locations
 								.filter(tfLocation => tfLocation.location)
 								.map((tfLocation, i) => {
-								const {message, physicalLocation} = tfLocation.location
+									const {message, physicalLocation} = tfLocation.location
 									const fileName = physicalLocation?.artifactLocation?.uri?.split('/').pop() ?? '—'
-								return <div key={i} className="svListItem">
-									<div className="ellipsis">{message?.text ?? '—'}</div>
-									<div className="svSecondary">{fileName} [{physicalLocation.region.startLine}]</div>
-								</div>
-							})
+									return <div key={i} className="svListItem">
+										<div className="ellipsis">{message?.text ?? '—'}</div>
+										<div className="svSecondary">{fileName} [{physicalLocation.region.startLine}]</div>
+									</div>
+								})
 							: <span className="svSecondary">None</span>
 						}
 					</div>
@@ -282,6 +285,15 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 			if (!sampleLogs.length) return
 			store.logs.push(sampleLogs.shift())
 			return
+		}
+
+		if (event.data?.command === 'select') {
+			const {id} = event.data
+			const [logUri, runIndex, resultIndex] = id
+			const result = store.logs.find(log => log._uri === logUri)?.runs[runIndex]?.results?.[resultIndex]
+			if (!result) throw new Error('Unexpected: result undefined')
+			const index = this.resultToIndexMap.get(result)
+			if (index !== undefined) this.selectedIndex = index
 		}
 
 		const {uri, webviewUri} = event.data
