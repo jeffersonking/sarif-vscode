@@ -32,13 +32,6 @@ function format(template: string, args?: string[]) {
 	return template.replace(/{(\d+)}/g, (_, group) => args[group])
 }
 
-function parseLocation(location?: Location) {
-	const ploc = location?.physicalLocation
-	const uri = ploc?.artifactLocation?.uri
-	const line = ploc?.region?.startLine ?? -1
-	return { uri, line }
-}
-
 export function augmentLog(log: Log) {
 	if (log._augmented) return
 	log._augmented = true
@@ -51,9 +44,11 @@ export function augmentLog(log: Log) {
 			result._run = run
 			result._index = i
 
-			const {uri, line} = parseLocation(result.locations?.[0])
+			const location = result.locations?.[0]
+			const ploc = location?.physicalLocation
+
+			const uri = ploc?.artifactLocation?.uri
 			result._uri = uri ?? '—'
-			result._line = line
 
 			result._region = (() => {
 				const region = result.locations?.[0]?.physicalLocation?.region
@@ -75,12 +70,12 @@ export function augmentLog(log: Log) {
 					endColumn ?? (startColumn + 1)
 				] as [number, number, number, number]
 			})()
+			result._line = result._region?.[0] ?? result._region ?? -1 // _line is sugar for _region
 
 			const parts = uri?.split('/')
 			implicitBase = // Base calc (inclusive of dash for now)
 				implicitBase?.slice(0, Array.commonLength(implicitBase, parts ?? []))
 				?? parts
-
 			result._file = parts?.pop() ?? '—'
 			result._path = parts?.join('/') ?? '—'
 			result._rule = run.tool.driver.rules?.[result.ruleIndex] // If result.ruleIndex is undefined, that's okay.
