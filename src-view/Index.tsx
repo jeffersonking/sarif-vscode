@@ -79,7 +79,7 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 	private resultToIndexMap = new Map<Result, number>()
 
 	private columnWidths = new Map<string, IObservableValue<number>>([
-		['Line', observable.box(70)],
+		['Line', observable.box(50)],
 		['Message', observable.box(300)],
 	])
 	private columnWidth(name: string) {
@@ -140,7 +140,8 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 							<col width="30" />
 							{columns.map((col, i, cols) => {
 								if (i === cols.length - 1) return null
-								return <col key={col} width={this.columnWidth(col).get()} />
+								const iconWidth = i === 0 ? 16 : 0
+								return <col key={col} width={iconWidth + this.columnWidth(col).get()} />
 							})}
 						</colgroup>
 						<thead>
