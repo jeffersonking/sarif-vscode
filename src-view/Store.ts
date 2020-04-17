@@ -55,8 +55,8 @@ export class Store {
 	public groupings = { // aka columns
 		File:    result => result._relativeUri,
 		Line:    _      => '', // Not ever expected to be grouped.
-		Rule:    result => `${result._rule?.name}|${result.ruleId}`,
 		Message: result => result._message,
+		Rule:    result => `${result._rule?.name}|${result.ruleId}`,
 	} as Record<string, (_: Result) => string>
 
 	private sortings = {

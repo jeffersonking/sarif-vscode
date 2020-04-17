@@ -134,6 +134,7 @@ body {
 	table-layout: fixed; // Otherwise will overshoot 100%.
 	cursor: pointer;
 	user-select: none;
+	margin-bottom: 22px; // About one row's height.
 
 	thead {
 		td:hover { background-color: var(--vscode-list-hoverBackground); }

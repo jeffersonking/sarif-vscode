@@ -78,6 +78,7 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 
 	private columnWidths = new Map<string, IObservableValue<number>>([
 		['Line', observable.box(70)],
+		['Message', observable.box(300)],
 	])
 	private columnWidth(name: string) {
 		if (!this.columnWidths.has(name)) this.columnWidths.set(name, observable.box(220))
@@ -211,7 +212,7 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 															case 'File':
 																return <span className="ellipsis" title={result._uri}>{result._file}</span>
 															case 'Message':
-																return <span className="ellipsis">{result._message}</span>
+																return <span className="ellipsis" title={result._message}>{result._message}</span>
 															case 'Rule':
 																return <>
 																	<span>{result._rule?.name ?? '—'}</span>
@@ -325,7 +326,7 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 
 const store = new Store()
 // store.logs.push(sampleLogs.shift())
-store.logs.push(logS as Log)
+store.logs.push(logA as Log)
 ReactDOM.render(
 	<Index store={store} />,
 	document.getElementById('root')
