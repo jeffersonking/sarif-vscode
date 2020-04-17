@@ -16,7 +16,6 @@ declare module 'sarif' {
 
 	interface Result {
 		_id?: ResultId
-		_file?: string
 		_line?: number
 		_uri?: string
 		_relativeUri?: string
@@ -67,7 +66,6 @@ export function augmentLog(log: Log) {
 				implicitBase?.slice(0, Array.commonLength(implicitBase, parts ?? []))
 				?? parts
 			const file = parts?.pop()
-			result._file = file ?? '—'
 			if (file && uri) {
 				fileAndUris.push([file, uri])
 			}

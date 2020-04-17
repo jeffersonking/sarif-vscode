@@ -212,7 +212,7 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 															case 'Line':
 																return <span>{result._line < 0 ? '—' : result._line}</span>
 															case 'File':
-																return <span className="ellipsis" title={result._uri ?? '—'}>{result._file}</span>
+																return <span className="ellipsis" title={result._uri ?? '—'}>{result._uri?.file ?? '—'}</span>
 															case 'Message':
 																return <span className="ellipsis" title={result._message}>{result._message}</span>
 															case 'Rule':
