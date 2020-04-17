@@ -76,15 +76,6 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 	private selectedIndexMax = 0
 	private resultToIndexMap = new Map<Result, number>()
 
-	constructor(props) {
-		super(props)
-		autorun(() => {
-			const results = this.props.store.resultsGroupedSorted
-			this.selectedIndex = 0
-			this.vscode.postMessage({ command: 'updateTitle', count: results.length })
-		})
-	}
-
 	private columnWidths = new Map<string, IObservableValue<number>>([
 		['Line', observable.box(70)],
 	])
@@ -192,7 +183,7 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 										return <tr key={i}
 											onClick={e => {
 												this.selectedIndex = index
-												this.vscode.postMessage({ command: 'present', id: result._id })
+												this.vscode.postMessage({ command: 'select', id: result._id })
 											}}
 											className={isSelected ? 'svItemSelected' : undefined}>{/* Result Row */}
 											
