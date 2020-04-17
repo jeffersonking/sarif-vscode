@@ -59,15 +59,13 @@ export class Panel {
 			if (!message) return
 			const {command} = message
 			if (command === 'open') {
-				const files = await window.showOpenDialog({
+				const uris = await window.showOpenDialog({
 					defaultUri: workspace.rootPath && Uri.file(workspace.rootPath),
 					filters: { 'SARIF files': ['sarif'] },
 				})
-				if (!files) return
-				webview.postMessage({ // Migrate to Log sync.
-					uri: files[0].path,
-					webviewUri: webview.asWebviewUri(files[0]).toString()
-				})
+				if (!uris) return
+				store.logUris.push(...uris.map(uri => uri.path))
+				this.replaceLogs(store.logUris) // TODO: Make autorun
 			}
 			if (command === 'select') {
 				const [logUri, runIndex, resultIndex] = message.id as ResultId
@@ -98,7 +96,7 @@ export class Panel {
 		})	
 	}
 
-	public addLog(uri: Uri) {
+	public addLog(uri: Uri) { // Unused.
 		this.panel?.webview.postMessage({
 			command: 'addLog',
 			uri: uri.path,

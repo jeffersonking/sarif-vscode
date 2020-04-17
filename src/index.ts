@@ -27,7 +27,7 @@ export const regionToSelection = (doc: TextDocument, region: number | [number, n
 		})()
 
 export class Store {
-	@observable.ref logUris= [] as string[]
+	@observable.shallow logUris= [] as string[]
 	@computed({ keepAlive: true }) get logs() { 
 		return this.logUris.map(path => {
 			const file = fs.readFileSync(path, 'utf8')
@@ -53,7 +53,7 @@ export async function activate(context: ExtensionContext) {
 
 	// Boot
 	const uris = await workspace.findFiles(new RelativePattern(workspace.rootPath, '.sarif/**/*.sarif')) // RelativePattern neccesary?
-	store.logUris = uris.map(uri => uri.path)
+	store.logUris.replace(uris.map(uri => uri.path))
 
 	// Basing
 	const urisNonSarif = await workspace.findFiles('**/*', '.sarif') // Ignore folders?
