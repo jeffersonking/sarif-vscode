@@ -13,6 +13,10 @@ declare global {
 		replace(items: T[]) // From Mobx, but not showing up.
 		sortBy<T>(this: T[], selector: Selector<T>, descending?: boolean): Array<T> // Not a copy
 	}
+	interface String {
+		file: String
+		path: String
+	}
 }
 
 Array.commonLength = function(a: any[], b: any[]): number {
@@ -38,3 +42,15 @@ Array.prototype.sortBy = function<T>(selector: Selector<T>, descending = false) 
 	})
 	return this
 }
+
+Object.defineProperty(String.prototype, 'file', {
+	get: function() {
+		return this.substring(this.lastIndexOf('/') + 1, this.length)
+	}
+})
+
+Object.defineProperty(String.prototype, 'path', {
+	get: function() {
+		return this.substring(0, this.lastIndexOf('/'))
+	}
+})

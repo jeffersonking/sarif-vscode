@@ -1,7 +1,7 @@
 import * as fs from 'fs'
 import { computed, observable } from 'mobx'
 import { Log, Result } from 'sarif'
-import { commands, DiagnosticSeverity, ExtensionContext, languages, Range, RelativePattern, Selection, TextDocument, ThemeColor, window, workspace } from 'vscode'
+import { commands, DiagnosticSeverity, ExtensionContext, languages, Range, RelativePattern, Selection, TextDocument, ThemeColor, Uri, window, workspace } from 'vscode'
 import { augmentLog, mapDistinct } from '../src-shared'
 import '../src-shared/extension'
 import { Baser } from './Baser'
@@ -27,12 +27,12 @@ export const regionToSelection = (doc: TextDocument, region: number | [number, n
 		})()
 
 export class Store {
-	@observable.shallow logUris= [] as string[]
+	@observable.shallow logUris= [] as Uri[]
 	@computed({ keepAlive: true }) get logs() { 
-		return this.logUris.map(path => {
-			const file = fs.readFileSync(path, 'utf8')
+		return this.logUris.map(uri => {
+			const file = fs.readFileSync(uri.path, 'utf8')
 			const log = JSON.parse(file) as Log
-			log._uri = path
+			log._uri = uri.toString()
 			augmentLog(log)
 			return log
 		})
@@ -53,7 +53,7 @@ export async function activate(context: ExtensionContext) {
 
 	// Boot
 	const uris = await workspace.findFiles(new RelativePattern(workspace.rootPath, '.sarif/**/*.sarif')) // RelativePattern neccesary?
-	store.logUris.replace(uris.map(uri => uri.path))
+	store.logUris.replace(uris)
 
 	// Basing
 	const urisNonSarif = await workspace.findFiles('**/*', '.sarif') // Ignore folders?

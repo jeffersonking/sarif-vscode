@@ -64,7 +64,7 @@ export class Panel {
 					filters: { 'SARIF files': ['sarif'] },
 				})
 				if (!uris) return
-				store.logUris.push(...uris.map(uri => uri.path))
+				store.logUris.push(...uris)
 				this.replaceLogs(store.logUris) // TODO: Make autorun
 			}
 			if (command === 'select') {
@@ -86,12 +86,12 @@ export class Panel {
 		this.replaceLogs(store.logUris)
 	}
 
-	private replaceLogs(uris: string[]) {
+	private replaceLogs(uris: Uri[]) {
 		this.panel?.webview.postMessage({
 			command: 'replaceLogs',
 			uris: uris.map(uri => ({
-				uri,
-				webviewUri: this.panel?.webview.asWebviewUri(Uri.file(uri)).toString(),
+				uri: uri.toString(),
+				webviewUri: this.panel?.webview.asWebviewUri(uri).toString(),
 			}))
 		})	
 	}
@@ -99,8 +99,8 @@ export class Panel {
 	public addLog(uri: Uri) { // Unused.
 		this.panel?.webview.postMessage({
 			command: 'addLog',
-			uri: uri.path,
-			webviewUri: this.panel.webview.asWebviewUri(uri).toString(),
+			uri: uri.toString(),
+			webviewUri: this.panel?.webview.asWebviewUri(uri).toString(),
 		})
 	}
 

@@ -124,11 +124,10 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 				{selectedTab.get() === 'Logs'
 					? <div className="svLogsPane">
 						{logs.map((log, i) => {
-							const parts = log._uri.split('/')
-							const name = parts?.pop() ?? '—'
+							const uri = new URL(log._uri)
 							return <div key={i} className="svListItem">
-								<div className="">{name}</div>
-								<div className="ellipsis svSecondary">{parts.join('/')}</div>
+								<div className="">{uri.pathname.file}</div>
+								<div className="ellipsis svSecondary">{uri.pathname.path}</div>
 								<Icon name="close" />
 							</div>
 						})}
