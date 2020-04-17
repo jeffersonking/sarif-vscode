@@ -26,7 +26,7 @@
 		"start": "webpack-dev-server --mode development",
 		"vscode:prepublish": "npm run compile",
 		"compile": "tsc -p ./tsconfig.src.json",
-		"watch": "tsc -p ./tsconfig.src.json --watch",
+		"watch": "npx webpack --watch & tsc -p ./tsconfig.src.json --watch",
 		"postinstall": "node ./node_modules/vscode/bin/install",
 		"build": "npx webpack && tsc -p ./tsconfig.src.json"
 	},
