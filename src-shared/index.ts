@@ -17,9 +17,9 @@ declare module 'sarif' {
 	interface Result {
 		_id?: ResultId
 		_file?: string
-		_path?: string
 		_line?: number
 		_uri?: string
+		_relativeUri?: string
 		_region?: number | [number, number, number, number]
 		_rule?: ReportingDescriptor
 		_message?: string
@@ -68,7 +68,6 @@ export function augmentLog(log: Log) {
 				?? parts
 			const file = parts?.pop()
 			result._file = file ?? '—'
-			result._path = parts?.join('/') ?? '—'
 			if (file && uri) {
 				fileAndUris.push([file, uri])
 			}
@@ -102,7 +101,7 @@ export function augmentLog(log: Log) {
 
 		run._implicitBase = implicitBase.join('/')
 		for (const result of run.results) {
-			result._path = result._uri.replace(run._implicitBase + '/', '') // End slash ok?
+			result._relativeUri = result._uri.replace(run._implicitBase , '')
 		}
 	})
 	log._distinct = mapDistinct(fileAndUris)

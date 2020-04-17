@@ -51,6 +51,6 @@ Object.defineProperty(String.prototype, 'file', {
 
 Object.defineProperty(String.prototype, 'path', {
 	get: function() {
-		return this.substring(0, this.lastIndexOf('/'))
+		return this.substring(0, this.lastIndexOf('/')).replace(/^\//g, '')
 	}
 })
