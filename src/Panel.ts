@@ -70,7 +70,7 @@ export class Panel {
 			if (command === 'select') {
 				const [logUri, runIndex, resultIndex] = message.id as ResultId
 				const result = store.logs.find(log => log._uri === logUri)?.runs[runIndex]?.results?.[resultIndex]
-				if (!result || result._uri === '—') return
+				if (!result || !result._uri) return
 				const validatedUri = await basing.translateToLocalPath(result._uri)
 				if (!validatedUri) return
 

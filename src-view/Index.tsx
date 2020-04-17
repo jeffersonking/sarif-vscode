@@ -153,9 +153,9 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 												store.sortColumn = col
 												store.sortDir = SortDir.reverse(sortDir)
 											})}>
-												{col}
-												{sortColumn === col && <Icon name={sortDir} />}
-											</span>
+											{col}
+											{sortColumn === col && <Icon name={sortDir} />}
+										</span>
 										{i < cols.length - 1 && <ResizeHandle size={this.columnWidth(col)} horizontal />}
 									</td>
 								)}
@@ -176,7 +176,7 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 												? (() => {
 													const {pathname} = new URL(title, 'file:')
 													return <>
-														<div>{pathname.file}</div>
+														<div>{pathname.file || 'No Location'}</div>
 														<div className="ellipsis svSecondary">{pathname.path}</div>
 													</>
 												})()
@@ -212,7 +212,7 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 															case 'Line':
 																return <span>{result._line < 0 ? '—' : result._line}</span>
 															case 'File':
-																return <span className="ellipsis" title={result._uri}>{result._file}</span>
+																return <span className="ellipsis" title={result._uri ?? '—'}>{result._file}</span>
 															case 'Message':
 																return <span className="ellipsis" title={result._message}>{result._message}</span>
 															case 'Rule':

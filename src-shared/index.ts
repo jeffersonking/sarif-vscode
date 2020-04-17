@@ -61,7 +61,7 @@ export function augmentLog(log: Log) {
 			const ploc = result.locations?.[0]?.physicalLocation
 
 			const uri = ploc?.artifactLocation?.uri
-			result._uri = uri ?? '—'
+			result._uri = uri
 			const parts = uri?.split('/')
 			implicitBase = // Base calc (inclusive of dash for now)
 				implicitBase?.slice(0, Array.commonLength(implicitBase, parts ?? []))
@@ -101,7 +101,7 @@ export function augmentLog(log: Log) {
 
 		run._implicitBase = implicitBase.join('/')
 		for (const result of run.results) {
-			result._relativeUri = result._uri.replace(run._implicitBase , '')
+			result._relativeUri = result._uri?.replace(run._implicitBase , '') ?? '' // For grouping, Empty works more predictably than undefined
 		}
 	})
 	log._distinct = mapDistinct(fileAndUris)
