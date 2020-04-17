@@ -13,10 +13,12 @@ import { Store, SortDir } from './Store'
 import logA from '../samples/AndroidStudio.Multirun.EmbeddedManifestFile.sarif.json'
 import logB from '../samples/BinSkim.ErorResultsAndNotifications.sarif.json'
 import logP from '../samples/Prefast.Converted.KeyEvents.sarif.json'
+import logPy from '../samples/bad-eval-with-code-flow.sarif.json'
 import logS from '../samples/Semme.sarif-sdk.csharp.sarif.json'
 (logA as Log)._uri = 'file:///Users/jeff/projects/vscode-hello/samples/AndroidStudio.Multirun.EmbeddedManifestFile.sarif.json'
 ;(logB as Log)._uri = 'file:///Users/jeff/projects/vscode-hello/samples/BinSkim.ErorResultsAndNotifications.sarif.json'
-;(logB as Log)._uri = 'file:///Users/jeff/projects/vscode-hello/samples/Prefast.Converted.KeyEvents.sarif.json'
+;(logP as Log)._uri = 'file:///Users/jeff/projects/vscode-hello/samples/Prefast.Converted.KeyEvents.sarif.json'
+;(logPy as Log)._uri = 'file:///Users/jeff/projects/vscode-hello/samples/bad-eval-with-code-flow.sarif.json'
 ;(logS as Log)._uri = 'file:///Users/jeff/projects/vscode-hello/samples/Semme.sarif-sdk.csharp.sarif.json'
 const sampleLogs = [logA, logB, logP] as Log[]
 
@@ -326,7 +328,7 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 
 const store = new Store()
 // store.logs.push(sampleLogs.shift())
-store.logs.push(logA as Log)
+store.logs.push(logPy as Log)
 ReactDOM.render(
 	<Index store={store} />,
 	document.getElementById('root')
