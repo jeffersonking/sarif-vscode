@@ -270,7 +270,6 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 		if (command === 'demo') {
 			if (!sampleLogs.length) return
 			store.logs.push(sampleLogs.shift())
-			return
 		}
 
 		if (command === 'select') {
@@ -280,7 +279,6 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 			if (!result) throw new Error('Unexpected: result undefined')
 			const index = this.resultToIndexMap.get(result)
 			if (index !== undefined) this.selectedIndex = index
-			return
 		}
 
 		const fetchLog = async ({uri, webviewUri }: {uri: string, webviewUri: string}) => {
@@ -293,7 +291,6 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 		if (command === 'replaceLogs') {
 			const uris = event.data.uris as { uri: string, webviewUri: string }[]
 			store.logs.replace(await Promise.all(uris.map(fetchLog)))
-			return
 		}
 
 		if (command === 'addLog') {
