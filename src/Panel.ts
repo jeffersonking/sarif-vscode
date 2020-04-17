@@ -61,7 +61,7 @@ export class Panel {
 			if (command === 'open') {
 				const uris = await window.showOpenDialog({
 					defaultUri: workspace.rootPath && Uri.file(workspace.rootPath),
-					filters: { 'SARIF files': ['sarif'] },
+					filters: { 'SARIF files': ['sarif', 'json'] },
 				})
 				if (!uris) return
 				store.logUris.push(...uris)
