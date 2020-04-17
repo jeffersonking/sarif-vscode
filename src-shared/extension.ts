@@ -9,15 +9,23 @@ declare global {
 		commonLength(a: any[], b: any[]): number
 	}
 	interface Array<T> {
+		last: T
+		replace(items: T[]) // From Mobx, but not showing up.
 		sortBy<T>(this: T[], selector: Selector<T>, descending?: boolean): Array<T> // Not a copy
 	}
 }
 
 Array.commonLength = function(a: any[], b: any[]): number {
 	let i = 0
-	for (; a[i] === b[i]; i++) {}
+	for (; a[i] === b[i] && i < a.length && i < b.length; i++) {}
 	return i
 }
+
+Object.defineProperty(Array.prototype, 'last', {
+	get: function() {
+		return this[this.length - 1]
+	}
+})
 
 Array.prototype.sortBy = function<T>(selector: Selector<T>, descending = false) {
 	this.sort((a, b) => {
