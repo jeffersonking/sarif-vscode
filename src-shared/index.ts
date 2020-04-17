@@ -16,10 +16,10 @@ declare module 'sarif' {
 
 	interface Result {
 		_id?: ResultId
-		_line?: number
 		_uri?: string
 		_relativeUri?: string
 		_region?: number | [number, number, number, number]
+		_line?: number
 		_rule?: ReportingDescriptor
 		_message?: string
 	}
