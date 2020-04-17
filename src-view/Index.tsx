@@ -274,28 +274,42 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 		if (event.data?.type) return // Ignore 'webpackOk'
 		
 		const {store} = this.props
+		const command = event.data?.command
 
-		if (event.data?.command === 'demo') {
+		if (command === 'demo') {
 			if (!sampleLogs.length) return
 			store.logs.push(sampleLogs.shift())
 			return
 		}
 
-		if (event.data?.command === 'select') {
+		if (command === 'select') {
 			const {id} = event.data
 			const [logUri, runIndex, resultIndex] = id
 			const result = store.logs.find(log => log._uri === logUri)?.runs[runIndex]?.results?.[resultIndex]
 			if (!result) throw new Error('Unexpected: result undefined')
 			const index = this.resultToIndexMap.get(result)
 			if (index !== undefined) this.selectedIndex = index
+			return
 		}
 
-		const {uri, webviewUri} = event.data
-		if (uri && webviewUri) {
+		const fetchLog = async ({uri, webviewUri }: {uri: string, webviewUri: string}) => {
 			const response = await fetch(webviewUri)
 			const log = await response.json() as Log
 			log._uri = uri
-			store.logs.push(log)
+			return log	
+		}
+
+		if (command === 'replaceLogs') {
+			const uris = event.data.uris as { uri: string, webviewUri: string }[]
+			store.logs.replace(await Promise.all(uris.map(fetchLog)))
+			return
+		}
+
+		if (command === 'addLog') {
+			const {uri, webviewUri} = event.data
+			if (uri && webviewUri) { // Check needed?
+				store.logs.push(await fetchLog(event.data))
+			}
 		}
 	}
 
