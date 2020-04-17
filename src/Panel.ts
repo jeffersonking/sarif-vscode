@@ -105,6 +105,6 @@ export class Panel {
 	}
 
 	public select(result: Result) {
-		this.panel?.webview.postMessage({ command: 'select', id: result._id })
+		this.panel?.webview.postMessage({ command: 'select', id: result?._id })
 	}
 }

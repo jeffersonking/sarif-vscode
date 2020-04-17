@@ -74,7 +74,7 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 @observer class Index extends Component<{ store: Store }> {
 	private vscode = acquireVsCodeApi()
 
-	@observable.ref private selectedIndex = 0
+	@observable.ref private selectedIndex = 0 // -1 = no selection.
 	private selectedIndexMax = 0
 	private resultToIndexMap = new Map<Result, number>()
 
@@ -290,12 +290,16 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 		}
 
 		if (command === 'select') {
-			const {id} = event.data
-			const [logUri, runIndex, resultIndex] = id
-			const result = store.logs.find(log => log._uri === logUri)?.runs[runIndex]?.results?.[resultIndex]
-			if (!result) throw new Error('Unexpected: result undefined')
-			const index = this.resultToIndexMap.get(result)
-			if (index !== undefined) this.selectedIndex = index
+			const {id} = event.data // id undefined means deselect.
+			if (!id) {
+				this.selectedIndex = -1
+			} else {
+				const [logUri, runIndex, resultIndex] = id
+				const result = store.logs.find(log => log._uri === logUri)?.runs[runIndex]?.results?.[resultIndex]
+				if (!result) throw new Error('Unexpected: result undefined')
+				const index = this.resultToIndexMap.get(result)
+				if (index !== undefined) this.selectedIndex = index
+			}
 		}
 
 		const fetchLog = async ({uri, webviewUri }: {uri: string, webviewUri: string}) => {
