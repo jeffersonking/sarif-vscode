@@ -10,7 +10,7 @@ export class Baser {
 
 	private basesArtifactToLocal = new Map<string, string>([ // <artifactPath, localPath>
 		// ['https://github.com/microsoft/sarif-sdk/blob/bdbb92f71982685a4cb881b15f9a56274b9b5c7b/src', '/Users/jeff/projects/sarif-sdk/src'],
-		// ['folder', '/Users/jeff/projects/vscode-sarif/samples-demo'],
+		// ['folder', '/Users/jeff/projects/vscode-sarif/samplesDemo'],
 	])
 	private updateBases(artifact: string[], local: string[]) {
 		const i = Array.commonLength(artifact.slice().reverse(), local.slice().reverse())
