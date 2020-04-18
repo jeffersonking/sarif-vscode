@@ -4,7 +4,7 @@ import { Store } from '.'
 
 export class Baser {
 	constructor(
-		private readonly distinctFileNames,
+		private readonly distinctLocalNames,
 		private readonly store: Pick<Store, 'distinctArtifactNames'>) {
 	}
 
@@ -38,7 +38,7 @@ export class Baser {
 		// Need to refresh on PathMap update.
 		if (!this.validatedPathsLocalToArtifact.has(localPath)) {
 			const {file} = localPath
-			if (this.distinctFileNames.has(file) && this.store.distinctArtifactNames.has(file)) {
+			if (this.distinctLocalNames.has(file) && this.store.distinctArtifactNames.has(file)) {
 				const artifactPath = this.store.distinctArtifactNames.get(file)
 				this.updateValidatedPaths(artifactPath, localPath)
 				this.updateBases(artifactPath.split('/'), localPath.split('/'))
@@ -72,8 +72,8 @@ export class Baser {
 				}
 			}
 			const {file} = artifactPath // Distinct matching
-			if (this.distinctFileNames.has(file) && this.store.distinctArtifactNames.has(file)) {
-				const localPath = this.distinctFileNames.get(file)
+			if (this.distinctLocalNames.has(file) && this.store.distinctArtifactNames.has(file)) {
+				const localPath = this.distinctLocalNames.get(file)
 				this.updateValidatedPaths(artifactPath, localPath)
 				this.updateBases(artifactPath.split('/'), artifactPath.split('/'))
 				return localPath
