@@ -37,7 +37,7 @@ export class Baser {
 	public translateToArtifactPath(localPath: string): string { // Future: Ret undefined when certain.
 		// Need to refresh on PathMap update.
 		if (!this.validatedPathsLocalToArtifact.has(localPath)) {
-			const file = localPath.split('/').pop()
+			const {file} = localPath
 			if (this.distinctFileNames.has(file) && this.store.distinctArtifactNames.has(file)) {
 				const artifactPath = this.store.distinctArtifactNames.get(file)
 				this.updateValidatedPaths(artifactPath, localPath)
@@ -51,7 +51,7 @@ export class Baser {
 		// Hacky.
 		const pathExists = async (artifactPath: string) => {
 			try {
-				void workspace.openTextDocument(Uri.parse(artifactPath))
+				await workspace.openTextDocument(Uri.parse(artifactPath))
 			} catch(e) {
 				return false
 			}
@@ -70,6 +70,13 @@ export class Baser {
 					this.updateValidatedPaths(artifactPath, localPath)
 					return localPath
 				}
+			}
+			const {file} = artifactPath // Distinct matching
+			if (this.distinctFileNames.has(file) && this.store.distinctArtifactNames.has(file)) {
+				const localPath = this.distinctFileNames.get(file)
+				this.updateValidatedPaths(artifactPath, localPath)
+				this.updateBases(artifactPath.split('/'), artifactPath.split('/'))
+				return localPath
 			}
 			return '' // Can't find uri.
 		}

@@ -14,8 +14,8 @@ declare global {
 		sortBy<T>(this: T[], selector: Selector<T>, descending?: boolean): Array<T> // Not a copy
 	}
 	interface String {
-		file: String
-		path: String
+		file: string
+		path: string
 	}
 }
 
