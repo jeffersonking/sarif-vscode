@@ -1,8 +1,8 @@
 {
-	"name": "hello",
+	"name": "sarif",
 	"publisher": "jeff",
-	"displayName": "hello",
-	"description": "hello",
+	"displayName": "sarif",
+	"description": "sarif",
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.43.0"
