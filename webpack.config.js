@@ -1,4 +1,4 @@
-const path = require('path').join(__dirname, 'devServer')
+const path = require('path')
 
 module.exports = {
 	resolve: {
@@ -28,13 +28,12 @@ module.exports = {
 	mode: 'production',
 	entry: './src/panel/Index.tsx',
 	output: {
-		path,
+		path: path.join(__dirname, 'out'),
 		filename: 'index.js',
 	},
 
 	devServer : {
 		port: 8000,
-		contentBase: path,
 		stats: 'none',
 	},
 
