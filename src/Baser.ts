@@ -48,10 +48,20 @@ export class Baser {
 	}
 
 	public async translateToLocalPath(artifactPath: string) { // Retval is validated.
-		const validateUri = () => {
+		// Hacky.
+		const pathExists = async (artifactPath: string) => {
+			try {
+				void workspace.openTextDocument(Uri.parse(artifactPath))
+			} catch(e) {
+				return false
+			}
+			return true
+		}
+
+		const validateUri = async () => {
 			if (this.validatedPathsArtifactToLocal.has(artifactPath))
 				return this.validatedPathsArtifactToLocal.get(artifactPath)
-			if (fs.existsSync(artifactPath))
+			if (await pathExists(artifactPath))
 				return artifactPath
 			for (const [oldBase, newBase] of this.basesArtifactToLocal) {
 				if (!artifactPath.startsWith(oldBase)) continue // Just let it fall through?
@@ -64,7 +74,7 @@ export class Baser {
 			return '' // Can't find uri.
 		}
 
-		let validatedUri = validateUri()
+		let validatedUri = await validateUri()
 		if (!validatedUri) {
 			// TODO: Guard against simultaneous prompts.
 			const choice = await window.showInformationMessage(`Unable to find '${artifactPath.split('/').pop()}'`, 'Locate...')
@@ -86,7 +96,7 @@ export class Baser {
 				this.updateBases(partsOld, partsNew)
 			}
 
-			validatedUri = validateUri() // Try again
+			validatedUri = await validateUri() // Try again
 		}
 		return validatedUri
 	}

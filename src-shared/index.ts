@@ -59,7 +59,16 @@ export function augmentLog(log: Log) {
 
 			const ploc = result.locations?.[0]?.physicalLocation
 
-			const uri = ploc?.artifactLocation?.uri
+			let uri = ploc?.artifactLocation?.uri
+
+			// Special handling of binary files.
+			const artIndex = ploc?.artifactLocation?.index
+			const artifact = run.artifacts?.[artIndex]
+			const binary = artifact?.contents?.binary
+			if (binary) {
+				uri = encodeURI(`sarif:${encodeURIComponent(log._uri)}/${runIndex}/${artIndex}/${artifact.location?.uri.file ?? 'Untitled'}`)
+			}
+
 			result._uri = uri
 			const parts = uri?.split('/')
 			implicitBase = // Base calc (inclusive of dash for now)

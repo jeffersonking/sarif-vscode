@@ -74,7 +74,7 @@ export class Panel {
 				const validatedUri = await basing.translateToLocalPath(result._uri)
 				if (!validatedUri) return
 
-				const doc = await workspace.openTextDocument(validatedUri)
+				const doc = await workspace.openTextDocument(Uri.parse(validatedUri))
 				const editor = await window.showTextDocument(doc, ViewColumn.One, true)
 
 				if (result._region === undefined) return
