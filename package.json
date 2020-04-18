@@ -13,7 +13,7 @@
 	"activationEvents": [
 		"*"
 	],
-	"main": "./out/src/index.js",
+	"main": "./out/context.js",
 	"contributes": {
 		"commands": [
 			{
@@ -23,12 +23,9 @@
 		]
 	},
 	"scripts": {
-		"start": "webpack-dev-server --mode development",
-		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -p ./tsconfig.src.json",
-		"watch": "npx webpack --watch & tsc -p ./tsconfig.src.json --watch",
-		"postinstall": "node ./node_modules/vscode/bin/install",
-		"build": "npx webpack && tsc -p ./tsconfig.src.json"
+		"start": "webpack-dev-server --mode development & webpack --watch",
+		"vscode:prepublish": "webpack",
+		"postinstall": "node ./node_modules/vscode/bin/install"
 	},
 	"devDependencies": {
 		"@types/mocha": "^2.2.42",
@@ -37,11 +34,7 @@
 		"@types/react-dom": "16.9.5",
 		"@types/sarif": "2.1.2",
 		"css-loader": "3.4.2",
-		"mobx": "5.15.4",
-		"mobx-react": "6.1.8",
 		"node-sass": "4.13.1",
-		"react": "16.13.1",
-		"react-dom": "16.13.1",
 		"sass-loader": "8.0.2",
 		"style-loader": "1.1.3",
 		"ts-loader": "6.2.2",
@@ -52,5 +45,11 @@
 		"webpack": "4.42.1",
 		"webpack-cli": "3.3.11",
 		"webpack-dev-server": "3.10.3"
+	},
+	"dependencies": {
+		"mobx": "5.15.4",
+		"mobx-react": "6.1.8",
+		"react": "16.13.1",
+		"react-dom": "16.13.1"
 	}
 }

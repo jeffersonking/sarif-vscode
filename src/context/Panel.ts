@@ -51,7 +51,7 @@ export class Panel {
 			</head>
 			<body>
 				<div id="root"></div>
-				<script src="vscode-resource:${context.extensionPath}/src-view-dev/index.js"></script>
+				<script src="vscode-resource:${context.extensionPath}/out/panel.js"></script>
 			</body>
 			</html>`
 
