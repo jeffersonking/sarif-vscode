@@ -1,7 +1,7 @@
 import { observable, computed, intercept } from 'mobx'
 import { Result, Log } from 'sarif'
-import '../src-shared/extension'
-import { augmentLog } from '../src-shared'
+import '../shared/extension'
+import { augmentLog } from '../shared'
 
 export enum SortDir {
 	Asc = 'arrow-down',

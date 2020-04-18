@@ -26,7 +26,7 @@ module.exports = {
 	},
 
 	mode: 'production',
-	entry: './src-view/Index.tsx',
+	entry: './src/panel/Index.tsx',
 	output: {
 		path,
 		filename: 'index.js',

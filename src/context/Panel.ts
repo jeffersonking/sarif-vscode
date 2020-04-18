@@ -2,7 +2,7 @@ import { autorun, observable } from 'mobx'
 import { Result } from 'sarif'
 import { ExtensionContext, TextEditorRevealType, Uri, ViewColumn, WebviewPanel, window, workspace } from 'vscode'
 import { regionToSelection, Store } from '.'
-import { ResultId } from '../src-shared'
+import { ResultId } from '../shared'
 import { Baser } from './Baser'
 
 export class Panel {
