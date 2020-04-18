@@ -33,6 +33,7 @@ module.exports = {
 	},
 
 	devServer : {
+		// index: 'devServer.html', // Not working.
 		port: 8000,
 		stats: 'none',
 	},
