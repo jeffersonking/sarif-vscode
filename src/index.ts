@@ -52,7 +52,7 @@ export async function activate(context: ExtensionContext) {
 	const store = new Store()
 
 	// Boot
-	const uris = await workspace.findFiles(new RelativePattern(workspace.rootPath, '.sarif/**/*.sarif')) // RelativePattern neccesary?
+	const uris = await workspace.findFiles('.sarif/**/*.sarif')
 	store.logUris.replace(uris)
 
 	// Basing
@@ -62,7 +62,7 @@ export async function activate(context: ExtensionContext) {
 
 	// Panel
 	const panel = new Panel(context, basing, store)
-	panel.show()
+	if (uris.length) panel.show()
 	disposables.push(commands.registerCommand('sarif.showResultsPanel', () => panel.show()))
 
 	// Diagnostics
