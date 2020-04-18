@@ -1,4 +1,4 @@
-const path = require('path').join(__dirname, 'src-view-dev')
+const path = require('path').join(__dirname, 'devServer')
 
 module.exports = {
 	resolve: {
