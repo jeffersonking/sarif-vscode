@@ -3,12 +3,12 @@ import { observer } from 'mobx-react'
 import * as React from 'react'
 import { Component, PureComponent } from 'react'
 import * as ReactDOM from 'react-dom'
-import { Log, Result } from 'sarif'
+import { Log } from 'sarif'
 
 import './codicon.css'
 import './Index.scss'
 import { ResizeHandle } from './Index.ResizeHandle'
-import { Store, SortDir, Group, Item } from './Store'
+import { Store, SortDir, Group } from './Store'
 
 import logA from '../../samples/AndroidStudio.Multirun.EmbeddedManifestFile.sarif.json'
 import logB from '../../samples/BinSkim.ErorResultsAndNotifications.sarif.json'
@@ -73,7 +73,6 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 
 @observer class Index extends Component<{ store: Store }> {
 	private vscode = acquireVsCodeApi()
-	@observable.ref private selectedItem = null as Item<Result>
 
 	private columnWidths = new Map<string, IObservableValue<number>>([
 		['Line', observable.box(50)],
@@ -89,10 +88,10 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 	@action.bound private onKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
 		if (!(e.key === 'ArrowUp' || e.key === 'ArrowDown')) return
 		if (e.key === 'ArrowUp') {
-			this.selectedItem = this.selectedItem?.prev ?? this.selectedItem
+			store.selectedItem = store.selectedItem?.prev ?? store.selectedItem
 		}
 		if (e.key === 'ArrowDown') {
-			this.selectedItem = this.selectedItem?.next ?? this.selectedItem
+			store.selectedItem = store.selectedItem?.next ?? store.selectedItem
 		}
 	}
 
@@ -164,7 +163,7 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 									return <tr key={`group${key}`}>
 										<td colSpan={columns.length + 1}><span className="svCell svGroup"
 											onClick={() => {
-												this.selectedItem = null
+												store.selectedItem = null
 												group.expanded = !expanded
 											}}>
 											<div className={`twisties codicon codicon-chevron-${expanded ? 'down' : 'right'}`}></div>
@@ -189,10 +188,10 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 								}
 								const item = row
 								const result = item.data
-								const isSelected = this.selectedItem === item
+								const isSelected = store.selectedItem === item
 								return <tr key={`item${item.key}`}
 									onClick={() => {
-										this.selectedItem = item
+										store.selectedItem = item
 										this.vscode.postMessage({ command: 'select', id: result._id })
 									}}
 									className={isSelected ? 'svItemSelected' : undefined}
@@ -231,7 +230,7 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 			</div>
 		</div>
 
-		const selected = this.selectedItem?.data
+		const selected = store.selectedItem?.data
 		return <>
 			{listPane}
 			<div className="svResizer">
@@ -287,14 +286,14 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 		if (command === 'select') {
 			const {id} = event.data // id undefined means deselect.
 			if (!id) {
-				this.selectedItem = null
+				store.selectedItem = null
 			} else {
 				const [logUri, runIndex, resultIndex] = id
 				const result = store.logs.find(log => log._uri === logUri)?.runs[runIndex]?.results?.[resultIndex]
 				if (!result) throw new Error('Unexpected: result undefined')
-				this.selectedItem = store.items.find(item => item.data === result) ?? null
-				if (this.selectedItem?.group)
-					this.selectedItem.group.expanded = true
+				store.selectedItem = store.items.find(item => item.data === result) ?? null
+				if (store.selectedItem?.group)
+					store.selectedItem.group.expanded = true
 			}
 		}
 

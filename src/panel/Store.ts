@@ -75,6 +75,8 @@ export class Store {
 		Rule:    result => result._rule?.name ?? '—',
 	} as Record<string, (_: Result) => number | string>
 
+	@observable.ref public selectedItem = null as Item<Result>
+
 	@computed public get items() {
 		return this.results.map(result => new Item(result))
 	}
