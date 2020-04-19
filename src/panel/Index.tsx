@@ -1,4 +1,4 @@
-import { observable, action, IObservableValue } from 'mobx'
+import { observable, action, IObservableValue, autorun, IReactionDisposer } from 'mobx'
 import { observer } from 'mobx-react'
 import * as React from 'react'
 import { Component, PureComponent } from 'react'
@@ -317,12 +317,21 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 		}
 	}
 
+	private selectionAutoRunDisposer: IReactionDisposer
+
 	componentDidMount() {
 		addEventListener('message', this.onMessage)
+		this.selectionAutoRunDisposer = autorun(() => {
+			const result = store.selectedItem?.data
+			console.log(111, 'select')
+			if (!result) return
+			this.vscode.postMessage({ command: 'select', id: result._id })
+		})
 	}
 
 	componentWillUnmount() {
 		removeEventListener('message', this.onMessage)
+		this.selectionAutoRunDisposer()
 	}
 }
 
