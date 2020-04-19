@@ -1,14 +1,14 @@
-import { observable, action, IObservableValue, autorun } from 'mobx'
+import { observable, action, IObservableValue } from 'mobx'
 import { observer } from 'mobx-react'
 import * as React from 'react'
-import { Component, Fragment, PureComponent } from 'react'
+import { Component, PureComponent } from 'react'
 import * as ReactDOM from 'react-dom'
 import { Log, Result } from 'sarif'
 
 import './codicon.css'
 import './Index.scss'
 import { ResizeHandle } from './Index.ResizeHandle'
-import { Store, SortDir } from './Store'
+import { Store, SortDir, Group, Item } from './Store'
 
 import logA from '../../samples/AndroidStudio.Multirun.EmbeddedManifestFile.sarif.json'
 import logB from '../../samples/BinSkim.ErorResultsAndNotifications.sarif.json'
@@ -73,10 +73,7 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 
 @observer class Index extends Component<{ store: Store }> {
 	private vscode = acquireVsCodeApi()
-
-	@observable.ref private selectedIndex = 0 // -1 = no selection.
-	private selectedIndexMax = 0
-	private resultToIndexMap = new Map<Result, number>()
+	@observable.ref private selectedItem = null as Item<Result>
 
 	private columnWidths = new Map<string, IObservableValue<number>>([
 		['Line', observable.box(50)],
@@ -92,10 +89,10 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 	@action.bound private onKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
 		if (!(e.key === 'ArrowUp' || e.key === 'ArrowDown')) return
 		if (e.key === 'ArrowUp') {
-			this.selectedIndex = Math.max(0, this.selectedIndex - 1)
+			this.selectedItem = this.selectedItem?.prev ?? this.selectedItem
 		}
 		if (e.key === 'ArrowDown') {
-			this.selectedIndex = Math.min(this.selectedIndexMax, this.selectedIndex + 1)
+			this.selectedItem = this.selectedItem?.next ?? this.selectedItem
 		}
 	}
 
@@ -109,12 +106,9 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 			</div>
 		}
 
-		const {logs, selectedTab, groupBy, groupings, groupsSorted, sortColumn, sortDir} = store
+		const {logs, selectedTab, groupBy, groupings, rows, sortColumn, sortDir} = store
 		const {detailsPaneHeight} = this
 		const columns = Object.keys(groupings).filter(col => col !== groupBy)
-		let rowIndex = -1
-		let selected = null as Result // Null when index = -1 (after group collapse)
-		this.resultToIndexMap.clear()
 
 		const listPane = <div tabIndex={0} ref={ref => ref?.focus()} className="svListPane" onKeyDown={this.onKeyDown}>
 			<div className="svListHeader">
@@ -163,13 +157,14 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 							</tr>
 						</thead>
 						<tbody>
-							{groupsSorted.map((group, i) => {
-								const {expanded, title, results} = group
-								return <Fragment key={i}>
-									<tr>{/* Group Row */}
+							{rows.map(row => {
+								if (row instanceof Group) {
+									const group = row
+									const {key, expanded, title, items} = group
+									return <tr key={`group${key}`}>
 										<td colSpan={columns.length + 1}><span className="svCell svGroup"
 											onClick={() => {
-												this.selectedIndex = -1
+												this.selectedItem = null
 												group.expanded = !expanded
 											}}>
 											<div className={`twisties codicon codicon-chevron-${expanded ? 'down' : 'right'}`}></div>
@@ -188,55 +183,55 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 														<div className="ellipsis svSecondary">{ruleId}</div>
 													</>
 												})()}
-											<Badge text={results.length} />
+											<Badge text={items.length} />
 										</span></td>
 									</tr>
-									{expanded && results.map((result, i) => {
-										rowIndex++
-										const index = rowIndex // Closure.
-										const isSelected = this.selectedIndex === index
-										if (isSelected) selected = result
-										this.resultToIndexMap.set(result, rowIndex)
-										return <tr key={i}
-											onClick={e => {
-												this.selectedIndex = index
-												this.vscode.postMessage({ command: 'select', id: result._id })
-											}}
-											className={isSelected ? 'svItemSelected' : undefined}>{/* Result Row */}
-											
-											<td className="svSpacer"></td>
-											{columns.map((col, i) =>
-												<td key={col}><span className="svCell">
-													{i === 0 && <span className={`codicon codicon-${levelToIcon[result.level]}`} />}
-													{(() => {
-														switch (col) {
-															case 'Line':
-																return <span>{result._line < 0 ? '—' : result._line}</span>
-															case 'File':
-																return <span className="ellipsis" title={result._uri ?? '—'}>{result._uri?.file ?? '—'}</span>
-															case 'Message':
-																return <span className="ellipsis" title={result._message}>{result._message}</span>
-															case 'Rule':
-																return <>
-																	<span>{result._rule?.name ?? '—'}</span>
-																	<span className="svSecondary">{result.ruleId}</span>
-																</>
-															default:
-																return <span>—</span>
-														}
-													})()}
-												</span></td>
-											)}
-										</tr>
-									})}
-								</Fragment>
+								}
+								const item = row
+								const result = item.data
+								const isSelected = this.selectedItem === item
+								return <tr key={`item${item.key}`}
+									onClick={() => {
+										this.selectedItem = item
+										this.vscode.postMessage({ command: 'select', id: result._id })
+									}}
+									className={isSelected ? 'svItemSelected' : undefined}
+									ref={td => {
+										if (!isSelected || !td) return
+										requestAnimationFrame(() => td.scrollIntoView({ behavior: 'smooth', block: 'nearest' }))
+									}}>
+									
+									<td className="svSpacer"></td>
+									{columns.map((col, i) =>
+										<td key={col}><span className="svCell">
+											{i === 0 && <span className={`codicon codicon-${levelToIcon[result.level]}`} />}
+											{(() => {
+												switch (col) {
+													case 'Line':
+														return <span>{result._line < 0 ? '—' : result._line}</span>
+													case 'File':
+														return <span className="ellipsis" title={result._uri ?? '—'}>{result._uri?.file ?? '—'}</span>
+													case 'Message':
+														return <span className="ellipsis" title={result._message}>{result._message}</span>
+													case 'Rule':
+														return <>
+															<span>{result._rule?.name ?? '—'}</span>
+															<span className="svSecondary">{result.ruleId}</span>
+														</>
+													default:
+														return <span>—</span>
+												}
+											})()}
+										</span></td>
+									)}
+								</tr>
 							})}
 						</tbody>	
 					</table>}
 			</div>
 		</div>
 
-		this.selectedIndexMax = rowIndex
+		const selected = this.selectedItem?.data
 		return <>
 			{listPane}
 			<div className="svResizer">
@@ -292,13 +287,14 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 		if (command === 'select') {
 			const {id} = event.data // id undefined means deselect.
 			if (!id) {
-				this.selectedIndex = -1
+				this.selectedItem = null
 			} else {
 				const [logUri, runIndex, resultIndex] = id
 				const result = store.logs.find(log => log._uri === logUri)?.runs[runIndex]?.results?.[resultIndex]
 				if (!result) throw new Error('Unexpected: result undefined')
-				const index = this.resultToIndexMap.get(result)
-				if (index !== undefined) this.selectedIndex = index
+				this.selectedItem = store.items.find(item => item.data === result) ?? null
+				if (this.selectedItem?.group)
+					this.selectedItem.group.expanded = true
 			}
 		}
 

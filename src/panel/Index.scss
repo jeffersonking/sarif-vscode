@@ -94,6 +94,7 @@ body {
 		flex: 1 1 auto;
 		overflow-y: overlay;
 		margin-top: 12px - 4px; // 4px optical to compensate for TH line height.
+		scroll-padding: 48px 0;
 	}
 }
 

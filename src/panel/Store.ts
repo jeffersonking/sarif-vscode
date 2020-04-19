@@ -13,10 +13,21 @@ export namespace SortDir {
 	}
 }
 
-class Group {
+export class Group<T> {
+	private static instances = 0
+	public readonly key = Group.instances++
 	@observable expanded = true
-	public results = [] as Result[]
+	public items = [] as Item<T>[]
 	constructor(readonly title: string) {}
+}
+
+export class Item<T> {
+	private static instances = 0
+	public readonly key = Item.instances++
+	public group?: Group<T>
+	public prev?: Item<T>
+	public next?: Item<T>
+	constructor(readonly data: T) {}
 }
 
 export class Store {
@@ -64,23 +75,43 @@ export class Store {
 		Rule:    result => result._rule?.name ?? '—',
 	} as Record<string, (_: Result) => number | string>
 
+	@computed public get items() {
+		return this.results.map(result => new Item(result))
+	}
+
 	@computed private get groups() {
 		const selector = this.groupings[this.groupBy]
-		const map = new Map<string, Group>()
-		this.results.forEach(result => {
-			const key = selector(result)
+		const map = new Map<string, Group<Result>>()
+		this.items.forEach(item => {
+			const key = selector(item.data)
 			if (!map.has(key)) map.set(key, new Group(key))
-			map.get(key).results.push(result)
+			const group = map.get(key)
+			group.items.push(item)
+			item.group = group
 		})
-		return [...map.values()].sortBy(g => g.results.length, true) // High to low.
+		return [...map.values()].sortBy(g => g.items.length, true) // High to low.
 	}
 
 	@computed public get groupsSorted() {
 		const {groups, sortColumn, sortDir} = this
 		groups.forEach(group => {
 			const selector = this.sortings[sortColumn] ?? this.groupings[sortColumn]
-			group.results.sortBy(selector, sortDir === SortDir.Dsc)
+			group.items.sortBy(item => selector(item.data), sortDir === SortDir.Dsc)
 		})
 		return groups.slice() // slice() as an indicator of change.
+	}
+
+	@computed public get rows() {
+		const rows = [] as (Group<Result> | Item<Result>)[]
+		for (const group of this.groupsSorted) {
+			rows.push(group)
+			if (group.expanded) rows.push(...group.items)
+		}
+		const items = rows.filter(row => row instanceof Item) as Item<Result>[] // Another allocation :-(
+		for (const [i, item] of items.entries()) {
+			item.prev = items[i - 1]
+			item.next = items[i + 1]
+		}
+		return rows
 	}
 }
