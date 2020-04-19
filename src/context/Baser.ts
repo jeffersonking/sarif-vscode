@@ -89,7 +89,7 @@ export class Baser {
 			if (choice === 'Locate...') {
 				const extension = artifactPath.match(/\.([\w]+)$/)[1]
 				const files = await window.showOpenDialog({
-					defaultUri: workspace.rootPath && Uri.file(workspace.rootPath),
+					defaultUri: workspace.workspaceFolders?.[0]?.uri,
 					filters: { 'Matching file' : [extension] },
 					// Consider allowing folders.
 				})
