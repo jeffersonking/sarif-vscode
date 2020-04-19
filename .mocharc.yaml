@@ -1,0 +1,7 @@
+# https://github.com/mochajs/mocha/blob/master/example/config/.mocharc.yml
+spec: src/**/*.spec.ts
+extension:
+- ts
+reporter: min
+require: ts-node/register
+watch: true

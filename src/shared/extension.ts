@@ -19,12 +19,16 @@ declare global {
 	}
 }
 
-Array.commonLength = function(a: any[], b: any[]): number {
-	let i = 0
-	for (; a[i] === b[i] && i < a.length && i < b.length; i++) {}
-	return i
-}
+!Array.hasOwnProperty('commonLength') &&
+Object.defineProperty(Array, 'commonLength', {
+	value: function(a: any[], b: any[]): number {
+		let i = 0
+		for (; a[i] === b[i] && i < a.length && i < b.length; i++) {}
+		return i
+	}
+})
 
+!Array.prototype.hasOwnProperty('last') && 
 Object.defineProperty(Array.prototype, 'last', {
 	get: function() {
 		return this[this.length - 1]
@@ -43,12 +47,14 @@ Array.prototype.sortBy = function<T>(selector: Selector<T>, descending = false) 
 	return this
 }
 
+!String.prototype.hasOwnProperty('file') && 
 Object.defineProperty(String.prototype, 'file', {
 	get: function() {
 		return this.substring(this.lastIndexOf('/') + 1, this.length)
 	}
 })
 
+!String.prototype.hasOwnProperty('path') && 
 Object.defineProperty(String.prototype, 'path', {
 	get: function() {
 		return this.substring(0, this.lastIndexOf('/')).replace(/^\//g, '')

@@ -1,10 +1,11 @@
 import * as fs from 'fs'
 import { Uri, window, workspace } from 'vscode'
 import { Store } from '.'
+import '../shared/extension'
 
 export class Baser {
 	constructor(
-		private readonly distinctLocalNames,
+		private readonly distinctLocalNames: Map<string, string>,
 		private readonly store: Pick<Store, 'distinctArtifactNames'>) {
 	}
 
