@@ -1,7 +1,7 @@
 import * as fs from 'fs'
 import { computed, observable } from 'mobx'
 import { Log, Result } from 'sarif'
-import { commands, DiagnosticSeverity, ExtensionContext, languages, Range, RelativePattern, Selection, TextDocument, ThemeColor, Uri, window, workspace } from 'vscode'
+import { commands, DiagnosticSeverity, ExtensionContext, languages, Range, Selection, TextDocument, ThemeColor, Uri, window, workspace } from 'vscode'
 import { augmentLog, mapDistinct } from '../shared'
 import '../shared/extension'
 import { Baser } from './Baser'
