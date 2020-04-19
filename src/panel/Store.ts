@@ -83,8 +83,4 @@ export class Store {
 		})
 		return groups.slice() // slice() as an indicator of change.
 	}
-
-	@computed public get resultsGroupedSorted() {
-		return this.groupsSorted.map(g => g.results).flat()
-	}
 }
