@@ -105,6 +105,7 @@ export class Panel {
 	}
 
 	public select(result: Result) {
+		if (!result?._id) return // Reduce Panel selection flicker.
 		this.panel?.webview.postMessage({ command: 'select', id: result?._id })
 	}
 }
