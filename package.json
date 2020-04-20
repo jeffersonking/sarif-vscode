@@ -1,9 +1,13 @@
 {
 	"name": "sarif",
-	"publisher": "jeff",
-	"displayName": "sarif",
-	"description": "sarif",
-	"version": "0.0.1",
+	"publisher": "Jeff",
+	"displayName": "SARIF",
+	"description": "SARIF for Visual Studio Code",
+	"version": "0.0.0",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/microsoft/sarif-vscode-extension.git"
+	},
 	"engines": {
 		"vscode": "^1.43.0"
 	},
