@@ -47,7 +47,6 @@ module.exports = [
 		entry: { panel: './src/panel/Index.tsx' },
 		devServer : {
 			// index: 'devServer.html', // Not working.
-			open: true,
 			port: 8000,
 			stats: 'none',
 		},
