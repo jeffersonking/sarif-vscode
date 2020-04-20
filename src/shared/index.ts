@@ -106,7 +106,7 @@ export function augmentLog(log: Log) {
 			result._message = format(template, result.message.arguments)
 		})
 
-		run._implicitBase = implicitBase.join('/')
+		run._implicitBase = implicitBase?.join('/')
 		for (const result of run.results) {
 			result._relativeUri = result._uri?.replace(run._implicitBase , '') ?? '' // For grouping, Empty works more predictably than undefined
 		}
