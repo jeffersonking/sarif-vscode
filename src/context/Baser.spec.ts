@@ -19,6 +19,6 @@ describe('Baser', () => {
 		])
 		const baser = new Baser(distinctLocalNames, { distinctArtifactNames })
 		const localPath = await baser.translateToLocalPath('folder/file1.txt')
-		assert.equal(localPath, '/projects/project/file1.txt')
+		assert.strictEqual(localPath, '/projects/project/file1.txt')
 	})
 })
