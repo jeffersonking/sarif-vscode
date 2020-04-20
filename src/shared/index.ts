@@ -64,8 +64,8 @@ export function augmentLog(log: Log) {
 			// Special handling of binary files.
 			const artIndex = ploc?.artifactLocation?.index
 			const artifact = run.artifacts?.[artIndex]
-			const binary = artifact?.contents?.binary
-			if (binary) {
+			const contents = artifact?.contents
+			if (contents?.text || contents?.binary) {
 				uri = encodeURI(`sarif:${encodeURIComponent(log._uri)}/${runIndex}/${artIndex}/${artifact.location?.uri.file ?? 'Untitled'}`)
 			}
 

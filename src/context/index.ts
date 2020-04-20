@@ -123,17 +123,17 @@ export async function activate(context: ExtensionContext) {
 			const [logUriEncoded, runIndex, artifactIndex] = uri.path.split('/')
 			const logUri = decodeURIComponent(logUriEncoded)
 			const artifact = store.logs.find(log => log._uri === logUri)?.runs[runIndex]?.artifacts?.[artifactIndex]
-			const binary = artifact?.contents?.binary
-			if (!binary) {
-				token.isCancellationRequested = true
-				return
-			}
-			return [...Buffer.from(binary, 'base64').toString()].map((char, i) => {
+			const contents = artifact?.contents
+			if (contents?.text) return contents?.text
+			if (contents?.binary) {
+				return [...Buffer.from(contents?.binary, 'base64').toString()].map((char, i) => {
 				const byte = char.charCodeAt(0).toString(16).padStart(2, '0')
 				const space = i % 2 === 1 ? ' ' : ''
 				const newline = i % 16 === 15 ? '\n' : ''
 				return `${byte}${space}${newline}`
 			}).join('')
+		}
+			token.isCancellationRequested = true
 		}
 	})
 }
