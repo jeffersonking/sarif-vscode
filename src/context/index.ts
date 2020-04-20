@@ -1,11 +1,11 @@
-import * as fs from 'fs'
 import { computed, observable } from 'mobx'
 import { Log, Result } from 'sarif'
-import { commands, DiagnosticSeverity, ExtensionContext, languages, Range, Selection, TextDocument, ThemeColor, Uri, window, workspace } from 'vscode'
-import { augmentLog, mapDistinct } from '../shared'
+import { commands, DiagnosticSeverity, ExtensionContext, languages, Range, Selection, TextDocument, ThemeColor, window, workspace } from 'vscode'
+import { mapDistinct } from '../shared'
 import '../shared/extension'
 import { Baser } from './Baser'
 import { Panel } from './Panel'
+import { loadLogs } from './loadLogs'
 
 declare module 'vscode' {
 	interface Diagnostic {
@@ -27,16 +27,7 @@ export const regionToSelection = (doc: TextDocument, region: number | [number, n
 		})()
 
 export class Store {
-	@observable.shallow logUris= [] as Uri[]
-	@computed({ keepAlive: true }) get logs() { 
-		return this.logUris.map(uri => {
-			const file = fs.readFileSync(uri.path, 'utf8')
-			const log = JSON.parse(file) as Log
-			log._uri = uri.toString()
-			augmentLog(log)
-			return log
-		})
-	}
+	@observable.shallow logs = [] as Log[]
 	@computed public get results() {
 		const runs = this.logs.map(log => log.runs).flat()
 		return runs.map(run => run.results).flat()
@@ -53,7 +44,7 @@ export async function activate(context: ExtensionContext) {
 
 	// Boot
 	const uris = await workspace.findFiles('.sarif/**/*.sarif')
-	store.logUris.replace(uris)
+	store.logs.push(...await loadLogs(uris, context.extensionPath))
 
 	// Basing
 	const urisNonSarif = await workspace.findFiles('**/*', '.sarif') // Ignore folders?
@@ -61,7 +52,7 @@ export async function activate(context: ExtensionContext) {
 	const basing = new Baser(mapDistinct(fileAndUris), store)
 
 	// Panel
-	const panel = new Panel(context, basing, store)
+	const panel = new Panel(context, basing, store, context.extensionPath)
 	if (uris.length) panel.show()
 	disposables.push(commands.registerCommand('sarif.showResultsPanel', () => panel.show()))
 
@@ -127,12 +118,12 @@ export async function activate(context: ExtensionContext) {
 			if (contents?.text) return contents?.text
 			if (contents?.binary) {
 				return [...Buffer.from(contents?.binary, 'base64').toString()].map((char, i) => {
-				const byte = char.charCodeAt(0).toString(16).padStart(2, '0')
-				const space = i % 2 === 1 ? ' ' : ''
-				const newline = i % 16 === 15 ? '\n' : ''
-				return `${byte}${space}${newline}`
-			}).join('')
-		}
+					const byte = char.charCodeAt(0).toString(16).padStart(2, '0')
+					const space = i % 2 === 1 ? ' ' : ''
+					const newline = i % 16 === 15 ? '\n' : ''
+					return `${byte}${space}${newline}`
+				}).join('')
+			}
 			token.isCancellationRequested = true
 		}
 	})

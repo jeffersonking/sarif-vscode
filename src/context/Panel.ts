@@ -4,6 +4,7 @@ import { ExtensionContext, TextEditorRevealType, Uri, ViewColumn, WebviewPanel, 
 import { regionToSelection, Store } from '.'
 import { ResultId } from '../shared'
 import { Baser } from './Baser'
+import { loadLogs } from './loadLogs'
 
 export class Panel {
 	private title = 'SARIF Result'
@@ -12,7 +13,8 @@ export class Panel {
 	constructor(
 		readonly context: Pick<ExtensionContext, 'extensionPath' | 'subscriptions'>,
 		readonly basing: Baser,
-		readonly store: Pick<Store, 'logs' | 'logUris' | 'results'>) {
+		readonly store: Pick<Store, 'logs' | 'results'>,
+		readonly extensionPath: string) {
 		autorun(() => {
 			const count = this.store.results.length
 			if (!this.panel) return
@@ -64,8 +66,8 @@ export class Panel {
 					filters: { 'SARIF files': ['sarif', 'json'] },
 				})
 				if (!uris) return
-				store.logUris.push(...uris)
-				this.replaceLogs(store.logUris) // TODO: Make autorun
+				store.logs.push(...await loadLogs(uris, this.extensionPath))
+				this.replaceLogs(store.logs.map(log => log._uri)) // TODO: Make autorun
 			}
 			if (command === 'select') {
 				const [logUri, runIndex, resultIndex] = message.id as ResultId
@@ -83,15 +85,15 @@ export class Panel {
 			}
 		}, undefined, context.subscriptions)
 
-		this.replaceLogs(store.logUris)
+		this.replaceLogs(store.logs.map(log => log._uri))
 	}
 
-	private replaceLogs(uris: Uri[]) {
+	private replaceLogs(uris: string[]) {
 		this.panel?.webview.postMessage({
 			command: 'replaceLogs',
 			uris: uris.map(uri => ({
-				uri: uri.toString(),
-				webviewUri: this.panel?.webview.asWebviewUri(uri).toString(),
+				uri,
+				webviewUri: this.panel?.webview.asWebviewUri(Uri.parse(uri)).toString(),
 			}))
 		})	
 	}

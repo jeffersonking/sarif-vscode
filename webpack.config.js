@@ -1,3 +1,4 @@
+const CopyPlugin = require('copy-webpack-plugin')
 const outputPath = require('path').join(__dirname, 'out')
 
 const common = {
@@ -69,5 +70,10 @@ module.exports = [
 		externals: {
 			vscode: 'commonjs vscode' // the vscode-module is created on-the-fly and must be excluded.
 		},
+		plugins: [
+			new CopyPlugin([
+				{ from: require('@microsoft/sarif-multitool-darwin') },
+			]),
+		],
 	},
 ]

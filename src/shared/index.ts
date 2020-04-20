@@ -6,6 +6,7 @@ export type ResultId = [string, number, number]
 declare module 'sarif' {
 	interface Log {
 		_uri?: string
+		_uriDisplay?: string
 		_augmented?: boolean
 		_distinct?: Map<string, string> // Technically per Run, practially does't matter right now.
 	}
