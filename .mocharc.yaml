@@ -4,4 +4,5 @@ extension:
 - ts
 reporter: min
 require: ts-node/register
+timeout: 3000 # For log upgrades.
 watch: true

@@ -22,10 +22,11 @@ mock('vscode', {
 	}
 })
 
-import { loadLogs } from './loadLogs'
+import { loadLogs, detectUpgrade } from './loadLogs'
+import { Log } from 'sarif'
 
 describe('loadLogs', () => {
-	it('Works', async () => {
+	it('loads', async () => {
 		const uris = [
 			`file:///Users/jeff/projects/sarif-vscode/samplesDemo/.sarif/Double.sarif`,
 			`file:///Users/jeff/projects/sarif-vscode/samplesDemo/.sarif/Single.sarif`,
@@ -35,5 +36,30 @@ describe('loadLogs', () => {
 		].map(path => Uri.parse(path))
 		const logs = await loadLogs(uris, process.cwd())
 		assert.strictEqual(logs.every(log => log.version === '2.1.0'), true)
+	})
+
+	it('detects upgrades', async () => {
+		const logsNoUpgrade = [] as Log[]
+		const logsToUpgrade = [] as Log[]
+
+		detectUpgrade({
+			version: '2.1.0',
+			$schema: 'https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json',
+		} as any, logsNoUpgrade, logsToUpgrade)
+		assert.strictEqual(logsNoUpgrade.length, 1)
+		assert.strictEqual(logsToUpgrade.length, 0)
+
+		detectUpgrade({
+			version: '2.1.0',
+			$schema: 'https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.4.json',
+		} as any, logsNoUpgrade, logsToUpgrade)
+		assert.strictEqual(logsNoUpgrade.length, 1)
+		assert.strictEqual(logsToUpgrade.length, 1)
+
+		detectUpgrade({
+			version: '2.1.0',
+		} as any, logsNoUpgrade, logsToUpgrade)
+		assert.strictEqual(logsNoUpgrade.length, 1)
+		assert.strictEqual(logsToUpgrade.length, 2)
 	})
 })
