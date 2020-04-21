@@ -1,6 +1,7 @@
 import { Log } from 'sarif'
 
 export type ResultId = [string, number, number]
+export type _Region = number | [number, number] | [number, number, number, number]
 
 // Underscored members are ptional in the source files, but required after preprocessing.
 declare module 'sarif' {
@@ -19,7 +20,7 @@ declare module 'sarif' {
 		_id?: ResultId
 		_uri?: string
 		_relativeUri?: string
-		_region?: number | [number, number, number, number]
+		_region?: _Region
 		_line?: number
 		_rule?: ReportingDescriptor
 		_message?: string
@@ -83,6 +84,9 @@ export function augmentLog(log: Log) {
 			result._region = (() => {
 				const region = ploc?.region
 				if (!region) return undefined
+
+				const {byteOffset, byteLength} = region
+				if (byteOffset !== undefined && byteLength !== undefined) return [byteOffset, byteLength] as [number, number]
 
 				let {startLine, startColumn, endLine, endColumn} = region
 				if (!startLine) return undefined // Lines are 1-based so no need to check undef.

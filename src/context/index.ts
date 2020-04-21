@@ -1,7 +1,7 @@
 import { computed, observable } from 'mobx'
 import { Log, Result } from 'sarif'
 import { commands, DiagnosticSeverity, ExtensionContext, languages, Range, Selection, TextDocument, ThemeColor, window, workspace } from 'vscode'
-import { mapDistinct } from '../shared'
+import { mapDistinct, _Region } from '../shared'
 import '../shared/extension'
 import { Baser } from './Baser'
 import { loadLogs } from './loadLogs'
@@ -13,9 +13,21 @@ declare module 'vscode' {
 	}
 }
 
-export const regionToSelection = (doc: TextDocument, region: number | [number, number, number, number]) =>
-	Array.isArray(region)
-		? new Selection(...region)
+export const regionToSelection = (doc: TextDocument, region: _Region) => {
+	return Array.isArray(region)
+		? (region.length === 4
+			? new Selection(...region)
+			: (() => {
+				const [byteOffset, byteLength] = region
+				const startColRaw = byteOffset % 16
+				const endColRaw = (byteOffset + byteLength) % 16
+				return new Selection(
+					Math.floor(byteOffset / 16),
+					10 + startColRaw + Math.floor(startColRaw / 2),
+					Math.floor((byteOffset + byteLength) / 16),
+					10 + endColRaw + Math.floor(endColRaw / 2),
+				)
+			})())
 		: (() => {
 			const line = doc.lineAt(region)
 			return new Selection(
@@ -25,6 +37,7 @@ export const regionToSelection = (doc: TextDocument, region: number | [number, n
 				line.range.end.character,
 			)
 		})()
+	}
 
 export class Store {
 	@observable.shallow logs = [] as Log[]
