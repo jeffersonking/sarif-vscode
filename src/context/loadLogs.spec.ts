@@ -38,6 +38,14 @@ describe('loadLogs', () => {
 		assert.strictEqual(logs.every(log => log.version === '2.1.0'), true)
 	})
 
+	// Known schemas:
+	// sarif-1.0.0.json
+	// sarif-2.0.0.json
+	// 2.0.0-csd.2.beta.2018-10-10
+	// sarif-2.1.0-rtm.2
+	// sarif-2.1.0-rtm.3
+	// sarif-2.1.0-rtm.4
+	// sarif-2.1.0-rtm.5
 	it('detects upgrades', async () => {
 		const logsNoUpgrade = [] as Log[]
 		const logsToUpgrade = [] as Log[]
