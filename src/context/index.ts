@@ -117,12 +117,12 @@ export async function activate(context: ExtensionContext) {
 			const contents = artifact?.contents
 			if (contents?.text) return contents?.text
 			if (contents?.binary) {
-				return [...Buffer.from(contents?.binary, 'base64').toString()].map((char, i) => {
-					const byte = char.charCodeAt(0).toString(16).padStart(2, '0')
-					const space = i % 2 === 1 ? ' ' : ''
-					const newline = i % 16 === 15 ? '\n' : ''
-					return `${byte}${space}${newline}`
-				}).join('')
+				const lines = Buffer.from(contents?.binary, 'base64').toString('hex').match(/.{1,32}/g)
+				return lines.reduce((sum, line, i) => {
+					const lineNo = ((i + 128) * 16).toString(16).toUpperCase().padStart(8, '0')
+					const preview = Buffer.from(line, 'hex').toString('utf8').replace(/(\x09|\x0A|\x0B|\x0C|\x0D|\x1B)/g, '?')
+					return `${sum}${lineNo}  ${line.toUpperCase().match(/.{1,2}/g).join(' ')}  ${preview}\n`
+				}, '')
 			}
 			token.isCancellationRequested = true
 		}
