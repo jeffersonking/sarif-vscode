@@ -1,5 +1,6 @@
 {
 	"rules": {
+		"no-console": [true, "log"],
 		"no-string-throw": true,
 		"no-duplicate-variable": true,
 		"class-name": true,
