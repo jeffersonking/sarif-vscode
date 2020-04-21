@@ -17,13 +17,17 @@ export async function loadLogs(uris: Uri[], extensionPath: string) {
 	const logsNoUpgrade = [] as Log[]
 	const logsToUpgrade = [] as Log[]
 	let warnUpgradeExtension = logs.some(log => detectUpgrade(log, logsNoUpgrade, logsToUpgrade))
-	if (logsToUpgrade.length) {
+	const upgrades = logsToUpgrade.length
+	if (upgrades) {
 		await vscode.window.withProgress(
-			{ location: ProgressLocation.Notification, },
+			{ location: ProgressLocation.Notification },
 			async progress => {
 				for (const [i, oldLog] of logsToUpgrade.entries()) {
-					progress.report({ message: `Upgrading ${i + 1} of ${logsToUpgrade.length} log(s)...` })
-					// await new Promise(r => setTimeout(r, 3000))
+					progress.report({
+						message: `Upgrading ${i + 1} of ${upgrades} log${upgrades === 1 ? '' : 's'}...`,
+						increment: i / upgrades * 100
+					})
+					await new Promise(r => setTimeout(r, 0)) // Await needed for progress to update
 					const tempPath = upgradeLog(Uri.parse(oldLog._uri).path, extensionPath)
 					const file = fs.readFileSync(tempPath, 'utf8')
 					const log = JSON.parse(file) as Log
