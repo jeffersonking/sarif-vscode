@@ -68,7 +68,8 @@ export function detectUpgrade(log: Log, logsNoUpgrade: Log[], logsToUpgrade: Log
 export function upgradeLog(path: string, extensionPath: string) {
 	var tempFile = tmp.fileSync()
 	try {
-		const {error} = spawnSync(join(extensionPath, 'out', 'Sarif.Multitool'), [
+		const multitoolExe = `Sarif.Multitool${process.platform === 'win32' ? '.exe' : ''}`
+		const {error} = spawnSync(join(extensionPath, 'out', multitoolExe), [
 			'transform',
 			path,
 			'--force',

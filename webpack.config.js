@@ -79,6 +79,7 @@ module.exports = [
 		plugins: [
 			new CopyPlugin([
 				{ from: require('@microsoft/sarif-multitool-darwin') },
+				{ from: require('@microsoft/sarif-multitool-win32') },
 			]),
 		],
 	},
