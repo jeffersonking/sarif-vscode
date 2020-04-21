@@ -1,20 +1,20 @@
 ## File Structure
 
 ```
-/out					Aka 'dist' or 'bin'. Contents here become the VSIX.
-    content.js			Bundled output of context + shared.
-	panel.js			Bundled output of panel + shared.
-/samples				Excluded from the repro (due to privacy), but required for index.html.
+/out                    Aka 'dist' or 'bin'. Contents here become the VSIX.
+    content.js          Bundled output of context + shared.
+    panel.js            Bundled output of panel + shared.
+/samples                Excluded from the repro (due to privacy), but required for index.html.
 /src
-	/context			The "extension" logic. Node-based.
-		index.ts		Project entry point.
-		Panel.ts		Launches content from /panel
-	/panel				The Webview. Browser-based.
-		codicon.*		Imported icons, do not edit.
-	/shared
-		extension.ts	Extension on built-in types.
-		index.ts		Common logic for both context and panel.
-	index.html			For Webpack Dev Server.
+    /context            The "extension" logic. Node-based.
+        index.ts        Project entry point.
+        Panel.ts        Launches content from /panel
+    /panel              The Webview. Browser-based.
+        codicon.*       Imported icons, do not edit.
+    /shared
+        extension.ts    Extension on built-in types.
+        index.ts        Common logic for both context and panel.
+    index.html          For Webpack Dev Server.
 ```
 
 ## Development
