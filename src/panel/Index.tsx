@@ -2,7 +2,6 @@ import { observable, action, IObservableValue, autorun, IReactionDisposer } from
 import { observer } from 'mobx-react'
 import * as React from 'react'
 import { Component, PureComponent } from 'react'
-import * as ReactDOM from 'react-dom'
 import { Log } from 'sarif'
 
 import './codicon.css'
@@ -10,17 +9,9 @@ import './Index.scss'
 import { ResizeHandle } from './Index.ResizeHandle'
 import { Store, SortDir, Group } from './Store'
 
-import logA from '../../samples/AndroidStudio.Multirun.EmbeddedManifestFile.sarif.json'
-import logB from '../../samples/BinSkim.ErorResultsAndNotifications.sarif.json'
-import logP from '../../samples/Prefast.Converted.KeyEvents.sarif.json'
-import logPy from '../../samples/bad-eval-with-code-flow.sarif.json'
-import logS from '../../samples/Semme.sarif-sdk.csharp.sarif.json'
-(logA as Log)._uri = 'file:///Users/jeff/projects/vscode-sarif/samples/AndroidStudio.Multirun.EmbeddedManifestFile.sarif.json'
-;(logB as Log)._uri = 'file:///Users/jeff/projects/vscode-sarif/samples/BinSkim.ErorResultsAndNotifications.sarif.json'
-;(logP as Log)._uri = 'file:///Users/jeff/projects/vscode-sarif/samples/Prefast.Converted.KeyEvents.sarif.json'
-;(logPy as Log)._uri = 'file:///Users/jeff/projects/vscode-sarif/samples/bad-eval-with-code-flow.sarif.json'
-;(logS as Log)._uri = 'file:///Users/jeff/projects/vscode-sarif/samples/Semme.sarif-sdk.csharp.sarif.json'
-const sampleLogs = [logA, logB, logP] as Log[]
+export { Store } from './Store'
+export * as React from 'react'
+export * as ReactDOM from 'react-dom'
 
 class Badge extends PureComponent<{ text: { toString: () => string } }> {
 	render() {
@@ -71,7 +62,7 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 	}
 }
 
-@observer class Index extends Component<{ store: Store }> {
+@observer export class Index extends Component<{ store: Store }> {
 	private vscode = acquireVsCodeApi()
 
 	private columnWidths = new Map<string, IObservableValue<number>>([
@@ -86,6 +77,7 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 	private detailsPaneHeight = observable.box(250)
 
 	@action.bound private onKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
+		const {store} = this.props
 		if (!(e.key === 'ArrowUp' || e.key === 'ArrowDown')) return
 		if (e.key === 'ArrowUp') {
 			store.selectedItem = store.selectedItem?.prev ?? store.selectedItem
@@ -278,11 +270,6 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 		const {store} = this.props
 		const command = event.data?.command
 
-		if (command === 'demo') {
-			if (!sampleLogs.length) return
-			store.logs.push(sampleLogs.shift())
-		}
-
 		if (command === 'select') {
 			const {id} = event.data // id undefined means deselect.
 			if (!id) {
@@ -322,8 +309,7 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 	componentDidMount() {
 		addEventListener('message', this.onMessage)
 		this.selectionAutoRunDisposer = autorun(() => {
-			const result = store.selectedItem?.data
-			console.log(111, 'select')
+			const result = this.props.store.selectedItem?.data
 			if (!result) return
 			this.vscode.postMessage({ command: 'select', id: result._id })
 		})
@@ -334,11 +320,3 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 		this.selectionAutoRunDisposer()
 	}
 }
-
-const store = new Store()
-// store.logs.push(sampleLogs.shift())
-store.logs.push(logPy as Log)
-ReactDOM.render(
-	<Index store={store} />,
-	document.getElementById('root')
-)

@@ -47,13 +47,19 @@ export class Panel {
 					default-src 'none';
 					connect-src vscode-resource:;
 					font-src    data:;
-					script-src  vscode-resource:;
+					script-src  vscode-resource: 'unsafe-inline';
 					style-src   vscode-resource: 'unsafe-inline';
 					">
 			</head>
 			<body>
 				<div id="root"></div>
 				<script src="vscode-resource:${context.extensionPath}/out/panel.js"></script>
+				<script>
+					ReactDOM.render(
+						React.createElement(Index, { store: new Store() }),
+						document.getElementById('root'),
+					)
+				</script>
 			</body>
 			</html>`
 

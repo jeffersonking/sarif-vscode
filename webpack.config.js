@@ -41,11 +41,17 @@ const common = {
 	},
 }
 
+
 module.exports = [
 	{
 		...common,
 		name: 'Panel', // Ordered 1st for devServer. https://github.com/webpack/webpack/issues/1849
 		entry: { panel: './src/panel/Index.tsx' },
+		output: {
+			...common.output,
+			libraryTarget: 'umd',
+			globalObject: 'this',
+		},
 		devServer : {
 			// index: 'devServer.html', // Not working.
 			port: 8000,

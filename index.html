@@ -438,5 +438,18 @@
 			} }))
 		</script>
 		<script src="panel.js"></script>
+		<script>
+			;(async () => {
+				const store = new Store()
+				const response = await fetch('samples/Semme.sarif-sdk.csharp.sarif.json')
+				const log = await response.json()
+				log._uri = 'file:///Users/jeff/projects/vscode-sarif/samples/Semme.sarif-sdk.csharp.sarif.json'
+				store.logs.push(log)
+				ReactDOM.render(
+					React.createElement(Index, { store }),
+					document.getElementById('root'),
+				)
+			})()
+		</script>
 	</body>
 </html>
