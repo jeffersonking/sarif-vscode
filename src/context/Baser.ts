@@ -49,6 +49,9 @@ export class Baser {
 	}
 
 	public async translateToLocalPath(artifactPath: string) { // Retval is validated.
+		// Temp.
+		if (artifactPath.startsWith('sarif:')) return artifactPath
+
 		// Hacky.
 		const pathExists = async (artifactPath: string) => {
 			try {
