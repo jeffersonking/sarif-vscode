@@ -71,9 +71,9 @@ export function upgradeLog(path: string, extensionPath: string) {
 			'--pretty-print',
 			'--output', tempFile.name
 		], { stdio: 'inherit' })
-		if (error) console.log('RESULTERROR', error)
+		if (error) console.warn('RESULTERROR', error)
 	} catch(e) {
-		console.log('ERROR', path, e) // Use malformed sarif to test
+		console.warn('ERROR', path, e) // Use malformed sarif to test
 	}
 	return tempFile.name
 }

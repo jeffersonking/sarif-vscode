@@ -1,17 +1,16 @@
-import { observable, action, IObservableValue, autorun, IReactionDisposer } from 'mobx'
+import { action, autorun, IObservableValue, IReactionDisposer, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import * as React from 'react'
 import { Component, PureComponent } from 'react'
 import { Log } from 'sarif'
-
 import './codicon.css'
-import './Index.scss'
 import { ResizeHandle } from './Index.ResizeHandle'
-import { Store, SortDir, Group } from './Store'
+import './Index.scss'
+import { Group, SortDir, Store } from './Store'
 
-export { Store } from './Store'
 export * as React from 'react'
 export * as ReactDOM from 'react-dom'
+export { Store } from './Store'
 
 class Badge extends PureComponent<{ text: { toString: () => string } }> {
 	render() {

@@ -4,8 +4,8 @@ import { commands, DiagnosticSeverity, ExtensionContext, languages, Range, Selec
 import { mapDistinct } from '../shared'
 import '../shared/extension'
 import { Baser } from './Baser'
-import { Panel } from './Panel'
 import { loadLogs } from './loadLogs'
+import { Panel } from './Panel'
 
 declare module 'vscode' {
 	interface Diagnostic {

@@ -3,7 +3,7 @@ import mock from 'mock-require'
 
 const progress = {
 	report: data => {
-		console.log(data)
+		console.warn(data)
 	}
 }
 class Uri {
