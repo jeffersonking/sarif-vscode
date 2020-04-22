@@ -8,10 +8,13 @@ const progress = {
 }
 class Uri {
 	static parse(value) { return new Uri(value) }
+	static file(path) { return Uri.parse(`file://${path}`) }
+
 	constructor(readonly value) {}
 	get path() { return this.value.replace('file://', '') }
+	get fsPath() { return this.path } // Assume Unix.
 	toString() { return this.value }
-	scheme; authority; query; fragment; fsPath; with; toJSON // Stubs
+	scheme; authority; query; fragment; with; toJSON // Stubs
 }
 mock('vscode', {
 	ProgressLocation: { Notification: 15 },
