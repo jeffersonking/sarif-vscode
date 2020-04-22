@@ -9,8 +9,9 @@ import { augmentLog } from '../shared'
 
 export async function loadLogs(uris: Uri[], extensionPath: string) {
 	const logs = uris.map(uri => {
-		const file = fs.readFileSync(uri.path, 'utf8')
+		const file = fs.readFileSync(uri.fsPath, 'utf8')
 		const log = JSON.parse(file) as Log
+		log._Uri = uri
 		log._uri = uri.toString()
 		return log
 	})
@@ -28,10 +29,11 @@ export async function loadLogs(uris: Uri[], extensionPath: string) {
 						increment: i / upgrades * 100
 					})
 					await new Promise(r => setTimeout(r, 0)) // Await needed for progress to update
-					const tempPath = upgradeLog(Uri.parse(oldLog._uri).path, extensionPath)
+					const tempPath = upgradeLog(oldLog._Uri.fsPath, extensionPath)
 					const file = fs.readFileSync(tempPath, 'utf8')
 					const log = JSON.parse(file) as Log
-					log._uri = `file://${tempPath}`
+					log._Uri = Uri.file(tempPath)
+					log._uri = Uri.file(tempPath).toString()
 					log._uriDisplay = oldLog.toString()
 					logsNoUpgrade.push(log)
 				}

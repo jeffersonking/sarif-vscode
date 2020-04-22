@@ -53,9 +53,9 @@ export class Baser {
 		if (artifactPath.startsWith('sarif:')) return artifactPath
 
 		// Hacky.
-		const pathExists = async (artifactPath: string) => {
+		const pathExists = async (path: string) => {
 			try {
-				await workspace.openTextDocument(Uri.parse(artifactPath))
+				await workspace.openTextDocument(Uri.parse(path))
 			} catch(e) {
 				return false
 			}
@@ -70,7 +70,7 @@ export class Baser {
 			for (const [oldBase, newBase] of this.basesArtifactToLocal) {
 				if (!artifactPath.startsWith(oldBase)) continue // Just let it fall through?
 				const localPath = artifactPath.replace(oldBase, newBase)
-				if (fs.existsSync(localPath)) {
+				if (await pathExists(localPath)) {
 					this.updateValidatedPaths(artifactPath, localPath)
 					return localPath
 				}

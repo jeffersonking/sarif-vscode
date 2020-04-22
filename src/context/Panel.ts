@@ -5,6 +5,7 @@ import { regionToSelection, Store } from '.'
 import { ResultId } from '../shared'
 import { Baser } from './Baser'
 import { loadLogs } from './loadLogs'
+import { join } from 'path'
 
 export class Panel {
 	private title = 'SARIF Result'
@@ -33,12 +34,13 @@ export class Panel {
 			'Index', `${this.title}s`, ViewColumn.Two,
 			{
 				enableScripts: true,
-				localResourceRoots: [Uri.file('/')],
+				localResourceRoots: [Uri.file('/'), Uri.file('c:')],
 				retainContextWhenHidden: true,
 			}
 		)
 		this.panel.onDidDispose(() => this.panel = null)
 
+		const src = Uri.file(join(context.extensionPath, 'out', 'panel.js'))
 		webview.html = `<!DOCTYPE html>
 			<html lang="en">
 			<head>
@@ -53,7 +55,7 @@ export class Panel {
 			</head>
 			<body>
 				<div id="root"></div>
-				<script src="vscode-resource:${context.extensionPath}/out/panel.js"></script>
+				<script src="${webview.asWebviewUri(src).toString()}"></script>
 				<script>
 					ReactDOM.render(
 						React.createElement(Index, { store: new Store() }),

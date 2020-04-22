@@ -8,6 +8,7 @@ declare module 'sarif' {
 	interface Log {
 		_uri?: string
 		_uriDisplay?: string
+		_Uri?: { fsPath: string } // Like the vscode.Uri, minus the hard dependency.
 		_augmented?: boolean
 		_distinct?: Map<string, string> // Technically per Run, practially does't matter right now.
 	}
