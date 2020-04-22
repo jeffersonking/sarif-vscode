@@ -17,6 +17,15 @@
     index.html          For Webpack Dev Server.
 ```
 
+## Installation
+```
+npm install
+npm install --force @microsoft/sarif-multitool-darwin @microsoft/sarif-multitool-win32
+```
+The Multitool in installed with force to override the normal platform/OS guards.
+
+On MacOS, run `chmod u+x Sarif.Multitool` on the Multitool binary to enable execution. Will look at automating this in the future.
+
 ## Development
 
 Run `npm start` to start watching and building the project. Then:
@@ -25,3 +34,5 @@ Run `npm start` to start watching and building the project. Then:
   * Requires files from the `/samples` which you will need to provide yourself.
 
 Run `npm test` to start watchiing and running the unit tests. These tests do not launch VS Code. Integration testing TBD.
+
+Note: Run `npx webpack` to build once (and not watch).
