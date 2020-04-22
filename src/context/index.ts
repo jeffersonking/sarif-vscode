@@ -69,6 +69,17 @@ export async function activate(context: ExtensionContext) {
 	if (uris.length) panel.show()
 	disposables.push(commands.registerCommand('sarif.showResultsPanel', () => panel.show()))
 
+	// Suggest In-Project Sarif Files
+	;(async () => {
+		const urisSarifInWorkspace = await workspace.findFiles('**/*.sarif', '.sarif/**/*.sarif')
+		const count = urisSarifInWorkspace.length
+		if (!count) return
+		if (await window.showInformationMessage(`Discovered ${count} SARIF logs in your workspace.`, 'View in SARIF Panel')) {
+			store.logs.push(...await loadLogs(urisSarifInWorkspace, context.extensionPath))
+			panel.show()
+		}
+	})()
+
 	// Diagnostics
 	const diagsAll = languages.createDiagnosticCollection('sarif')
 	const setDiags = (doc: TextDocument) => {
