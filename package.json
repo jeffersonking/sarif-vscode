@@ -29,8 +29,7 @@
 	"scripts": {
 		"start": "webpack-dev-server --mode development & webpack --watch",
 		"test": "mocha",
-		"vscode:prepublish": "webpack",
-		"postinstall": "node ./node_modules/vscode/bin/install"
+		"vscode:prepublish": "webpack"
 	},
 	"devDependencies": {
 		"@types/mocha": "2.2.48",
