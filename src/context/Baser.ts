@@ -1,4 +1,3 @@
-import * as fs from 'fs'
 import { Uri, window, workspace } from 'vscode'
 import { Store } from '.'
 import '../shared/extension'
