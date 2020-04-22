@@ -4,7 +4,7 @@ import { join } from 'path'
 import { Log } from 'sarif'
 import { eq, gt, lt } from 'semver'
 import { tmpNameSync } from 'tmp'
-import vscode, { ProgressLocation, Uri } from 'vscode'
+import { ProgressLocation, Uri, window } from 'vscode'
 import { augmentLog } from '../shared'
 
 export async function loadLogs(uris: Uri[], extensionPath: string) {
@@ -19,7 +19,7 @@ export async function loadLogs(uris: Uri[], extensionPath: string) {
 	let warnUpgradeExtension = logs.some(log => detectUpgrade(log, logsNoUpgrade, logsToUpgrade))
 	const upgrades = logsToUpgrade.length
 	if (upgrades) {
-		await vscode.window.withProgress(
+		await window.withProgress(
 			{ location: ProgressLocation.Notification },
 			async progress => {
 				for (const [i, oldLog] of logsToUpgrade.entries()) {
@@ -40,7 +40,7 @@ export async function loadLogs(uris: Uri[], extensionPath: string) {
 	}
 	logsNoUpgrade.forEach(augmentLog)
 	if (warnUpgradeExtension) {
-		vscode.window.showWarningMessage('Some log versions are newer than this extension.')
+		window.showWarningMessage('Some log versions are newer than this extension.')
 	}
 	return logsNoUpgrade
 }
