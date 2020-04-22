@@ -70,7 +70,7 @@ describe('loadLogs', () => {
 		detectUpgrade({
 			version: '2.1.0',
 		} as any, logsNoUpgrade, logsToUpgrade)
-		assert.strictEqual(logsNoUpgrade.length, 1)
-		assert.strictEqual(logsToUpgrade.length, 2)
+		assert.strictEqual(logsNoUpgrade.length, 2)
+		assert.strictEqual(logsToUpgrade.length, 1)
 	})
 })

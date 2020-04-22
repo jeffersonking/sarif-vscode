@@ -56,7 +56,7 @@ export function detectUpgrade(log: Log, logsNoUpgrade: Log[], logsToUpgrade: Log
 			?.replace('http://json.schemastore.org/sarif-', '')
 			?.replace('https://schemastore.azurewebsites.net/schemas/json/sarif-', '')
 			?.replace(/\.json$/, '')
-		if (schema === '2.1.0-rtm.5') {
+		if (schema === undefined || schema === '2.1.0-rtm.5') {
 			logsNoUpgrade.push(log)
 		} else {
 			logsToUpgrade.push(log)
