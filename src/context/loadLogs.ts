@@ -3,7 +3,7 @@ import * as fs from 'fs'
 import { join } from 'path'
 import { Log } from 'sarif'
 import { eq, gt, lt } from 'semver'
-import tmp from 'tmp'
+import { tmpNameSync } from 'tmp'
 import vscode, { ProgressLocation, Uri } from 'vscode'
 import { augmentLog } from '../shared'
 
@@ -66,7 +66,7 @@ export function detectUpgrade(log: Log, logsNoUpgrade: Log[], logsToUpgrade: Log
 }
 
 export function upgradeLog(path: string, extensionPath: string) {
-	var tempFile = tmp.fileSync()
+	const name = tmpNameSync()
 	try {
 		const multitoolExe = `Sarif.Multitool${process.platform === 'win32' ? '.exe' : ''}`
 		const {error} = spawnSync(join(extensionPath, 'out', multitoolExe), [
@@ -74,11 +74,11 @@ export function upgradeLog(path: string, extensionPath: string) {
 			path,
 			'--force',
 			'--pretty-print',
-			'--output', tempFile.name
+			'--output', name
 		], { stdio: 'inherit' })
 		if (error) console.warn('RESULTERROR', error)
 	} catch(e) {
 		console.warn('ERROR', path, e) // Use malformed sarif to test
 	}
-	return tempFile.name
+	return name
 }
