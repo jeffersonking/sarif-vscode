@@ -71,16 +71,6 @@ body {
 	.svListHeader {
 		display: flex;
 		align-items: center;
-	
-		& > .twisties {
-			width: 20px;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			transform-origin: center;
-			color: inherit;
-			flex-shrink: 0;
-		}
 
 		.codicon {
 			line-height: 35px;
@@ -172,6 +162,17 @@ body {
 	
 			& > * + * {
 				margin-left: 6px;
+			}
+
+			& > .twisties {
+				width: 20px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				transform-origin: center;
+				color: inherit;
+				flex-shrink: 0;
+				align-self: center;
 			}
 		}
 	}
