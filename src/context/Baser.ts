@@ -47,6 +47,7 @@ export class Baser {
 		return this.validatedPathsLocalToArtifact.get(localPath) ?? localPath
 	}
 
+	private activeInfoMessages = new Set<string>() // Prevent repeat message animations when arrowing through many results with the same uri.
 	public async translateToLocalPath(artifactPath: string) { // Retval is validated.
 		// Temp.
 		if (artifactPath.startsWith('sarif:')) return artifactPath
@@ -85,9 +86,10 @@ export class Baser {
 		}
 
 		let validatedUri = await validateUri()
-		if (!validatedUri) {
-			// TODO: Guard against simultaneous prompts.
+		if (!validatedUri && !this.activeInfoMessages.has(artifactPath)) {
+			this.activeInfoMessages.add(artifactPath)
 			const choice = await window.showInformationMessage(`Unable to find '${artifactPath.split('/').pop()}'`, 'Locate...')
+			this.activeInfoMessages.delete(artifactPath)
 			if (choice === 'Locate...') {
 				const extension = artifactPath.match(/\.([\w]+)$/)[1]
 				const files = await window.showOpenDialog({
