@@ -7,6 +7,7 @@ import './codicon.css'
 import { ResizeHandle } from './Index.ResizeHandle'
 import './Index.scss'
 import { Group, SortDir, Store } from './Store'
+import '../shared/extension'
 
 export * as React from 'react'
 export * as ReactDOM from 'react-dom'
@@ -115,7 +116,8 @@ class Icon extends PureComponent<{ name: string, title?: string, onClick?: (even
 							return <div key={i} className="svListItem">
 								<div>{pathname.file}</div>
 								<div className="ellipsis svSecondary">{pathname.path}</div>
-								<Icon name="close" />
+								<Icon name="close" title="Remove Log"
+									onClick={() => this.vscode.postMessage({ command: 'removeLog', uri: log._uri })} />
 							</div>
 						})}
 					</div>
@@ -294,7 +296,7 @@ class Icon extends PureComponent<{ name: string, title?: string, onClick?: (even
 			for (const uri of event.data.removed) {
 				const i = store.logs.findIndex(log => log._uri === uri)
 				if (i >= 0) store.logs.splice(i, 1)	
-		}
+			}
 			for (const uriPair of event.data.added) {
 				store.logs.push(await fetchLog(uriPair))
 			}
