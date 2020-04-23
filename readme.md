@@ -1,3 +1,11 @@
+## Not Yet Implemented
+
+The following features of [sarif-vscode-extension](https://github.com/microsoft/sarif-vscode-extension) have yet to be implemented in this project.
+* Jumping/mapping from the Results List to Log document regions.
+* Transform from other formats to SARIF (via the Multitool).
+* A fully fleshed-out details pane (Stacks tab, etc).
+* Results List does not have configurable columns or filters.
+
 ## File Structure
 
 ```
