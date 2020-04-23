@@ -40,6 +40,8 @@ export const regionToSelection = (doc: TextDocument, region: _Region) => {
 	}
 
 export class Store {
+	static extensionPath: string | undefined
+
 	@observable.shallow logs = [] as Log[]
 	@computed public get results() {
 		const runs = this.logs.map(log => log.runs).flat()
@@ -52,12 +54,13 @@ export class Store {
 }
 
 export async function activate(context: ExtensionContext) {
+	Store.extensionPath = context.extensionPath
 	const disposables = context.subscriptions
 	const store = new Store()
 
 	// Boot
 	const uris = await workspace.findFiles('.sarif/**/*.sarif')
-	store.logs.push(...await loadLogs(uris, context.extensionPath))
+	store.logs.push(...await loadLogs(uris))
 
 	// Basing
 	const urisNonSarif = await workspace.findFiles('**/*', '.sarif') // Ignore folders?
@@ -65,7 +68,7 @@ export async function activate(context: ExtensionContext) {
 	const basing = new Baser(mapDistinct(fileAndUris), store)
 
 	// Panel
-	const panel = new Panel(context, basing, store, context.extensionPath)
+	const panel = new Panel(context, basing, store)
 	if (uris.length) panel.show()
 	disposables.push(commands.registerCommand('sarif.showResultsPanel', () => panel.show()))
 
@@ -75,7 +78,7 @@ export async function activate(context: ExtensionContext) {
 		const count = urisSarifInWorkspace.length
 		if (!count) return
 		if (await window.showInformationMessage(`Discovered ${count} SARIF logs in your workspace.`, 'View in SARIF Panel')) {
-			store.logs.push(...await loadLogs(urisSarifInWorkspace, context.extensionPath))
+			store.logs.push(...await loadLogs(urisSarifInWorkspace))
 			panel.show()
 		}
 	})()
@@ -105,7 +108,7 @@ export async function activate(context: ExtensionContext) {
 	// Open Documents <-sync-> Store.logs
 	const syncActiveLog = async (doc: TextDocument) => {
 		if (!doc.fileName.match(/\.sarif$/i)) return
-		store.logs.push(...await loadLogs([doc.uri], context.extensionPath))
+		store.logs.push(...await loadLogs([doc.uri]))
 	}
 	workspace.textDocuments.forEach(syncActiveLog)
 	workspace.onDidOpenTextDocument(syncActiveLog)

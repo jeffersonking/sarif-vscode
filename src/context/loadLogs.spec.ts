@@ -37,7 +37,7 @@ describe('loadLogs', () => {
 			`file:///Users/jeff/projects/sarif-vscode/samplesDemo/.sarif/bad-eval-with-code-flow.sarif`,
 			`file:///Users/jeff/projects/sarif-vscode/samplesDemo/.sarif/oldLog.sarif`,
 		].map(path => Uri.parse(path))
-		const logs = await loadLogs(uris, process.cwd())
+		const logs = await loadLogs(uris)
 		assert.strictEqual(logs.every(log => log.version === '2.1.0'), true)
 	})
 

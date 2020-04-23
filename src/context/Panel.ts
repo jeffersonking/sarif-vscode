@@ -13,8 +13,7 @@ export class Panel {
 	constructor(
 		readonly context: Pick<ExtensionContext, 'extensionPath' | 'subscriptions'>,
 		readonly basing: Baser,
-		readonly store: Pick<Store, 'logs' | 'results'>,
-		readonly extensionPath: string) {
+		readonly store: Pick<Store, 'logs' | 'results'>) {
 		observe(store.logs, change => {
 			const {type, removed, added} = change as unknown as IArraySplice<Log>
 			if (type !== 'splice') throw new Error('Only splice allowed on store.logs.')
@@ -77,7 +76,7 @@ export class Panel {
 					filters: { 'SARIF files': ['sarif', 'json'] },
 				})
 				if (!uris) return
-				store.logs.push(...await loadLogs(uris, this.extensionPath))
+				store.logs.push(...await loadLogs(uris))
 			}
 			if (command === 'removeLog') {
 				store.logs.removeWhere(log => log._uri === message.uri)

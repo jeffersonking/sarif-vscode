@@ -5,9 +5,10 @@ import { Log } from 'sarif'
 import { eq, gt, lt } from 'semver'
 import { tmpNameSync } from 'tmp'
 import { ProgressLocation, Uri, window } from 'vscode'
+import { Store } from '.'
 import { augmentLog } from '../shared'
 
-export async function loadLogs(uris: Uri[], extensionPath: string) {
+export async function loadLogs(uris: Uri[]) {
 	const logs = uris.map(uri => {
 		const file = fs.readFileSync(uri.fsPath, 'utf8') // Assume scheme file.
 		const log = JSON.parse(file) as Log
@@ -28,7 +29,7 @@ export async function loadLogs(uris: Uri[], extensionPath: string) {
 						increment: i / upgrades * 100
 					})
 					await new Promise(r => setTimeout(r, 0)) // Await needed for progress to update
-					const tempPath = upgradeLog(Uri.parse(oldLog._uri).fsPath, extensionPath)
+					const tempPath = upgradeLog(Uri.parse(oldLog._uri).fsPath)
 					const file = fs.readFileSync(tempPath, 'utf8') // Assume scheme file.
 					const log = JSON.parse(file) as Log
 					log._uri = Uri.file(tempPath).toString()
@@ -65,11 +66,11 @@ export function detectUpgrade(log: Log, logsNoUpgrade: Log[], logsToUpgrade: Log
 	return false
 }
 
-export function upgradeLog(path: string, extensionPath: string) {
+export function upgradeLog(path: string) {
 	const name = tmpNameSync()
 	try {
 		const multitoolExe = `Sarif.Multitool${process.platform === 'win32' ? '.exe' : ''}`
-		const {error} = spawnSync(join(extensionPath, 'out', multitoolExe), [
+		const {error} = spawnSync(join(Store.extensionPath || process.cwd(), 'out', multitoolExe), [
 			'transform',
 			path,
 			'--force',
