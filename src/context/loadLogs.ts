@@ -32,8 +32,8 @@ export async function loadLogs(uris: Uri[]) {
 					const tempPath = upgradeLog(Uri.parse(oldLog._uri).fsPath)
 					const file = fs.readFileSync(tempPath, 'utf8') // Assume scheme file.
 					const log = JSON.parse(file) as Log
-					log._uri = Uri.file(tempPath).toString()
-					log._uriDisplay = oldLog.toString()
+					log._uri = oldLog._uri
+					log._uriUpgraded = Uri.file(tempPath).toString()
 					logsNoUpgrade.push(log)
 				}
 			}

@@ -111,7 +111,7 @@ export class Panel {
 			removed: removed.map(log => log._uri),
 			added: added.map(log => ({
 				uri: log._uri,
-				webviewUri: this.panel?.webview.asWebviewUri(Uri.parse(log._uri)).toString(),
+				webviewUri: this.panel?.webview.asWebviewUri(Uri.parse(log._uriUpgraded ?? log._uri)).toString(),
 			})),
 		})
 	}

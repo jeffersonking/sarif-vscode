@@ -1,4 +1,4 @@
-import { computed, observable } from 'mobx'
+import { computed, intercept, observable, IArrayWillSplice } from 'mobx'
 import { Log, Result } from 'sarif'
 import { commands, DiagnosticSeverity, ExtensionContext, languages, Range, Selection, TextDocument, ThemeColor, window, workspace } from 'vscode'
 import { mapDistinct, _Region } from '../shared'
@@ -50,6 +50,14 @@ export class Store {
 	@computed public get distinctArtifactNames() {
 		const fileAndUris = this.logs.map(log => [...log._distinct.entries()]).flat()
 		return mapDistinct(fileAndUris)
+	}
+
+	constructor() {
+		intercept(this.logs, objChange => {
+			const change = objChange as unknown as IArrayWillSplice<Log>
+			change.added = change.added.filter(log => this.logs.every(existing => existing._uri !== log._uri))
+			return objChange
+		})
 	}
 }
 

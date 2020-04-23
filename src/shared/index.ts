@@ -7,7 +7,7 @@ export type _Region = number | [number, number] | [number, number, number, numbe
 declare module 'sarif' {
 	interface Log {
 		_uri?: string
-		_uriDisplay?: string
+		_uriUpgraded?: string
 		_augmented?: boolean
 		_distinct?: Map<string, string> // Technically per Run, practially does't matter right now.
 	}
