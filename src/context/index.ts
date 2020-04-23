@@ -102,6 +102,18 @@ export async function activate(context: ExtensionContext) {
 	workspace.onDidOpenTextDocument(setDiags)
 	workspace.onDidCloseTextDocument(doc => diagsAll.delete(doc.uri)) // Spurious *.git deletes don't hurt.
 
+	// Open Documents <-sync-> Store.logs
+	const syncActiveLog = async (doc: TextDocument) => {
+		if (!doc.fileName.match(/\.sarif$/i)) return
+		store.logs.push(...await loadLogs([doc.uri], context.extensionPath))
+	}
+	workspace.textDocuments.forEach(syncActiveLog)
+	workspace.onDidOpenTextDocument(syncActiveLog)
+	workspace.onDidCloseTextDocument(doc => {
+		if (!doc.fileName.match(/\.sarif$/i)) return
+		store.logs.removeWhere(log => log._uri === doc.uri.toString())
+	})
+
 	// Actions/Decorations for Call Trees
 	const decorationType = window.createTextEditorDecorationType({
 		after: { color: new ThemeColor('problemsWarningIcon.foreground') }

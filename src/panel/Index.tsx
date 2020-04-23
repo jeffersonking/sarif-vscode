@@ -290,15 +290,13 @@ class Icon extends PureComponent<{ name: string, title?: string, onClick?: (even
 			return log	
 		}
 
-		if (command === 'replaceLogs') {
-			const uris = event.data.uris as { uri: string, webviewUri: string }[]
-			store.logs.replace(await Promise.all(uris.map(fetchLog)))
+		if (command === 'spliceLogs') {
+			for (const uri of event.data.removed) {
+				const i = store.logs.findIndex(log => log._uri === uri)
+				if (i >= 0) store.logs.splice(i, 1)	
 		}
-
-		if (command === 'addLog') {
-			const {uri, webviewUri} = event.data
-			if (uri && webviewUri) { // Check needed?
-				store.logs.push(await fetchLog(event.data))
+			for (const uriPair of event.data.added) {
+				store.logs.push(await fetchLog(uriPair))
 			}
 		}
 	}

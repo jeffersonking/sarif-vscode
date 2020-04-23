@@ -1,5 +1,5 @@
-import { autorun, observable } from 'mobx'
-import { Result } from 'sarif'
+import { observable, observe, IArraySplice } from 'mobx'
+import { Result, Log } from 'sarif'
 import { ExtensionContext, TextEditorRevealType, Uri, ViewColumn, WebviewPanel, window, workspace } from 'vscode'
 import { regionToSelection, Store } from '.'
 import { ResultId } from '../shared'
@@ -15,8 +15,12 @@ export class Panel {
 		readonly basing: Baser,
 		readonly store: Pick<Store, 'logs' | 'results'>,
 		readonly extensionPath: string) {
-		autorun(() => {
-			const count = this.store.results.length
+		observe(store.logs, change => {
+			const {type, removed, added} = change as unknown as IArraySplice<Log>
+			if (type !== 'splice') throw new Error('Only splice allowed on store.logs.')
+			this.spliceLogs(removed, added)
+
+			const count = store.results.length
 			if (!this.panel) return
 			this.panel.title = `${count} ${this.title}${count === 1 ? '' : 's'}`
 		})
@@ -74,7 +78,6 @@ export class Panel {
 				})
 				if (!uris) return
 				store.logs.push(...await loadLogs(uris, this.extensionPath))
-				this.replaceLogs(store.logs.map(log => log._uri)) // TODO: Make autorun
 			}
 			if (command === 'select') {
 				const [logUri, runIndex, resultIndex] = message.id as ResultId
@@ -92,29 +95,22 @@ export class Panel {
 			}
 		}, undefined, context.subscriptions)
 
-		this.replaceLogs(store.logs.map(log => log._uri))
-	}
-
-	private replaceLogs(uris: string[]) {
-		this.panel?.webview.postMessage({
-			command: 'replaceLogs',
-			uris: uris.map(uri => ({
-				uri,
-				webviewUri: this.panel?.webview.asWebviewUri(Uri.parse(uri)).toString(),
-			}))
-		})	
-	}
-
-	public addLog(uri: Uri) { // Unused.
-		this.panel?.webview.postMessage({
-			command: 'addLog',
-			uri: uri.toString(),
-			webviewUri: this.panel?.webview.asWebviewUri(uri).toString(),
-		})
+		this.spliceLogs([], store.logs)
 	}
 
 	public select(result: Result) {
 		if (!result?._id) return // Reduce Panel selection flicker.
 		this.panel?.webview.postMessage({ command: 'select', id: result?._id })
+	}
+
+	private spliceLogs(removed: Log[], added: Log[]) {
+		this.panel?.webview.postMessage({
+			command: 'spliceLogs',
+			removed: removed.map(log => log._uri),
+			added: added.map(log => ({
+				uri: log._uri,
+				webviewUri: this.panel?.webview.asWebviewUri(Uri.parse(log._uri)).toString(),
+			})),
+		})
 	}
 }
