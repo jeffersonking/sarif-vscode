@@ -26,10 +26,10 @@ const levelToIcon = {
 	undefined: 'question',
 }
 
-class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void }> {
+class Icon extends PureComponent<{ name: string, title?: string, onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void }> {
 	render() {
-		const {name: iconName, onClick} = this.props
-		return <div className={`codicon codicon-${iconName}`} onClick={onClick}></div>
+		const {name: iconName, title, onClick} = this.props
+		return <div className={`codicon codicon-${iconName}`} title={title} onClick={onClick}></div>
 	}
 }
 
@@ -104,8 +104,8 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 			<div className="svListHeader">
 				<TabBar titles={store.tabs} selection={store.selectedTab} />
 				<div className="flexFill"></div>
-				<Icon name="collapse-all" onClick={() => store.groupsSorted.forEach(group => group.expanded = false)} />
-				<Icon name="folder-opened" onClick={() => this.vscode.postMessage({ command: 'open' })} />
+				<Icon name="collapse-all" title="Collapse All" onClick={() => store.groupsSorted.forEach(group => group.expanded = false)} />
+				<Icon name="folder-opened" title="Open Log" onClick={() => this.vscode.postMessage({ command: 'open' })} />
 			</div>
 			<div className="svListTableScroller">
 				{selectedTab.get() === 'Logs'
@@ -139,7 +139,7 @@ class Icon extends PureComponent<{ name: string, onClick?: (event: React.MouseEv
 												store.sortDir = SortDir.reverse(sortDir)
 											})}>
 											{col}
-											{sortColumn === col && <Icon name={sortDir} />}
+											{sortColumn === col && <Icon title="Sort" name={sortDir} />}
 										</span>
 										{i < cols.length - 1 && <ResizeHandle size={this.columnWidth(col)} horizontal />}
 									</td>
