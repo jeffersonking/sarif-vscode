@@ -34,7 +34,7 @@ export class Panel {
 
 		const {context, basing, store} = this
 		const {webview} = this.panel = window.createWebviewPanel(
-			'Index', `${this.title}s`, ViewColumn.Two,
+			'Index', `${this.title}s`, { preserveFocus: false, viewColumn: ViewColumn.Two },
 			{
 				enableScripts: true,
 				localResourceRoots: [Uri.file('/'), Uri.file('c:')],
