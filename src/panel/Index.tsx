@@ -184,7 +184,7 @@ const levelToIcon = {
 				<ResizeHandle size={detailsPaneHeight} />
 			</div>
 			<div className="svDetailsPane" style={{ height: detailsPaneHeight.get() }}>
-				{selected && <TabPanel titles={['Info', 'Code Flow']}>
+				{selected && <TabPanel titles={['Info', 'Call Trees']}>
 					<div className="svDetailsBody --svDetailsBodyInfo">
 						<div className="svDetailsMessage">{selected._message}</div>
 						<div className="svDetailsInfo">
