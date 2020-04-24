@@ -24,6 +24,7 @@ declare module 'sarif' {
 		_line?: number
 		_rule?: ReportingDescriptor
 		_message?: string
+		_suppression?: 'not suppressed' | 'suppressed'
 	}
 }
 
@@ -109,6 +110,11 @@ export function augmentLog(log: Log) {
 			result._rule = run.tool.driver.rules?.[result.ruleIndex] // If result.ruleIndex is undefined, that's okay.
 			const template = result._rule?.messageStrings?.[result.message.id].text ?? result.message.text ?? '—'
 			result._message = format(template, result.message.arguments)
+
+			result.level = result.level ?? 'warning'
+			result._suppression = !result.suppressions || result.suppressions.every(sup => sup.status === 'rejected')
+				? 'not suppressed'
+				: 'suppressed'
 		})
 
 		run._implicitBase = implicitBase?.join('/')
