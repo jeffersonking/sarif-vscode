@@ -38,7 +38,13 @@ export class Baser {
 		// Need to refresh on PathMap update.
 		if (!this.validatedPathsLocalToArtifact.has(localPath)) {
 			const {file} = localPath
-			if (this.distinctLocalNames.has(file) && this.store.distinctArtifactNames.has(file)) {
+			if ((	// If no workspace, then the open docs (at this moment) become the workspace.
+					// Overassuming the localPath.name is distinct. There could be 2+ open docs with the same name.
+					!workspace.workspaceFolders?.length ||
+					this.distinctLocalNames.has(file)
+				) &&
+				this.store.distinctArtifactNames.has(file)) {
+
 				const artifactPath = this.store.distinctArtifactNames.get(file)
 				this.updateValidatedPaths(artifactPath, localPath)
 				this.updateBases(artifactPath.split('/'), localPath.split('/'))
@@ -63,10 +69,15 @@ export class Baser {
 		}
 
 		const validateUri = async () => {
+			// Cache
 			if (this.validatedPathsArtifactToLocal.has(artifactPath))
 				return this.validatedPathsArtifactToLocal.get(artifactPath)
+
+			// File System Exist
 			if (await pathExists(artifactPath))
 				return artifactPath
+
+			// Known Bases
 			for (const [oldBase, newBase] of this.basesArtifactToLocal) {
 				if (!artifactPath.startsWith(oldBase)) continue // Just let it fall through?
 				const localPath = artifactPath.replace(oldBase, newBase)
@@ -75,13 +86,25 @@ export class Baser {
 					return localPath
 				}
 			}
-			const {file} = artifactPath // Distinct matching
+
+			// Distinct Project Items
+			const {file} = artifactPath
 			if (this.distinctLocalNames.has(file) && this.store.distinctArtifactNames.has(file)) {
 				const localPath = this.distinctLocalNames.get(file)
 				this.updateValidatedPaths(artifactPath, localPath)
-				this.updateBases(artifactPath.split('/'), artifactPath.split('/'))
+				this.updateBases(artifactPath.split('/'), localPath.split('/'))
 				return localPath
 			}
+			
+			// Open Docs
+			for (const doc of workspace.textDocuments) {
+				const localPath = doc.uri.path
+				if (localPath.file !== artifactPath.file) continue
+				this.updateValidatedPaths(artifactPath, localPath)
+				this.updateBases(artifactPath.split('/'), localPath.split('/'))
+				return localPath
+			}
+
 			return '' // Can't find uri.
 		}
 
