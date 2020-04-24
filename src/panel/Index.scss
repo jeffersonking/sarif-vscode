@@ -226,33 +226,3 @@ body {
 .svListHeader {
 	position: relative;
 }
-.svFilterPopup {
-	position: absolute;
-	top: 35px; right: 70px; // Manual align with button.
-	z-index: 1;
-    background: var(--vscode-menu-background);
-    box-shadow: var(--vscode-widget-shadow) 0px 0px 8px;
-	padding: 10px 28px 14px 16px;
-	user-select: none;
-	display: flex;
-	flex-direction: column;
-	color: var(--vscode-foreground); // VS Code has alpha=0.9, but couldn't find the function.
-
-	& > div.svFilterPopupTitle {
-		&:not(:first-child) {
-			margin-top: 12px;
-		}
-		color: var(--vscode-settings-headerForeground);
-		font-weight: 600;
-		margin-bottom: 1px;
-	}
-
-	& > div {
-		padding: 3px 0;
-		display: flex;
-		align-items: center;
-		.svCheckbox {
-			margin-right: 9px; // Matches VS Code settings page.
-		}
-	}
-}

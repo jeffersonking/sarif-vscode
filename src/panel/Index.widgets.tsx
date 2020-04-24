@@ -10,11 +10,11 @@ export class Badge extends PureComponent<{ text: { toString: () => string } }> {
 	}
 }
 
-@observer export class Checkrow extends PureComponent<{ label: string, ob: IObservableValue<boolean>}> {
+@observer export class Checkrow extends PureComponent<{ label: string, checked: IObservableValue<boolean>}> {
 	render() {
-		const {label, ob} = this.props
-		return <div className="svCheckrow" onClick={() => ob.set(!ob.get())}>
-			<div className={`svCheckbox ${ob.get() ? 'svChecked' : '' }`} tabIndex={0}
+		const {label, checked} = this.props
+		return <div className="svCheckrow" onClick={() => checked.set(!checked.get())}>
+			<div className={`svCheckbox ${checked.get() ? 'svChecked' : '' }`} tabIndex={0}
 				role="checkbox" aria-checked="false" aria-label="" title="">
 				<Icon name="check" />
 			</div>
@@ -27,6 +27,30 @@ export class Icon extends PureComponent<{ name: string, title?: string } & React
 	render() {
 		const {name, ...divProps} = this.props
 		return <div className={`codicon codicon-${name}`} {...divProps}></div>
+	}
+}
+
+@observer export class Popover extends PureComponent<{ show: IObservableValue<boolean> } & React.HTMLAttributes<HTMLDivElement>> {
+	render() {
+		const {children, show, className, ...divProps} = this.props
+		if (!show.get()) return null
+		return <div className={`svPopover ${className}`} onMouseDown={e => e.stopPropagation()} {...divProps} >
+			{children}
+		</div>
+	}
+	@action.bound private onKeyDown(e: KeyboardEvent) {
+		if (e.key === 'Escape') this.props.show.set(false)
+	}
+	@action.bound private onClick() {
+		this.props.show.set(false)
+	}
+	componentDidMount() {
+		addEventListener('keydown', this.onKeyDown)
+		addEventListener('mousedown', this.onClick)
+	}
+	componentWillUnmount() {
+		removeEventListener('keydown', this.onKeyDown)
+		removeEventListener('mousedown', this.onClick)
 	}
 }
 

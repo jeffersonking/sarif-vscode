@@ -6,7 +6,7 @@ import { Log } from 'sarif'
 import '../shared/extension'
 import './codicon.css'
 import './Index.scss'
-import { Badge, Checkrow, Icon, ResizeHandle, TabBar, TabPanel } from './Index.widgets'
+import { Badge, Checkrow, Icon, ResizeHandle, TabBar, TabPanel, Popover } from './Index.widgets'
 import { column, Group, SortDir, Store } from './Store'
 
 export * as React from 'react'
@@ -23,7 +23,7 @@ const levelToIcon = {
 
 @observer export class Index extends Component<{ store: Store }> {
 	private vscode = acquireVsCodeApi()
-	@observable private showFilterPopup = false
+	private showFilterPopup = observable.box(false)
 	private detailsPaneHeight = observable.box(250)
 
 	private columnWidths = new Map<column, IObservableValue<number>>([
@@ -48,7 +48,7 @@ const levelToIcon = {
 		}
 
 		const {logs, selectedTab, groupBy, groupings, rows, sortColumn, sortDir} = store
-		const {detailsPaneHeight} = this
+		const {showFilterPopup, detailsPaneHeight} = this
 		const columns = Object.keys(groupings).filter(col => col !== groupBy) as column[]
 		const selected = store.selectedItem?.data
 		return <>
@@ -56,17 +56,17 @@ const levelToIcon = {
 				<div className="svListHeader">
 					<TabBar titles={store.tabs} selection={store.selectedTab} />
 					<div className="flexFill"></div>
-					<Icon name="filter" title="Filter Options" onMouseDown={e => e.stopPropagation()} onClick={e => this.showFilterPopup = !this.showFilterPopup} />
+					<Icon name="filter" title="Filter Options" onMouseDown={e => e.stopPropagation()} onClick={e => showFilterPopup.set(!showFilterPopup.get())} />
 					<Icon name="collapse-all" title="Collapse All" onClick={() => store.groupsFilteredSorted.forEach(group => group.expanded = false)} />
 					<Icon name="folder-opened" title="Open Log" onClick={() => this.vscode.postMessage({ command: 'open' })} />
-					{this.showFilterPopup && <div className="svFilterPopup" onMouseDown={e => e.stopPropagation()}>
-						<div className="svFilterPopupTitle">Level</div>
-						{[...store.level.entries()].map(([label, ob]) => <Checkrow key={label} label={label} ob={ob} />)}
-						<div className="svFilterPopupTitle">Baseline</div>
-						{[...store.baseline.entries()].map(([label, ob]) => <Checkrow key={label} label={label} ob={ob} />)}
-						<div className="svFilterPopupTitle">Suppression</div>
-						{[...store.suppression.entries()].map(([label, ob]) => <Checkrow key={label} label={label} ob={ob} />)}
-					</div>}
+					<Popover show={showFilterPopup} style={{ top: 35, right: 70 }}>
+						<div className="svPopoverTitle">Level</div>
+						{[...store.level.entries()].map(([label, ob]) => <Checkrow key={label} label={label} checked={ob} />)}
+						<div className="svPopoverTitle">Baseline</div>
+						{[...store.baseline.entries()].map(([label, ob]) => <Checkrow key={label} label={label} checked={ob} />)}
+						<div className="svPopoverTitle">Suppression</div>
+						{[...store.suppression.entries()].map(([label, ob]) => <Checkrow key={label} label={label} checked={ob} />)}
+					</Popover>
 				</div>
 				<div className="svListTableScroller">
 					{selectedTab.get() === 'Logs'
@@ -227,9 +227,6 @@ const levelToIcon = {
 		if (e.key === 'ArrowDown') {
 			store.selectedItem = store.selectedItem?.next ?? store.selectedItem
 		}
-		if (e.key === 'Escape') {
-			this.showFilterPopup = false
-		}
 	}
 
 	@action.bound private async onMessage(event: MessageEvent) {
@@ -269,16 +266,10 @@ const levelToIcon = {
 		}
 	}
 
-	@action.bound private onClick() {
-		this.showFilterPopup = false
-	}
-
 	private selectionAutoRunDisposer: IReactionDisposer
 
 	componentDidMount() {
-		addEventListener('keydown', this.onKeyDown)
 		addEventListener('message', this.onMessage)
-		addEventListener('mousedown', this.onClick)
 		this.selectionAutoRunDisposer = autorun(() => {
 			const result = this.props.store.selectedItem?.data
 			if (!result) return
@@ -287,9 +278,7 @@ const levelToIcon = {
 	}
 
 	componentWillUnmount() {
-		removeEventListener('keydown', this.onKeyDown)
 		removeEventListener('message', this.onMessage)
-		removeEventListener('mousedown', this.onClick)
 		this.selectionAutoRunDisposer()
 	}
 }
