@@ -1,23 +1,17 @@
 import { action, autorun, IObservableValue, IReactionDisposer, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import * as React from 'react'
-import { Component, PureComponent } from 'react'
+import { Component } from 'react'
 import { Log } from 'sarif'
 import '../shared/extension'
 import './codicon.css'
-import { ResizeHandle } from './Index.widgets'
 import './Index.scss'
+import { Badge, Checkrow, Icon, ResizeHandle, TabBar, TabPanel } from './Index.widgets'
 import { column, Group, SortDir, Store } from './Store'
 
 export * as React from 'react'
 export * as ReactDOM from 'react-dom'
 export { Store } from './Store'
-
-class Badge extends PureComponent<{ text: { toString: () => string } }> {
-	render() {
-		return <span className="svBadge">{this.props.text.toString()}</span>
-	}
-}
 
 const levelToIcon = {
 	error: 'error',
@@ -25,55 +19,6 @@ const levelToIcon = {
 	info: 'info',
 	none: 'issues',
 	undefined: 'question',
-}
-
-class Icon extends PureComponent<{ name: string, title?: string,
-	onMouseDown?: React.MouseEventHandler, onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void }> {
-	render() {
-		const {name: iconName, title, onMouseDown, onClick} = this.props
-		return <div className={`codicon codicon-${iconName}`} title={title} onMouseDown={onMouseDown} onClick={onClick}></div>
-	}
-}
-
-@observer class Checkrow extends PureComponent<{ label: string, ob: IObservableValue<boolean>}> {
-	render() {
-		const {label, ob} = this.props
-		return <div className="svCheckrow" onClick={() => ob.set(!ob.get())}>
-			<div className={`svCheckbox ${ob.get() ? 'svChecked' : '' }`} tabIndex={0}
-				role="checkbox" aria-checked="false" aria-label="" title="">
-				<Icon name="check" />
-			</div>
-			{label}
-		</div>
-	}
-}
-
-@observer class TabBar extends Component<{ titles: string[], selection: IObservableValue<string> }> {
-	render() {
-		const {titles, selection} = this.props
-		return <div className="svTabs">
-			{titles.map((title, i) => <div key={i} onClick={() => selection.set(title)}>
-				<div className={selection.get() === title ? 'svTabSelected' : ''}>{title}</div>
-			</div>)}
-		</div>
-	}
-}
-
-@observer class TabPanel extends Component<{ titles: string[] }> {
-	@observable private selected = 0
-	render() {
-		const {selected} = this
-		const {children, titles} = this.props
-		const array = React.Children.toArray(children)
-		return <>
-			<div className="svTabs">
-				{titles.map((title, i) => <div key={i} onClick={() => this.selected = i}>
-					<div className={selected === i ? 'svTabSelected' : ''}>{title}</div>
-				</div>)}
-			</div>
-			{array[selected]}
-		</>
-	}
 }
 
 @observer export class Index extends Component<{ store: Store }> {
