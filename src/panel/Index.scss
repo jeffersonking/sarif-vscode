@@ -48,19 +48,6 @@ body {
 	}
 }
 
-.svBadge {
-    padding: 3px 5px;
-    border-radius: 11px;
-    font-size: 11px;
-    min-width: 18px;
-    min-height: 18px;
-    line-height: 11px;
-    font-weight: 400;
-    text-align: center;
-    display: inline-block;
-    box-sizing: border-box;
-}
-
 .svListPane {
 	flex: 1 1 auto;
 	display: flex;
@@ -192,37 +179,6 @@ body {
 	.svItemSelected {
 		background-color: var(--vscode-list-inactiveSelectionBackground);
 	}
-
-	.codicon-error    { color: var(--vscode-problemsErrorIcon-foreground); }
-	.codicon-warning  { color: var(--vscode-problemsWarningIcon-foreground); }
-	.codicon-info     { color: var(--vscode-problemsInfoIcon-foreground); }
-	.codicon-issues   { color: var(--vscode-problemsInfoIcon-foreground); }
-	.codicon-question { color: var(--vscode-problemsInfoIcon-foreground); }
-}
-
-.svTabs {
-	display: flex;
-	padding: 0 12px;
-	user-select: none;
-
-	& > div {
-		cursor: pointer;
-		padding: 4px 10px 3px;
-
-		& > div {
-			border-bottom: 1px solid transparent;
-			text-transform: uppercase;
-			font-size: 11px;
-			line-height: 27px;
-			color: var(--vscode-panelTitle-activeForeground);
-			@extend .svSecondary;
-	
-			&.svTabSelected {
-				color: var(--vscode-panelTitle-activeForeground);
-				border-bottom-color: var(--vscode-panelTitle-activeForeground);
-			}
-		}
-	}
 }
 
 .svDetailsPane {
@@ -297,30 +253,6 @@ body {
 		align-items: center;
 		.svCheckbox {
 			margin-right: 9px; // Matches VS Code settings page.
-		}
-	}
-}
-
-.svCheckrow {
-	cursor: pointer;
-
-	.svCheckbox {
-		box-sizing: border-box;
-		height: 18px;
-		width: 18px;
-		border: 1px solid transparent;
-		border-radius: 3px;
-		margin-left: 0;
-		background-color: var(--vscode-input-background);
-
-		.codicon {
-			width: unset !important;
-			line-height: unset !important;
-			opacity: 0;
-		}
-
-		&.svChecked { 
-			.codicon { opacity: 1; }
 		}
 	}
 }

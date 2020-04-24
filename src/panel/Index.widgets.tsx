@@ -2,6 +2,7 @@ import { action, IObservableValue, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import * as React from 'react'
 import { Component, CSSProperties, PureComponent } from 'react'
+import './Index.widgets.scss'
 
 export class Badge extends PureComponent<{ text: { toString: () => string } }> {
 	render() {
