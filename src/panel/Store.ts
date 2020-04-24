@@ -95,7 +95,6 @@ export class Store {
 	private sortings = {
 		'File': result => result._relativeUri?.file ?? '—',
 		'Line':	result => result._line,
-		'Rule': result => result._rule?.name ?? '—',
 	} as Record<column, (_: Result) => number | string>
 
 	@observable.ref public selectedItem = null as Item<Result>
