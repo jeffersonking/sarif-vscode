@@ -93,6 +93,7 @@ export class Store {
 	} as Record<column, (_: Result) => string>
 
 	private sortings = {
+		'File': result => result._relativeUri?.file ?? '—',
 		'Line':	result => result._line,
 		'Rule': result => result._rule?.name ?? '—',
 	} as Record<column, (_: Result) => number | string>
@@ -139,7 +140,7 @@ export class Store {
 			const selector = this.sortings[sortColumn] ?? this.groupings[sortColumn]
 			group.itemsFiltered.sortBy(item => selector(item.data), sortDir === SortDir.Dsc)
 		})
-		return groups.slice() // slice() as an indicator of change.
+		return groups.filter(group => group.itemsFiltered.length)
 	}
 
 	@computed public get rows() {
