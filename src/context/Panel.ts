@@ -28,7 +28,7 @@ export class Panel {
 
 	public show() {
 		if (this.panel) {
-			this.panel.reveal(undefined, true)
+			if (!this.panel.active) this.panel.reveal(undefined, true)
 			return
 		}
 

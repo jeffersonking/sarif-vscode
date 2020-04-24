@@ -117,6 +117,7 @@ export async function activate(context: ExtensionContext) {
 	const syncActiveLog = async (doc: TextDocument) => {
 		if (!doc.fileName.match(/\.sarif$/i)) return
 		store.logs.push(...await loadLogs([doc.uri]))
+		panel.show()
 	}
 	workspace.textDocuments.forEach(syncActiveLog)
 	workspace.onDidOpenTextDocument(syncActiveLog)
