@@ -34,7 +34,7 @@ export class Baser {
 	// Notes:
 	// If 2 logs have the same path, then likely the same (unless the path is super short)
 	// If 2 logs don't have the same path, they can still potentially be the same match
-	public translateToArtifactPath(localPath: string): string { // Future: Ret undefined when certain.
+	public translateLocalToArtifact(localPath: string): string { // Future: Ret undefined when certain.
 		// Need to refresh on PathMap update.
 		if (!this.validatedPathsLocalToArtifact.has(localPath)) {
 			const {file} = localPath
@@ -48,7 +48,7 @@ export class Baser {
 	}
 
 	private activeInfoMessages = new Set<string>() // Prevent repeat message animations when arrowing through many results with the same uri.
-	public async translateToLocalPath(artifactPath: string) { // Retval is validated.
+	public async translateArtifactToLocal(artifactPath: string) { // Retval is validated.
 		// Temp.
 		if (artifactPath.startsWith('sarif:')) return artifactPath
 

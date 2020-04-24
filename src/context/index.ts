@@ -95,7 +95,7 @@ export async function activate(context: ExtensionContext) {
 	const diagsAll = languages.createDiagnosticCollection('sarif')
 	const setDiags = (doc: TextDocument) => {
 		if (doc.fileName.endsWith('.git')) return
-		const artifactPath = basing.translateToArtifactPath(doc.uri.path)
+		const artifactPath = basing.translateLocalToArtifact(doc.uri.path)
 		const diags = store.results
 			.filter(result => result._uri === artifactPath)
 			.map(result => ({
