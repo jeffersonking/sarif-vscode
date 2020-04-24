@@ -31,6 +31,8 @@ export class Item<T> {
 	constructor(readonly data: T) {}
 }
 
+export type column = 'File' | 'Line' | 'Message' | 'Baseline' | 'Suppression' | 'Rule'
+
 export class Store {
 	@observable.shallow public logs = [] as Log[]
 
@@ -67,7 +69,7 @@ export class Store {
 		['Suppressed', observable.box(true)],
 	])
 
-	@observable public sortColumn = 'Line'
+	@observable public sortColumn = 'Line' as column
 	@observable public sortDir = SortDir.Asc
 
 	public tabs = ['Locations', 'Rules', 'Logs']
@@ -82,18 +84,18 @@ export class Store {
 	}
 
 	public groupings = { // aka columns
-		File:    result => result._relativeUri,
-		Line:    _      => '', // Not ever expected to be grouped.
-		Message: result => result._message,
-		Baseline: result => result.baselineState ?? '—',
-		Suppression: result => result._suppression,
-		Rule:    result => `${result._rule?.name ?? '—'}|${result.ruleId ?? '—'}`,
-	} as Record<string, (_: Result) => string>
+		'File':        result => result._relativeUri,
+		'Line':        _      => '', // Not ever expected to be grouped.
+		'Message':     result => result._message,
+		'Baseline':    result => result.baselineState ?? '—',
+		'Suppression': result => result._suppression,
+		'Rule':        result => `${result._rule?.name ?? '—'}|${result.ruleId ?? '—'}`,
+	} as Record<column, (_: Result) => string>
 
 	private sortings = {
-		Line:	 result => result._line,
-		Rule:    result => result._rule?.name ?? '—',
-	} as Record<string, (_: Result) => number | string>
+		'Line':	result => result._line,
+		'Rule': result => result._rule?.name ?? '—',
+	} as Record<column, (_: Result) => number | string>
 
 	@observable.ref public selectedItem = null as Item<Result>
 

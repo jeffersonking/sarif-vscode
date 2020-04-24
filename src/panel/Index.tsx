@@ -3,11 +3,11 @@ import { observer } from 'mobx-react'
 import * as React from 'react'
 import { Component, PureComponent } from 'react'
 import { Log } from 'sarif'
+import '../shared/extension'
 import './codicon.css'
 import { ResizeHandle } from './Index.ResizeHandle'
 import './Index.scss'
-import { Group, SortDir, Store } from './Store'
-import '../shared/extension'
+import { column, Group, SortDir, Store } from './Store'
 
 export * as React from 'react'
 export * as ReactDOM from 'react-dom'
@@ -81,13 +81,13 @@ class Icon extends PureComponent<{ name: string, title?: string,
 	@observable private showFilterPopup = false
 	private detailsPaneHeight = observable.box(250)
 
-	private columnWidths = new Map<string, IObservableValue<number>>([
+	private columnWidths = new Map<column, IObservableValue<number>>([
 		['Line', observable.box(50)],
 		['Message', observable.box(300)],
 		['Baseline', observable.box(100)],
 		['Suppression', observable.box(100)],
 	])
-	private columnWidth(name: string) {
+	private columnWidth(name: column) {
 		if (!this.columnWidths.has(name)) this.columnWidths.set(name, observable.box(220))
 		return this.columnWidths.get(name)
 	}
@@ -104,7 +104,7 @@ class Icon extends PureComponent<{ name: string, title?: string,
 
 		const {logs, selectedTab, groupBy, groupings, rows, sortColumn, sortDir} = store
 		const {detailsPaneHeight} = this
-		const columns = Object.keys(groupings).filter(col => col !== groupBy)
+		const columns = Object.keys(groupings).filter(col => col !== groupBy) as column[]
 
 		const listPane = <div tabIndex={0} ref={ref => ref?.focus()} className="svListPane">
 			<div className="svListHeader">
