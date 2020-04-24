@@ -112,6 +112,7 @@ export function augmentLog(log: Log) {
 			result._message = format(template, result.message.arguments)
 
 			result.level = result.level ?? 'warning'
+			result.baselineState = result.baselineState ?? 'new'
 			result._suppression = !result.suppressions || result.suppressions.every(sup => sup.status === 'rejected')
 				? 'not suppressed'
 				: 'suppressed'

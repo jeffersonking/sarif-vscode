@@ -87,7 +87,7 @@ export class Store {
 		'File':        result => result._relativeUri,
 		'Line':        _      => '', // Not ever expected to be grouped.
 		'Message':     result => result._message,
-		'Baseline':    result => result.baselineState ?? '—',
+		'Baseline':    result => result.baselineState,
 		'Suppression': result => result._suppression,
 		'Rule':        result => `${result._rule?.name ?? '—'}|${result.ruleId ?? '—'}`,
 	} as Record<column, (_: Result) => string>

@@ -207,7 +207,7 @@ const levelToIcon = {
 							<span>Rule Description</span>	<span>{selected._rule?.fullDescription?.text ?? selected._rule?.shortDescription?.text ?? '—'}</span>
 							<span>Level</span>				<span>{selected.level}</span>
 							<span>Kind</span>				<span>{selected.kind ?? '—'}</span>
-							<span>Baseline State</span>		<span>{selected.baselineState ?? '—'}</span>
+							<span>Baseline State</span>		<span>{selected.baselineState}</span>
 						</div>
 					</div>
 					<div className="svDetailsBody svDetailsBodyCodeflow">
