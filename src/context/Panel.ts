@@ -28,13 +28,13 @@ export class Panel {
 
 	public show() {
 		if (this.panel) {
-			this.panel.reveal()
+			this.panel.reveal(undefined, true)
 			return
 		}
 
 		const {context, basing, store} = this
 		const {webview} = this.panel = window.createWebviewPanel(
-			'Index', `${this.title}s`, { preserveFocus: false, viewColumn: ViewColumn.Two },
+			'Index', `${this.title}s`, { preserveFocus: true, viewColumn: ViewColumn.Two }, // ViewColumn.Besides steals focus regardless of preserveFocus.
 			{
 				enableScripts: true,
 				localResourceRoots: [Uri.file('/'), Uri.file('c:')],
