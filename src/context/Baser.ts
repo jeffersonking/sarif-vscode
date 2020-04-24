@@ -56,7 +56,7 @@ export class Baser {
 		const pathExists = async (path: string) => {
 			try {
 				await workspace.openTextDocument(Uri.parse(path))
-			} catch(e) {
+			} catch {
 				return false
 			}
 			return true
