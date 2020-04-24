@@ -93,19 +93,6 @@ class Icon extends PureComponent<{ name: string, title?: string,
 
 	private detailsPaneHeight = observable.box(250)
 
-	@action.bound private onKeyDown(e: KeyboardEvent) {
-		const {store} = this.props
-		if (e.key === 'ArrowUp') {
-			store.selectedItem = store.selectedItem?.prev ?? store.selectedItem
-		}
-		if (e.key === 'ArrowDown') {
-			store.selectedItem = store.selectedItem?.next ?? store.selectedItem
-		}
-		if (e.key === 'Escape') {
-			this.showFilterPopup = false
-		}
-	}
-
 	render() {
 		const {store} = this.props
 		if (!store.results.length) {
@@ -289,6 +276,19 @@ class Icon extends PureComponent<{ name: string, title?: string,
 				</TabPanel>}
 			</div>
 		</>
+	}
+
+	@action.bound private onKeyDown(e: KeyboardEvent) {
+		const {store} = this.props
+		if (e.key === 'ArrowUp') {
+			store.selectedItem = store.selectedItem?.prev ?? store.selectedItem
+		}
+		if (e.key === 'ArrowDown') {
+			store.selectedItem = store.selectedItem?.next ?? store.selectedItem
+		}
+		if (e.key === 'Escape') {
+			this.showFilterPopup = false
+		}
 	}
 
 	@action.bound private async onMessage(event: MessageEvent) {
