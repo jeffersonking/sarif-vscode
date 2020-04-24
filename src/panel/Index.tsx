@@ -5,7 +5,7 @@ import { Component, PureComponent } from 'react'
 import { Log } from 'sarif'
 import '../shared/extension'
 import './codicon.css'
-import { ResizeHandle } from './Index.ResizeHandle'
+import { ResizeHandle } from './Index.widgets'
 import './Index.scss'
 import { column, Group, SortDir, Store } from './Store'
 
