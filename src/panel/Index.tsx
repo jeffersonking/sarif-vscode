@@ -203,15 +203,16 @@ class Icon extends PureComponent<{ name: string, title?: string, onClick?: (even
 														return <span>{result._line < 0 ? '—' : result._line}</span>
 													case 'File':
 														return <span className="ellipsis" title={result._uri ?? '—'}>{result._uri?.file ?? '—'}</span>
-													case 'Message':
-														return <span className="ellipsis" title={result._message}>{result._message}</span>
 													case 'Rule':
 														return <>
 															<span>{result._rule?.name ?? '—'}</span>
 															<span className="svSecondary">{result.ruleId}</span>
 														</>
 													default:
-														return <span>—</span>
+														const capitalize = str => `${str[0].toUpperCase()}${str.slice(1)}`
+														const selector = store.groupings[col]
+														const text = capitalize(selector(result))
+														return <span className="ellipsis" title={text}>{text}</span>
 												}
 											})()}
 										</span></td>
