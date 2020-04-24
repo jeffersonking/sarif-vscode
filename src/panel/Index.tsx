@@ -79,6 +79,7 @@ class Icon extends PureComponent<{ name: string, title?: string,
 @observer export class Index extends Component<{ store: Store }> {
 	private vscode = acquireVsCodeApi()
 	@observable private showFilterPopup = false
+	private detailsPaneHeight = observable.box(250)
 
 	private columnWidths = new Map<string, IObservableValue<number>>([
 		['Line', observable.box(50)],
@@ -90,8 +91,6 @@ class Icon extends PureComponent<{ name: string, title?: string,
 		if (!this.columnWidths.has(name)) this.columnWidths.set(name, observable.box(220))
 		return this.columnWidths.get(name)
 	}
-
-	private detailsPaneHeight = observable.box(250)
 
 	render() {
 		const {store} = this.props
