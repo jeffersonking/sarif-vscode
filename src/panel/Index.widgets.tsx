@@ -22,11 +22,10 @@ export class Badge extends PureComponent<{ text: { toString: () => string } }> {
 	}
 }
 
-export class Icon extends PureComponent<{ name: string, title?: string,
-	onMouseDown?: React.MouseEventHandler, onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void }> {
+export class Icon extends PureComponent<{ name: string, title?: string } & React.HTMLAttributes<HTMLDivElement>> {
 	render() {
-		const {name: iconName, title, onMouseDown, onClick} = this.props
-		return <div className={`codicon codicon-${iconName}`} title={title} onMouseDown={onMouseDown} onClick={onClick}></div>
+		const {name, ...divProps} = this.props
+		return <div className={`codicon codicon-${name}`} {...divProps}></div>
 	}
 }
 
