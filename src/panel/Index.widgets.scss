@@ -64,6 +64,12 @@
 		font-weight: 600;
 		margin-bottom: 2px;
 	}
+
+	& > .svPopoverDivider {
+		height: 1px;
+		margin: 12px -28px 0 -16px;
+		background: var(--vscode-editorGroup-border);
+	}
 }
 
 .svTabs {
