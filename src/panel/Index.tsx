@@ -277,6 +277,7 @@ const levelToIcon = {
 	private selectionAutoRunDisposer: IReactionDisposer
 
 	componentDidMount() {
+		addEventListener('keydown', this.onKeyDown)
 		addEventListener('message', this.onMessage)
 		this.selectionAutoRunDisposer = autorun(() => {
 			const result = this.props.store.selectedItem?.data
@@ -286,6 +287,7 @@ const levelToIcon = {
 	}
 
 	componentWillUnmount() {
+		removeEventListener('keydown', this.onKeyDown)
 		removeEventListener('message', this.onMessage)
 		this.selectionAutoRunDisposer()
 	}
