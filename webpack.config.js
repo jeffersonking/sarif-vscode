@@ -58,9 +58,9 @@ module.exports = [
 			stats: 'none',
 		},
 		performance: {
-			hints: false,
-			maxAssetSize: 320 * 1024,
-			maxEntrypointSize: 320 * 1024,
+			hints: 'warning',
+			maxAssetSize: 322 * 1024,
+			maxEntrypointSize: 322 * 1024,
 		},
 	},
 	{
