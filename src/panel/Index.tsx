@@ -27,10 +27,24 @@ const levelToIcon = {
 	undefined: 'question',
 }
 
-class Icon extends PureComponent<{ name: string, title?: string, onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void }> {
+class Icon extends PureComponent<{ name: string, title?: string,
+	onMouseDown?: React.MouseEventHandler, onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void }> {
 	render() {
-		const {name: iconName, title, onClick} = this.props
-		return <div className={`codicon codicon-${iconName}`} title={title} onClick={onClick}></div>
+		const {name: iconName, title, onMouseDown, onClick} = this.props
+		return <div className={`codicon codicon-${iconName}`} title={title} onMouseDown={onMouseDown} onClick={onClick}></div>
+	}
+}
+
+@observer class Checkrow extends PureComponent<{ label: string, ob: IObservableValue<boolean>}> {
+	render() {
+		const {label, ob} = this.props
+		return <div className="svCheckrow" onClick={() => ob.set(!ob.get())}>
+			<div className={`svCheckbox ${ob.get() ? 'svChecked' : '' }`} tabIndex={0}
+				role="checkbox" aria-checked="false" aria-label="" title="">
+				<Icon name="check" />
+			</div>
+			{label}
+		</div>
 	}
 }
 
@@ -64,10 +78,13 @@ class Icon extends PureComponent<{ name: string, title?: string, onClick?: (even
 
 @observer export class Index extends Component<{ store: Store }> {
 	private vscode = acquireVsCodeApi()
+	@observable private showFilterPopup = false
 
 	private columnWidths = new Map<string, IObservableValue<number>>([
 		['Line', observable.box(50)],
 		['Message', observable.box(300)],
+		['Baseline', observable.box(100)],
+		['Suppression', observable.box(100)],
 	])
 	private columnWidth(name: string) {
 		if (!this.columnWidths.has(name)) this.columnWidths.set(name, observable.box(220))
@@ -76,14 +93,16 @@ class Icon extends PureComponent<{ name: string, title?: string, onClick?: (even
 
 	private detailsPaneHeight = observable.box(250)
 
-	@action.bound private onKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
+	@action.bound private onKeyDown(e: KeyboardEvent) {
 		const {store} = this.props
-		if (!(e.key === 'ArrowUp' || e.key === 'ArrowDown')) return
 		if (e.key === 'ArrowUp') {
 			store.selectedItem = store.selectedItem?.prev ?? store.selectedItem
 		}
 		if (e.key === 'ArrowDown') {
 			store.selectedItem = store.selectedItem?.next ?? store.selectedItem
+		}
+		if (e.key === 'Escape') {
+			this.showFilterPopup = false
 		}
 	}
 
@@ -101,12 +120,21 @@ class Icon extends PureComponent<{ name: string, title?: string, onClick?: (even
 		const {detailsPaneHeight} = this
 		const columns = Object.keys(groupings).filter(col => col !== groupBy)
 
-		const listPane = <div tabIndex={0} ref={ref => ref?.focus()} className="svListPane" onKeyDown={this.onKeyDown}>
+		const listPane = <div tabIndex={0} ref={ref => ref?.focus()} className="svListPane">
 			<div className="svListHeader">
 				<TabBar titles={store.tabs} selection={store.selectedTab} />
 				<div className="flexFill"></div>
-				<Icon name="collapse-all" title="Collapse All" onClick={() => store.groupsSorted.forEach(group => group.expanded = false)} />
+				<Icon name="filter" title="Filter Options" onMouseDown={e => e.stopPropagation()} onClick={e => this.showFilterPopup = !this.showFilterPopup} />
+				<Icon name="collapse-all" title="Collapse All" onClick={() => store.groupsFilteredSorted.forEach(group => group.expanded = false)} />
 				<Icon name="folder-opened" title="Open Log" onClick={() => this.vscode.postMessage({ command: 'open' })} />
+				{this.showFilterPopup && <div className="svFilterPopup" onMouseDown={e => e.stopPropagation()}>
+					<div className="svFilterPopupTitle">Level</div>
+					{[...store.level.entries()].map(([label, ob]) => <Checkrow key={label} label={label} ob={ob} />)}
+					<div className="svFilterPopupTitle">Baseline</div>
+					{[...store.baseline.entries()].map(([label, ob]) => <Checkrow key={label} label={label} ob={ob} />)}
+					<div className="svFilterPopupTitle">Suppression</div>
+					{[...store.suppression.entries()].map(([label, ob]) => <Checkrow key={label} label={label} ob={ob} />)}
+				</div>}
 			</div>
 			<div className="svListTableScroller">
 				{selectedTab.get() === 'Logs'
@@ -152,7 +180,7 @@ class Icon extends PureComponent<{ name: string, title?: string, onClick?: (even
 							{rows.map(row => {
 								if (row instanceof Group) {
 									const group = row
-									const {key, expanded, title, items} = group
+									const {key, expanded, title, itemsFiltered} = group
 									return <tr key={`group${key}`}>
 										<td colSpan={columns.length + 1}><span className="svCell svGroup"
 											onClick={() => {
@@ -175,7 +203,7 @@ class Icon extends PureComponent<{ name: string, title?: string, onClick?: (even
 														<div className="ellipsis svSecondary">{ruleId}</div>
 													</>
 												})()}
-											<Badge text={items.length} />
+											<Badge text={itemsFiltered.length} />
 										</span></td>
 									</tr>
 								}
@@ -300,10 +328,16 @@ class Icon extends PureComponent<{ name: string, title?: string, onClick?: (even
 		}
 	}
 
+	@action.bound private onClick() {
+		this.showFilterPopup = false
+	}
+
 	private selectionAutoRunDisposer: IReactionDisposer
 
 	componentDidMount() {
+		addEventListener('keydown', this.onKeyDown)
 		addEventListener('message', this.onMessage)
+		addEventListener('mousedown', this.onClick)
 		this.selectionAutoRunDisposer = autorun(() => {
 			const result = this.props.store.selectedItem?.data
 			if (!result) return
@@ -312,7 +346,9 @@ class Icon extends PureComponent<{ name: string, title?: string, onClick?: (even
 	}
 
 	componentWillUnmount() {
+		removeEventListener('keydown', this.onKeyDown)
 		removeEventListener('message', this.onMessage)
+		removeEventListener('mousedown', this.onClick)
 		this.selectionAutoRunDisposer()
 	}
 }
