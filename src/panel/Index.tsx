@@ -67,17 +67,6 @@ const levelToIcon = {
 					<Icon name="filter" title="Filter Options" onMouseDown={e => e.stopPropagation()} onClick={e => showFilterPopup.set(!showFilterPopup.get())} />
 					<Icon name="collapse-all" title="Collapse All" onClick={() => store.groupsFilteredSorted.forEach(group => group.expanded = false)} />
 					<Icon name="folder-opened" title="Open Log" onClick={() => this.vscode.postMessage({ command: 'open' })} />
-					<Popover show={showFilterPopup} style={{ top: 35, right: 35 * 2 }}>
-						<div className="svPopoverTitle">Level</div>
-						{[...store.level.entries()].map(([label, ob]) => <Checkrow key={label} label={label} checked={ob} />)}
-						<div className="svPopoverTitle">Baseline</div>
-						{[...store.baseline.entries()].map(([label, ob]) => <Checkrow key={label} label={label} checked={ob} />)}
-						<div className="svPopoverTitle">Suppression</div>
-						{[...store.suppression.entries()].map(([label, ob]) => <Checkrow key={label} label={label} checked={ob} />)}
-						<div className="svPopoverDivider" />
-						<div className="svPopoverTitle">Columns</div>
-						{[...this.columnVisibility.entries()].map(([label, ob]) => <Checkrow key={label} label={label} checked={ob} />)}
-					</Popover>
 				</div>
 				<div className="svListTableScroller">
 					{selectedTab.get() === 'Logs'
@@ -227,6 +216,17 @@ const levelToIcon = {
 					</div>
 				</TabPanel>}
 			</div>
+			<Popover show={showFilterPopup} style={{ top: 35, right: 35 * 2 }}>
+				<div className="svPopoverTitle">Level</div>
+				{[...store.level.entries()].map(([label, ob]) => <Checkrow key={label} label={label} checked={ob} />)}
+				<div className="svPopoverTitle">Baseline</div>
+				{[...store.baseline.entries()].map(([label, ob]) => <Checkrow key={label} label={label} checked={ob} />)}
+				<div className="svPopoverTitle">Suppression</div>
+				{[...store.suppression.entries()].map(([label, ob]) => <Checkrow key={label} label={label} checked={ob} />)}
+				<div className="svPopoverDivider" />
+				<div className="svPopoverTitle">Columns</div>
+				{[...this.columnVisibility.entries()].map(([label, ob]) => <Checkrow key={label} label={label} checked={ob} />)}
+			</Popover>
 		</>
 	}
 

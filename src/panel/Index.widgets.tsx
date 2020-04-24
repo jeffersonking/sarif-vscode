@@ -34,7 +34,7 @@ export class Icon extends PureComponent<{ name: string, title?: string } & React
 	render() {
 		const {children, show, className, ...divProps} = this.props
 		if (!show.get()) return null
-		return <div className={`svPopover ${className}`} onMouseDown={e => e.stopPropagation()} {...divProps} >
+		return <div className={`svPopover ${className ?? ''}`} onMouseDown={e => e.stopPropagation()} {...divProps} >
 			{children}
 		</div>
 	}
