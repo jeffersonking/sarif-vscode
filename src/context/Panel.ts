@@ -5,6 +5,7 @@ import { regionToSelection, Store } from '.'
 import { ResultId } from '../shared'
 import { Baser } from './Baser'
 import { loadLogs } from './loadLogs'
+import { commands } from 'vscode'
 
 export class Panel {
 	private title = 'SARIF Result'
@@ -87,6 +88,13 @@ export class Panel {
 				if (!result || !result._uri) return
 				const validatedUri = await basing.translateToLocalPath(result._uri)
 				if (!validatedUri) return
+
+				// Keep/pin active Log as needed
+				for (const editor of window.visibleTextEditors.slice()) {
+					if (editor.document.uri.toString() !== logUri) continue
+					await window.showTextDocument(editor.document, editor.viewColumn)
+					commands.executeCommand('workbench.action.keepEditor')
+				}
 
 				const doc = await workspace.openTextDocument(Uri.parse(validatedUri))
 				const editor = await window.showTextDocument(doc, ViewColumn.One, true)
