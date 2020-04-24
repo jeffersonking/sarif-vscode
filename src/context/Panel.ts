@@ -93,7 +93,7 @@ export class Panel {
 				for (const editor of window.visibleTextEditors.slice()) {
 					if (editor.document.uri.toString() !== logUri) continue
 					await window.showTextDocument(editor.document, editor.viewColumn)
-					commands.executeCommand('workbench.action.keepEditor')
+					await commands.executeCommand('workbench.action.keepEditor')
 				}
 
 				const doc = await workspace.openTextDocument(Uri.parse(validatedUri))
