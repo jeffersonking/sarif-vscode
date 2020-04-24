@@ -66,7 +66,7 @@ export class Store {
 	])
 	public suppression = new Map<string, IObservableValue<boolean>>([
 		['Not Suppressed', observable.box(true)],
-		['Suppressed', observable.box(true)],
+		['Suppressed', observable.box(false)],
 	])
 
 	@observable public sortColumn = 'Line' as column
