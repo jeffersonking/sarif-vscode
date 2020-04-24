@@ -39,13 +39,17 @@ export class Icon extends PureComponent<{ name: string, title?: string } & React
 		</div>
 	}
 	@action.bound private onKeyDown(e: KeyboardEvent) {
-		if (e.key === 'Escape') this.props.show.set(false)
+		const {show} = this.props
+		if (show.get() && e.key === 'Escape') {
+			show.set(false)
+			e.stopImmediatePropagation()
+		}
 	}
 	@action.bound private onClick() {
 		this.props.show.set(false)
 	}
 	componentDidMount() {
-		addEventListener('keydown', this.onKeyDown)
+		addEventListener('keydown', this.onKeyDown, true)
 		addEventListener('mousedown', this.onClick)
 	}
 	componentWillUnmount() {

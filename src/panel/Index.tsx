@@ -235,6 +235,9 @@ const levelToIcon = {
 		if (e.key === 'ArrowDown') {
 			store.selectedItem = store.selectedItem?.next ?? store.selectedItem
 		}
+		if (e.key === 'Escape') {
+			store.selectedItem = null
+		}
 	}
 
 	@action.bound private async onMessage(event: MessageEvent) {
