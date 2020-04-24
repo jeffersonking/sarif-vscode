@@ -105,142 +105,139 @@ class Icon extends PureComponent<{ name: string, title?: string,
 		const {logs, selectedTab, groupBy, groupings, rows, sortColumn, sortDir} = store
 		const {detailsPaneHeight} = this
 		const columns = Object.keys(groupings).filter(col => col !== groupBy) as column[]
-
-		const listPane = <div tabIndex={0} ref={ref => ref?.focus()} className="svListPane">
-			<div className="svListHeader">
-				<TabBar titles={store.tabs} selection={store.selectedTab} />
-				<div className="flexFill"></div>
-				<Icon name="filter" title="Filter Options" onMouseDown={e => e.stopPropagation()} onClick={e => this.showFilterPopup = !this.showFilterPopup} />
-				<Icon name="collapse-all" title="Collapse All" onClick={() => store.groupsFilteredSorted.forEach(group => group.expanded = false)} />
-				<Icon name="folder-opened" title="Open Log" onClick={() => this.vscode.postMessage({ command: 'open' })} />
-				{this.showFilterPopup && <div className="svFilterPopup" onMouseDown={e => e.stopPropagation()}>
-					<div className="svFilterPopupTitle">Level</div>
-					{[...store.level.entries()].map(([label, ob]) => <Checkrow key={label} label={label} ob={ob} />)}
-					<div className="svFilterPopupTitle">Baseline</div>
-					{[...store.baseline.entries()].map(([label, ob]) => <Checkrow key={label} label={label} ob={ob} />)}
-					<div className="svFilterPopupTitle">Suppression</div>
-					{[...store.suppression.entries()].map(([label, ob]) => <Checkrow key={label} label={label} ob={ob} />)}
-				</div>}
-			</div>
-			<div className="svListTableScroller">
-				{selectedTab.get() === 'Logs'
-					? <div className="svLogsPane">
-						{logs.map((log, i) => {
-							const {pathname} = new URL(log._uri)
-							return <div key={i} className="svListItem">
-								<div>{pathname.file}</div>
-								<div className="ellipsis svSecondary">{pathname.path}</div>
-								<Icon name="close" title="Remove Log"
-									onClick={() => this.vscode.postMessage({ command: 'removeLog', uri: log._uri })} />
-							</div>
-						})}
-					</div>
-					: <table className="svListTable">
-						<colgroup>
-							<col width="30" />
-							{columns.map((col, i, cols) => {
-								if (i === cols.length - 1) return null
-								const iconWidth = i === 0 ? 16 : 0
-								return <col key={col} width={iconWidth + this.columnWidth(col).get()} />
-							})}
-						</colgroup>
-						<thead>
-							<tr>
-								<td className="svSpacer"><span className="svCell">&nbsp;</span></td>{/* svCell and nbsp to get matching height */}
-								{columns.map((col, i, cols) =>
-									<td key={col}>
-										<span className="svCell svSecondary"
-											onClick={action(() => {
-												store.sortColumn = col
-												store.sortDir = SortDir.reverse(sortDir)
-											})}>
-											{col}
-											{sortColumn === col && <Icon title="Sort" name={sortDir} />}
-										</span>
-										{i < cols.length - 1 && <ResizeHandle size={this.columnWidth(col)} horizontal />}
-									</td>
-								)}
-							</tr>
-						</thead>
-						<tbody>
-							{rows.map(row => {
-								if (row instanceof Group) {
-									const group = row
-									const {key, expanded, title, itemsFiltered} = group
-									return <tr key={`group${key}`}>
-										<td colSpan={columns.length + 1}><span className="svCell svGroup"
-											onClick={() => {
-												store.selectedItem = null
-												group.expanded = !expanded
-											}}>
-											<div className={`twisties codicon codicon-chevron-${expanded ? 'down' : 'right'}`}></div>
-											{groupBy === 'File'
-												? (() => {
-													const {pathname} = new URL(title, 'file:')
-													return <>
-														<div>{pathname.file || 'No Location'}</div>
-														<div className="ellipsis svSecondary">{pathname.path}</div>
-													</>
-												})()
-												: (() => {
-													const [ruleName, ruleId] = title.split('|')
-													return <>
-														<div>{ruleName}</div>
-														<div className="ellipsis svSecondary">{ruleId}</div>
-													</>
-												})()}
-											<Badge text={itemsFiltered.length} />
-										</span></td>
-									</tr>
-								}
-								const item = row
-								const result = item.data
-								const isSelected = store.selectedItem === item
-								return <tr key={`item${item.key}`}
-									onClick={() => {
-										store.selectedItem = item
-										this.vscode.postMessage({ command: 'select', id: result._id })
-									}}
-									className={isSelected ? 'svItemSelected' : undefined}
-									ref={td => {
-										if (!isSelected || !td) return
-										requestAnimationFrame(() => td.scrollIntoView({ behavior: 'smooth', block: 'nearest' }))
-									}}>
-									
-									<td className="svSpacer"></td>
-									{columns.map((col, i) =>
-										<td key={col}><span className="svCell">
-											{i === 0 && <span className={`codicon codicon-${levelToIcon[result.level]}`} />}
-											{(() => {
-												switch (col) {
-													case 'Line':
-														return <span>{result._line < 0 ? '—' : result._line}</span>
-													case 'File':
-														return <span className="ellipsis" title={result._uri ?? '—'}>{result._uri?.file ?? '—'}</span>
-													case 'Rule':
-														return <>
-															<span>{result._rule?.name ?? '—'}</span>
-															<span className="svSecondary">{result.ruleId}</span>
-														</>
-													default:
-														const capitalize = str => `${str[0].toUpperCase()}${str.slice(1)}`
-														const selector = store.groupings[col]
-														const text = capitalize(selector(result))
-														return <span className="ellipsis" title={text}>{text}</span>
-												}
-											})()}
-										</span></td>
-									)}
-								</tr>
-							})}
-						</tbody>	
-					</table>}
-			</div>
-		</div>
-
 		const selected = store.selectedItem?.data
 		return <>
-			{listPane}
+			<div tabIndex={0} ref={ref => ref?.focus()} className="svListPane">
+				<div className="svListHeader">
+					<TabBar titles={store.tabs} selection={store.selectedTab} />
+					<div className="flexFill"></div>
+					<Icon name="filter" title="Filter Options" onMouseDown={e => e.stopPropagation()} onClick={e => this.showFilterPopup = !this.showFilterPopup} />
+					<Icon name="collapse-all" title="Collapse All" onClick={() => store.groupsFilteredSorted.forEach(group => group.expanded = false)} />
+					<Icon name="folder-opened" title="Open Log" onClick={() => this.vscode.postMessage({ command: 'open' })} />
+					{this.showFilterPopup && <div className="svFilterPopup" onMouseDown={e => e.stopPropagation()}>
+						<div className="svFilterPopupTitle">Level</div>
+						{[...store.level.entries()].map(([label, ob]) => <Checkrow key={label} label={label} ob={ob} />)}
+						<div className="svFilterPopupTitle">Baseline</div>
+						{[...store.baseline.entries()].map(([label, ob]) => <Checkrow key={label} label={label} ob={ob} />)}
+						<div className="svFilterPopupTitle">Suppression</div>
+						{[...store.suppression.entries()].map(([label, ob]) => <Checkrow key={label} label={label} ob={ob} />)}
+					</div>}
+				</div>
+				<div className="svListTableScroller">
+					{selectedTab.get() === 'Logs'
+						? <div className="svLogsPane">
+							{logs.map((log, i) => {
+								const {pathname} = new URL(log._uri)
+								return <div key={i} className="svListItem">
+									<div>{pathname.file}</div>
+									<div className="ellipsis svSecondary">{pathname.path}</div>
+									<Icon name="close" title="Remove Log"
+										onClick={() => this.vscode.postMessage({ command: 'removeLog', uri: log._uri })} />
+								</div>
+							})}
+						</div>
+						: <table className="svListTable">
+							<colgroup>
+								<col width="30" />
+								{columns.map((col, i, cols) => {
+									if (i === cols.length - 1) return null
+									const iconWidth = i === 0 ? 16 : 0
+									return <col key={col} width={iconWidth + this.columnWidth(col).get()} />
+								})}
+							</colgroup>
+							<thead>
+								<tr>
+									<td className="svSpacer"><span className="svCell">&nbsp;</span></td>{/* svCell and nbsp to get matching height */}
+									{columns.map((col, i, cols) =>
+										<td key={col}>
+											<span className="svCell svSecondary"
+												onClick={action(() => {
+													store.sortColumn = col
+													store.sortDir = SortDir.reverse(sortDir)
+												})}>
+												{col}
+												{sortColumn === col && <Icon title="Sort" name={sortDir} />}
+											</span>
+											{i < cols.length - 1 && <ResizeHandle size={this.columnWidth(col)} horizontal />}
+										</td>
+									)}
+								</tr>
+							</thead>
+							<tbody>
+								{rows.map(row => {
+									if (row instanceof Group) {
+										const group = row
+										const {key, expanded, title, itemsFiltered} = group
+										return <tr key={`group${key}`}>
+											<td colSpan={columns.length + 1}><span className="svCell svGroup"
+												onClick={() => {
+													store.selectedItem = null
+													group.expanded = !expanded
+												}}>
+												<div className={`twisties codicon codicon-chevron-${expanded ? 'down' : 'right'}`}></div>
+												{groupBy === 'File'
+													? (() => {
+														const {pathname} = new URL(title, 'file:')
+														return <>
+															<div>{pathname.file || 'No Location'}</div>
+															<div className="ellipsis svSecondary">{pathname.path}</div>
+														</>
+													})()
+													: (() => {
+														const [ruleName, ruleId] = title.split('|')
+														return <>
+															<div>{ruleName}</div>
+															<div className="ellipsis svSecondary">{ruleId}</div>
+														</>
+													})()}
+												<Badge text={itemsFiltered.length} />
+											</span></td>
+										</tr>
+									}
+									const item = row
+									const result = item.data
+									const isSelected = store.selectedItem === item
+									return <tr key={`item${item.key}`}
+										onClick={() => {
+											store.selectedItem = item
+											this.vscode.postMessage({ command: 'select', id: result._id })
+										}}
+										className={isSelected ? 'svItemSelected' : undefined}
+										ref={td => {
+											if (!isSelected || !td) return
+											requestAnimationFrame(() => td.scrollIntoView({ behavior: 'smooth', block: 'nearest' }))
+										}}>
+										
+										<td className="svSpacer"></td>
+										{columns.map((col, i) =>
+											<td key={col}><span className="svCell">
+												{i === 0 && <span className={`codicon codicon-${levelToIcon[result.level]}`} />}
+												{(() => {
+													switch (col) {
+														case 'Line':
+															return <span>{result._line < 0 ? '—' : result._line}</span>
+														case 'File':
+															return <span className="ellipsis" title={result._uri ?? '—'}>{result._uri?.file ?? '—'}</span>
+														case 'Rule':
+															return <>
+																<span>{result._rule?.name ?? '—'}</span>
+																<span className="svSecondary">{result.ruleId}</span>
+															</>
+														default:
+															const capitalize = str => `${str[0].toUpperCase()}${str.slice(1)}`
+															const selector = store.groupings[col]
+															const text = capitalize(selector(result))
+															return <span className="ellipsis" title={text}>{text}</span>
+													}
+												})()}
+											</span></td>
+										)}
+									</tr>
+								})}
+							</tbody>	
+						</table>}
+				</div>
+			</div>
 			<div className="svResizer">
 				<ResizeHandle size={detailsPaneHeight} />
 			</div>
