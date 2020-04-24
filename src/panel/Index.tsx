@@ -143,10 +143,7 @@ const levelToIcon = {
 									const result = item.data
 									const isSelected = store.selectedItem === item
 									return <tr key={`item${item.key}`}
-										onClick={() => {
-											store.selectedItem = item
-											this.vscode.postMessage({ command: 'select', id: result._id })
-										}}
+										onClick={() => store.selectedItem = item}
 										className={isSelected ? 'svItemSelected' : undefined}
 										ref={td => {
 											if (!isSelected || !td) return
