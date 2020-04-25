@@ -89,7 +89,7 @@ export async function activate(context: ExtensionContext) {
 			store.logs.push(...await loadLogs(urisSarifInWorkspace))
 			panel.show()
 		}
-	}) // Disabled Temporarily.
+	})() // Enabled Temporarily.
 
 	// Diagnostics
 	const diagsAll = languages.createDiagnosticCollection('sarif')
