@@ -11,11 +11,11 @@ export class Badge extends PureComponent<{ text: { toString: () => string } }> {
 	}
 }
 
-@observer export class Checkrow extends PureComponent<{ label: string, checked: IObservableValue<boolean>}> {
+@observer export class Checkrow extends PureComponent<{ label: string, state: Record<string, boolean>}> {
 	render() {
-		const {label, checked} = this.props
-		return <div className="svCheckrow" onClick={() => checked.set(!checked.get())}>
-			<div className={`svCheckbox ${checked.get() ? 'svChecked' : '' }`} tabIndex={0}
+		const {label, state} = this.props
+		return <div className="svCheckrow" onClick={() => state[label] = !state[label]}>
+			<div className={`svCheckbox ${state[label] ? 'svChecked' : '' }`} tabIndex={0}
 				role="checkbox" aria-checked="false" aria-label="" title="">
 				<Icon name="check" />
 			</div>

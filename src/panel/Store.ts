@@ -1,4 +1,4 @@
-import { computed, intercept, IObservableValue, observable } from 'mobx'
+import { computed, intercept, observable } from 'mobx'
 import { Log, Result } from 'sarif'
 import { augmentLog } from '../shared'
 import '../shared/extension'
@@ -51,23 +51,25 @@ export class Store {
 	@computed public get results() {
 		return this.runs.map(run => run.results).flat()
 	}
-	
-	public level = new Map<string, IObservableValue<boolean>>([
-		['Error', observable.box(true)],
-		['Warning', observable.box(true)],
-		['Updated', observable.box(true)],
-		['None', observable.box(true)],
-	])
-	public baseline = new Map<string, IObservableValue<boolean>>([
-		['New', observable.box(true)],
-		['Unchanged', observable.box(true)],
-		['Updated', observable.box(true)],
-		['Absent', observable.box(false)],
-	])
-	public suppression = new Map<string, IObservableValue<boolean>>([
-		['Not Suppressed', observable.box(true)],
-		['Suppressed', observable.box(false)],
-	])
+
+	@observable filtersRow = {
+		Level: {
+			'Error': true,
+			'Warning': true,
+			'Updated': true,
+			'None': true,
+		},
+		Baseline: {
+			'New': true,
+			'Unchanged': true,
+			'Updated': true,
+			'Absent': false,
+		},
+		Suppression: {
+			'Not Suppressed': true,
+			'Suppressed': false,
+		},
+	}
 
 	@observable public sortColumn = 'Line' as column
 	@observable public sortDir = SortDir.Asc
@@ -118,13 +120,13 @@ export class Store {
 
 	@computed public get groupsFilteredSorted() {
 		const {groups, sortColumn, sortDir} = this
-		const mapToList = map => [...map.entries()]
-			.filter(([, ob]) => ob.get())
+		const mapToList = record => Object.entries(record)
+			.filter(([, value]) => value)
 			.map(([label,]) => label.toLowerCase())
 
-		const levels = mapToList(this.level)
-		const baselines = mapToList(this.baseline)
-		const suppressions = mapToList(this.suppression)
+		const levels = mapToList(this.filtersRow.Level)
+		const baselines = mapToList(this.filtersRow.Baseline)
+		const suppressions = mapToList(this.filtersRow.Suppression)
 		for (const group of groups) {
 			group.itemsFiltered = group.items.filter(item => {
 				const result = item.data

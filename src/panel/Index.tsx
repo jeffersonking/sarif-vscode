@@ -1,12 +1,12 @@
 import { action, autorun, IObservableValue, IReactionDisposer, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import * as React from 'react'
-import { Component } from 'react'
+import { Component, Fragment } from 'react'
 import { Log } from 'sarif'
 import '../shared/extension'
 import './codicon.css'
 import './Index.scss'
-import { Badge, Checkrow, Icon, ResizeHandle, TabBar, TabPanel, Popover, renderMessageWithEmbeddedLinks } from './Index.widgets'
+import { Badge, Checkrow, Icon, Popover, renderMessageWithEmbeddedLinks, ResizeHandle, TabBar, TabPanel } from './Index.widgets'
 import { column, Group, SortDir, Store } from './Store'
 
 export * as React from 'react'
@@ -36,11 +36,13 @@ const levelToIcon = {
 		if (!this.columnWidths.has(name)) this.columnWidths.set(name, observable.box(220))
 		return this.columnWidths.get(name)
 	}
-	public columnVisibility = new Map<column, IObservableValue<boolean>>([
-		['Baseline', observable.box(false)],
-		['Suppression', observable.box(false)],
-		['Rule', observable.box(false)],
-	])
+	@observable filtersColumn = {
+		Columns: {
+			'Baseline': false,
+			'Suppression': false,
+			'Rule': false,
+		},
+	}
 
 	render() {
 		const {store} = this.props
@@ -52,12 +54,12 @@ const levelToIcon = {
 			</div>
 		}
 
-		const {logs, selectedTab, groupBy, groupings, rows, sortColumn, sortDir} = store
-		const {showFilterPopup, detailsPaneHeight, columnVisibility} = this
-		const columns = ['File', 'Line', 'Message'].filter(col => col !== groupBy) as column[]
-		for (const [column, visibility] of columnVisibility) {
-			if (visibility.get()) columns.push(column)
-		}
+		const {logs, selectedTab, groupBy, rows, sortColumn, sortDir} = store
+		const {showFilterPopup, detailsPaneHeight, filtersColumn} = this
+		const columnsOptional = Object.entries(filtersColumn.Columns)
+			.filter(([_, state]) => state)
+			.map(([name, ]) => name)
+		const columns = ['File', 'Line', 'Message', ...columnsOptional].filter(col => col !== groupBy) as column[]
 		const selected = store.selectedItem?.data
 		return <>
 			<div tabIndex={0} ref={ref => ref?.focus()} className="svListPane">
@@ -218,15 +220,15 @@ const levelToIcon = {
 				</TabPanel>}
 			</div>
 			<Popover show={showFilterPopup} style={{ top: 35, right: 35 * 2 }}>
-				<div className="svPopoverTitle">Level</div>
-				{[...store.level.entries()].map(([label, ob]) => <Checkrow key={label} label={label} checked={ob} />)}
-				<div className="svPopoverTitle">Baseline</div>
-				{[...store.baseline.entries()].map(([label, ob]) => <Checkrow key={label} label={label} checked={ob} />)}
-				<div className="svPopoverTitle">Suppression</div>
-				{[...store.suppression.entries()].map(([label, ob]) => <Checkrow key={label} label={label} checked={ob} />)}
+				{Object.entries(store.filtersRow).map(([name, state]) => <Fragment key={name}>
+					<div className="svPopoverTitle">{name}</div>
+					{Object.keys(state).map(name => <Checkrow key={name} label={name} state={state} />)}
+				</Fragment>)}
 				<div className="svPopoverDivider" />
-				<div className="svPopoverTitle">Columns</div>
-				{[...this.columnVisibility.entries()].map(([label, ob]) => <Checkrow key={label} label={label} checked={ob} />)}
+				{Object.entries(this.filtersColumn).map(([name, state]) => <Fragment key={name}>
+					<div className="svPopoverTitle">{name}</div>
+					{Object.keys(state).map(name => <Checkrow key={name} label={name} state={state} />)}
+				</Fragment>)}
 			</Popover>
 		</>
 	}
