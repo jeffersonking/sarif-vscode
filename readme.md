@@ -43,7 +43,7 @@ Once you have started running this extension in Visual Studio Code, there are a 
 * Any SARIF files found in the workspace (an not in `.sarif`) will be prompted for load.
 * Any SARIF files opened for editing will automatically be loaded.
   * And likewise unloaded on document close.
-* Open the SARIF Results Pane manually via command `sarif.showResultsPanel`.
+* Open the SARIF Results Pane manually via command `sarif.showPanel`.
   * If empty, there will be a `Open SARIF File` button.
   * If non-empty, you can use the Folder Icon on the top right to open.
   * As a refresher, commands can be executed via `Ctrl+Shift+P` or `Cmd+Shift+P`.

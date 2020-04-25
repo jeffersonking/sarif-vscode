@@ -21,8 +21,8 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "sarif.showResultsPanel",
-				"title": "Show SARIF Panel"
+				"command": "sarif.showPanel",
+				"title": "SARIF: Show Panel"
 			},
 			{
 				"command": "sarif.clearState",
