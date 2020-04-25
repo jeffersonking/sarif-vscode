@@ -83,6 +83,6 @@ export function upgradeLog(path: string) {
 	const name = tmpNameSync()
 	const multitoolExe = `Sarif.Multitool${process.platform === 'win32' ? '.exe' : ''}`
 	const multitoolExePath = join(Store.extensionPath || process.cwd(), 'out', multitoolExe)
-	execSync(`${multitoolExePath} transform ${path} --force --pretty-print --output ${name}`)
+	execSync(`${multitoolExePath} transform ${path} --force --output ${name}`)
 	return name
 }
