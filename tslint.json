@@ -1,13 +1,17 @@
 {
 	"rules": {
-		"no-console": [true, "log"],
-		"no-string-throw": true,
-		"no-duplicate-variable": true,
 		"class-name": true,
-		"semicolon": [true, "never"],
-		"triple-equals": true,
+		"no-console": [true, "log"],
+		"no-debugger": true,
+		"no-string-throw": true,
+		"no-var-keyword": true,
+		"prefer-const": true,
+
 		"indent": [true, "tabs"],
-		"quotemark": [true, "single", "jsx-double"]
+		"no-trailing-whitespace": true,
+		"quotemark": [true, "single", "jsx-double"],
+		"semicolon": [true, "never"],
+		"triple-equals": true
 	},
 	"defaultSeverity": "warning"
 }
