@@ -18,7 +18,7 @@
 				}
 				if (command === 'setState') {
 					const {state} = message
-					localStorage.setItem('state', JSON.stringify(state))
+					localStorage.setItem('state', state)
 					return
 				}
 				console.log('unknown message', message)
@@ -57,7 +57,7 @@
 					},
 				}
 				const state = localStorage.getItem('state')
-				const store = new Store(state ? JSON.parse(state) : defaultState)
+				const store = new Store(JSON.parse(state) ?? defaultState)
 				const file = 'samples/Semme.sarif-sdk.csharp.sarif.json'
 				const response = await fetch(file)
 				const log = await response.json()
