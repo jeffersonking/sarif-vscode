@@ -70,6 +70,13 @@ export class Store {
 			'Suppressed': false,
 		},
 	}
+	@observable filtersColumn = {
+		Columns: {
+			'Baseline': false,
+			'Suppression': false,
+			'Rule': false,
+		},
+	}
 
 	@observable public sortColumn = 'Line' as column
 	@observable public sortDir = SortDir.Asc

@@ -37,13 +37,6 @@ const levelToIcon = {
 		if (!this.columnWidths.has(name)) this.columnWidths.set(name, observable.box(220))
 		return this.columnWidths.get(name)
 	}
-	@observable filtersColumn = {
-		Columns: {
-			'Baseline': false,
-			'Suppression': false,
-			'Rule': false,
-		},
-	}
 
 	render() {
 		const {store} = this.props
@@ -55,8 +48,8 @@ const levelToIcon = {
 			</div>
 		}
 
-		const {logs, selectedTab, groupBy, rows, sortColumn, sortDir} = store
-		const {showFilterPopup, detailsPaneHeight, filtersColumn} = this
+		const {logs, selectedTab, groupBy, rows, sortColumn, sortDir, filtersColumn} = store
+		const {showFilterPopup, detailsPaneHeight} = this
 		const columnsOptional = Object.entries(filtersColumn.Columns)
 			.filter(([_, state]) => state)
 			.map(([name, ]) => name)
@@ -226,7 +219,7 @@ const levelToIcon = {
 					{Object.keys(state).map(name => <Checkrow key={name} label={name} state={state} />)}
 				</Fragment>)}
 				<div className="svPopoverDivider" />
-				{Object.entries(this.filtersColumn).map(([name, state]) => <Fragment key={name}>
+				{Object.entries(store.filtersColumn).map(([name, state]) => <Fragment key={name}>
 					<div className="svPopoverTitle">{name}</div>
 					{Object.keys(state).map(name => <Checkrow key={name} label={name} state={state} />)}
 				</Fragment>)}
