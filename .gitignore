@@ -8,4 +8,4 @@ out
 devServer/index.js
 samples
 samplesDemo
-vsix
+*.vsix
