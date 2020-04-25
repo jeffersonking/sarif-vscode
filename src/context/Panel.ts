@@ -36,7 +36,7 @@ export class Panel {
 			'Index', `${this.title}s`, { preserveFocus: true, viewColumn: ViewColumn.Two }, // ViewColumn.Besides steals focus regardless of preserveFocus.
 			{
 				enableScripts: true,
-				localResourceRoots: [Uri.file('/'), Uri.file('c:')],
+				localResourceRoots: [Uri.file('/'), ...'abcdefghijklmnopqrstuvwxyz'.split('').map(c => Uri.file(`${c}:`))],
 				retainContextWhenHidden: true,
 			}
 		)
