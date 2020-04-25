@@ -137,6 +137,7 @@ export class ResizeHandle extends Component<{ size: IObservableValue<number>, ho
 // Not a widget, but just an orphan helper.
 // Borrowed from: sarif-web-component.
 // 3.11.6 Messages with embedded links. Replace [text](relatedIndex) with <a href />.
+// 3.10.3 sarif URI scheme is not supported.
 export function renderMessageWithEmbeddedLinks(result: Result, postMessage: (_: any) => {}) {
 	const message = result.message.text ?? ''
 	const rxLink = /\[([^\]]*)\]\(([^\)]+)\)/ // Matches [text](id). Similar to below, but with an extra grouping around the id part.
@@ -146,13 +147,13 @@ export function renderMessageWithEmbeddedLinks(result: Result, postMessage: (_: 
 			.map((item, i) => {
 				if (i % 2 === 0) return item
 				const [_, text, id] = item.match(rxLink)
-				if (isNaN(+id)) return <a key={i} href={id}>{text}</a>
-				const onClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-					e.preventDefault() // Don't leave a # in the url.
-					e.stopPropagation()
-					postMessage({ command: 'select', id: result._id, relatedLocationId: +id })
-				}
-				return <a key={i} href="#" onClick={onClick}>{text}</a>
+				return isNaN(+id)
+					? <a key={i} href={id}>{text}</a>
+					: <a key={i} href="#" onClick={e => {
+						e.preventDefault() // Don't leave a # in the url.
+						e.stopPropagation()
+						postMessage({ command: 'select', id: result._id, relatedLocationId: +id })
+					}}>{text}</a>
 			})
 		: message
 }
