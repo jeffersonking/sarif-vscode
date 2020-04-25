@@ -146,7 +146,7 @@ export function renderMessageWithEmbeddedLinks(result: Result, postMessage: (_: 
 			.map((item, i) => {
 				if (i % 2 === 0) return item
 				const [_, text, id] = item.match(rxLink)
-				if (isNaN(+id)) return text // Over cautious.
+				if (isNaN(+id)) return <a key={i} href={id}>{text}</a>
 				const onClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
 					e.preventDefault() // Don't leave a # in the url.
 					e.stopPropagation()
