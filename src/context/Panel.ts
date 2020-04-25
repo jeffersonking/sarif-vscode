@@ -2,7 +2,7 @@ import { IArraySplice, observable, observe } from 'mobx'
 import { Log, Result } from 'sarif'
 import { commands, ExtensionContext, TextEditorRevealType, Uri, ViewColumn, WebviewPanel, window, workspace } from 'vscode'
 import { regionToSelection, Store } from '.'
-import { ResultId, _Region } from '../shared'
+import { ResultId, _Region, parseRegion } from '../shared'
 import { Baser } from './Baser'
 import { loadLogs } from './loadLogs'
 
@@ -84,11 +84,22 @@ export class Panel {
 			if (command === 'select') {
 				const [logUri, runIndex, resultIndex] = message.id as ResultId
 				const result = store.logs.find(log => log._uri === logUri)?.runs[runIndex]?.results?.[resultIndex]
-				if (!result || !result._uri) return
+				if (!result) return
+
+				const [uri, region] = (() => {
+					const relatedId = message.relatedLocationId as number
+					if (relatedId !== undefined) {
+						const rploc = result?.relatedLocations?.find(rloc => rloc.id === +relatedId)?.physicalLocation
+						return [rploc?.artifactLocation?.uri, parseRegion(rploc?.region)]
+					}
+					return [result._uri, result._region]
+				})() as [string, _Region]
+				if (!uri) return
+
 				const validatedUri = await basing.translateArtifactToLocal(result._uri)
 				if (!validatedUri) return
 
-				await this.selectLocal(logUri, validatedUri, result._region)
+				await this.selectLocal(logUri, validatedUri, region)
 			}
 		}, undefined, context.subscriptions)
 

@@ -12,6 +12,11 @@ body {
 	flex-direction: column;
 }
 
+a {
+	text-decoration: none;
+	&:hover { text-decoration: underline; }
+}
+
 // ^^ Move to index.html ^^
 
 #root {

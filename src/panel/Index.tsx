@@ -6,7 +6,7 @@ import { Log } from 'sarif'
 import '../shared/extension'
 import './codicon.css'
 import './Index.scss'
-import { Badge, Checkrow, Icon, ResizeHandle, TabBar, TabPanel, Popover } from './Index.widgets'
+import { Badge, Checkrow, Icon, ResizeHandle, TabBar, TabPanel, Popover, renderMessageWithEmbeddedLinks } from './Index.widgets'
 import { column, Group, SortDir, Store } from './Store'
 
 export * as React from 'react'
@@ -160,6 +160,10 @@ const levelToIcon = {
 															return <span>{result._line < 0 ? '—' : result._line}</span>
 														case 'File':
 															return <span className="ellipsis" title={result._uri ?? '—'}>{result._uri?.file ?? '—'}</span>
+														case 'Message':
+															return <span className="ellipsis" title={result._message}>
+																{renderMessageWithEmbeddedLinks(result, this.vscode.postMessage)}
+															</span>
 														case 'Rule':
 															return <>
 																<span>{result._rule?.name ?? '—'}</span>
@@ -186,7 +190,7 @@ const levelToIcon = {
 			<div className="svDetailsPane" style={{ height: detailsPaneHeight.get() }}>
 				{selected && <TabPanel titles={['Info', 'Call Trees']}>
 					<div className="svDetailsBody --svDetailsBodyInfo">
-						<div className="svDetailsMessage">{selected._message}</div>
+						<div className="svDetailsMessage">{renderMessageWithEmbeddedLinks(selected, this.vscode.postMessage)}</div>
 						<div className="svDetailsInfo">
 							<span>Rule Id</span>			<span>{selected.ruleId}</span>
 							<span>Rule Name</span>			<span>{selected._rule?.name ?? '—'}</span>

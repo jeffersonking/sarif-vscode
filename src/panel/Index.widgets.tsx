@@ -2,6 +2,7 @@ import { action, IObservableValue, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import * as React from 'react'
 import { Component, CSSProperties, PureComponent } from 'react'
+import { Result } from 'sarif'
 import './Index.widgets.scss'
 
 export class Badge extends PureComponent<{ text: { toString: () => string } }> {
@@ -131,4 +132,23 @@ export class ResizeHandle extends Component<{ size: IObservableValue<number>, ho
 
 		return <div onMouseDown={this.onMouseDown} style={style}></div>
 	}
+}
+
+// Not a widget, but just an orphan helper.
+// Borrowed from: sarif-web-component.
+// 3.11.6 Messages with embedded links. Replace [text](relatedIndex) with <a href />.
+export function renderMessageWithEmbeddedLinks(result: Result, postMessage: (_: any) => {}) {
+	const message = result.message.text ?? ''
+	const rxLink = /\[([^\]]*)\]\(([^\)]+)\)/ // Matches [text](id). Similar to below, but with an extra grouping around the id part.
+	return message.match(rxLink)
+		? message
+			.split(/(\[[^\]]*\]\([^\)]+\))/g)
+			.map((item, i) => {
+				if (i % 2 === 0) return item
+				const [_, text, id] = item.match(rxLink)
+				if (isNaN(+id)) return text // Over cautious.
+				const onClick = () => postMessage({ command: 'select', id: result._id, relatedLocationId: +id })
+				return <a key={i} href="#" onClick={onClick}>{text}</a>
+			})
+		: message
 }
