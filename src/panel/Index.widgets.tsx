@@ -147,7 +147,10 @@ export function renderMessageWithEmbeddedLinks(result: Result, postMessage: (_: 
 				if (i % 2 === 0) return item
 				const [_, text, id] = item.match(rxLink)
 				if (isNaN(+id)) return text // Over cautious.
-				const onClick = () => postMessage({ command: 'select', id: result._id, relatedLocationId: +id })
+				const onClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+					e.stopPropagation()
+					postMessage({ command: 'select', id: result._id, relatedLocationId: +id })
+				}
 				return <a key={i} href="#" onClick={onClick}>{text}</a>
 			})
 		: message
