@@ -49,3 +49,18 @@ describe('augmentLog', () => {
 		assert.strictEqual(result._uri, 'sarif:undefined/0/0/artifact.txt')
 	})
 })
+
+/*
+Global State Test Notes
+- Basic
+  - Clear State
+  - Change filter
+  - Choice:
+    - Close tab, reopen tab
+	- Close window, reopen tab
+  - Verify
+    - Checks maintained
+	- Order maintained
+- Versioning
+  - Make sure version isn't lost on roundtrip.
+*/
