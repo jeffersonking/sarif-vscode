@@ -1,11 +1,10 @@
-import { observable, observe, IArraySplice } from 'mobx'
-import { Result, Log } from 'sarif'
-import { ExtensionContext, TextEditorRevealType, Uri, ViewColumn, WebviewPanel, window, workspace } from 'vscode'
+import { IArraySplice, observable, observe } from 'mobx'
+import { Log, Result } from 'sarif'
+import { commands, ExtensionContext, TextEditorRevealType, Uri, ViewColumn, WebviewPanel, window, workspace } from 'vscode'
 import { regionToSelection, Store } from '.'
-import { ResultId } from '../shared'
+import { ResultId, _Region } from '../shared'
 import { Baser } from './Baser'
 import { loadLogs } from './loadLogs'
-import { commands } from 'vscode'
 
 export class Panel {
 	private title = 'SARIF Result'
@@ -89,23 +88,27 @@ export class Panel {
 				const validatedUri = await basing.translateArtifactToLocal(result._uri)
 				if (!validatedUri) return
 
-				// Keep/pin active Log as needed
-				for (const editor of window.visibleTextEditors.slice()) {
-					if (editor.document.uri.toString() !== logUri) continue
-					await window.showTextDocument(editor.document, editor.viewColumn)
-					await commands.executeCommand('workbench.action.keepEditor')
-				}
-
-				const doc = await workspace.openTextDocument(Uri.parse(validatedUri))
-				const editor = await window.showTextDocument(doc, ViewColumn.One, true)
-
-				if (result._region === undefined) return
-				editor.selection = regionToSelection(doc, result._region)
-				editor.revealRange(editor.selection, TextEditorRevealType.InCenterIfOutsideViewport)
+				await this.selectLocal(logUri, validatedUri, result._region)
 			}
 		}, undefined, context.subscriptions)
 
 		this.spliceLogs([], store.logs)
+	}
+
+	public async selectLocal(logUri: string, localUri: string, region: _Region) {
+		// Keep/pin active Log as needed
+		for (const editor of window.visibleTextEditors.slice()) {
+			if (editor.document.uri.toString() !== logUri) continue
+			await window.showTextDocument(editor.document, editor.viewColumn)
+			await commands.executeCommand('workbench.action.keepEditor')
+		}
+
+		const doc = await workspace.openTextDocument(Uri.parse(localUri))
+		const editor = await window.showTextDocument(doc, ViewColumn.One, true)
+
+		if (region === undefined) return
+		editor.selection = regionToSelection(doc, region)
+		editor.revealRange(editor.selection, TextEditorRevealType.InCenterIfOutsideViewport)
 	}
 
 	public select(result: Result) {
