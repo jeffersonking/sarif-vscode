@@ -13,6 +13,8 @@ export * as React from 'react'
 export * as ReactDOM from 'react-dom'
 export { Store } from './Store'
 
+const vscode = acquireVsCodeApi()
+
 const levelToIcon = {
 	error: 'error',
 	warning: 'warning',
@@ -22,7 +24,6 @@ const levelToIcon = {
 }
 
 @observer export class Index extends Component<{ store: Store }> {
-	private vscode = acquireVsCodeApi()
 	private showFilterPopup = observable.box(false)
 	private detailsPaneHeight = observable.box(250)
 
@@ -48,7 +49,7 @@ const levelToIcon = {
 		const {store} = this.props
 		if (!store.results.length) {
 			return <div className="svZeroData">
-				<div onClick={() => this.vscode.postMessage({ command: 'open' })}>
+				<div onClick={() => vscode.postMessage({ command: 'open' })}>
 					Open SARIF file
 				</div>
 			</div>
@@ -68,7 +69,7 @@ const levelToIcon = {
 					<div className="flexFill"></div>
 					<Icon name="filter" title="Filter Options" onMouseDown={e => e.stopPropagation()} onClick={e => showFilterPopup.set(!showFilterPopup.get())} />
 					<Icon name="collapse-all" title="Collapse All" onClick={() => store.groupsFilteredSorted.forEach(group => group.expanded = false)} />
-					<Icon name="folder-opened" title="Open Log" onClick={() => this.vscode.postMessage({ command: 'open' })} />
+					<Icon name="folder-opened" title="Open Log" onClick={() => vscode.postMessage({ command: 'open' })} />
 				</div>
 				<div className="svListTableScroller">
 					{selectedTab.get() === 'Logs'
@@ -79,7 +80,7 @@ const levelToIcon = {
 									<div>{pathname.file}</div>
 									<div className="ellipsis svSecondary">{pathname.path}</div>
 									<Icon name="close" title="Remove Log"
-										onClick={() => this.vscode.postMessage({ command: 'removeLog', uri: log._uri })} />
+										onClick={() => vscode.postMessage({ command: 'removeLog', uri: log._uri })} />
 								</div>
 							})}
 						</div>
@@ -164,7 +165,7 @@ const levelToIcon = {
 															return <span className="ellipsis" title={result._uri ?? '—'}>{result._uri?.file ?? '—'}</span>
 														case 'Message':
 															return <span className="ellipsis" title={result._message}>
-																{renderMessageWithEmbeddedLinks(result, this.vscode.postMessage)}
+																{renderMessageWithEmbeddedLinks(result, vscode.postMessage)}
 															</span>
 														case 'Rule':
 															return <>
@@ -192,7 +193,7 @@ const levelToIcon = {
 			<div className="svDetailsPane" style={{ height: detailsPaneHeight.get() }}>
 				{selected && <TabPanel titles={['Info', 'Call Trees']}>
 					<div className="svDetailsBody --svDetailsBodyInfo">
-						<div className="svDetailsMessage">{renderMessageWithEmbeddedLinks(selected, this.vscode.postMessage)}</div>
+						<div className="svDetailsMessage">{renderMessageWithEmbeddedLinks(selected, vscode.postMessage)}</div>
 						<div className="svDetailsInfo">
 							<span>Rule Id</span>			<span>{selected.ruleId}</span>
 							<span>Rule Name</span>			<span>{selected._rule?.name ?? '—'}</span>
@@ -291,7 +292,7 @@ const levelToIcon = {
 		this.selectionAutoRunDisposer = autorun(() => {
 			const result = this.props.store.selectedItem?.data
 			if (!result) return
-			this.vscode.postMessage({ command: 'select', id: result._id })
+			vscode.postMessage({ command: 'select', id: result._id })
 		})
 	}
 
