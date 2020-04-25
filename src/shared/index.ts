@@ -127,3 +127,30 @@ export function parseRegion(region: Region): _Region {
 		endColumn ?? (startColumn + 1)
 	] as [number, number, number, number]
 }
+
+export const filtersRow = {
+	Level: {
+		'Error': true,
+		'Warning': true,
+		'Updated': true,
+		'None': true,
+	},
+	Baseline: {
+		'New': true,
+		'Unchanged': true,
+		'Updated': true,
+		'Absent': false,
+	},
+	Suppression: {
+		'Not Suppressed': true,
+		'Suppressed': false,
+	},
+}
+
+export const filtersColumn = {
+	Columns: {
+		'Baseline': false,
+		'Suppression': false,
+		'Rule': false,
+	},
+}

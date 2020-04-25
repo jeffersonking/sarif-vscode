@@ -424,7 +424,7 @@
 	<body class="vscode-dark">
 		<div id="root" style="margin: 50px 300px; position: relative;"></div><!-- relative for Popover -->
 		<script>
-			window.acquireVsCodeApi = (() => ({ postMessage: message => {
+			acquireVsCodeApi = (() => ({ postMessage: message => {
 				const {command} = message
 				if (command === 'updateTitle') {
 					document.title = `${message.count} SARIF Result(s)`
@@ -434,13 +434,48 @@
 					postMessage({ command: 'demo' })
 					return
 				}
+				if (command === 'setState') {
+					const {state} = message
+					localStorage.setItem('state', JSON.stringify(state))
+					return
+				}
 				console.log('unknown message', message)
 			} }))
+			vscode = acquireVsCodeApi()
 		</script>
 		<script src="panel.js"></script>
 		<script>
 			;(async () => {
-				const store = new Store()
+				const defaultState = { // Some duplicated from shared/index
+					version: 0,
+					filtersRow: {
+						Level: {
+							'Error': true,
+							'Warning': true,
+							'Updated': true,
+							'None': true,
+						},
+						Baseline: {
+							'New': true,
+							'Unchanged': true,
+							'Updated': true,
+							'Absent': false,
+						},
+						Suppression: {
+							'Not Suppressed': true,
+							'Suppressed': false,
+						},
+					},
+					filtersColumn: {
+						Columns: {
+							'Baseline': false,
+							'Suppression': false,
+							'Rule': false,
+						},
+					},
+				}
+				const state = localStorage.getItem('state')
+				const store = new Store(state ? JSON.parse(state) : defaultState)
 				const file = 'samples/Semme.sarif-sdk.csharp.sarif.json'
 				const response = await fetch(file)
 				const log = await response.json()

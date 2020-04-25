@@ -13,8 +13,6 @@ export * as React from 'react'
 export * as ReactDOM from 'react-dom'
 export { Store } from './Store'
 
-const vscode = acquireVsCodeApi()
-
 const levelToIcon = {
 	error: 'error',
 	warning: 'warning',

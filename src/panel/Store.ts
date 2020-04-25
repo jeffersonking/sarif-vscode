@@ -1,6 +1,6 @@
-import { computed, intercept, observable } from 'mobx'
+import { computed, intercept, observable, observe, toJS } from 'mobx'
 import { Log, Result } from 'sarif'
-import { augmentLog } from '../shared'
+import { augmentLog, filtersColumn, filtersRow } from '../shared'
 import '../shared/extension'
 
 export enum SortDir {
@@ -36,7 +36,21 @@ export type column = 'File' | 'Line' | 'Message' | 'Baseline' | 'Suppression' | 
 export class Store {
 	@observable.shallow public logs = [] as Log[]
 
-	constructor() {
+	constructor(state) {
+		this.filtersRow = state.filtersRow
+		this.filtersColumn = state.filtersColumn
+		const setState = () => {
+			const {filtersRow, filtersColumn} = this
+			const state = { filtersRow: toJS(filtersRow), filtersColumn: toJS(filtersColumn) }
+			vscode.postMessage({ command: 'setState', state: JSON.stringify(state, null, '    ') })
+			// PostMessage object key order unstable. Stringify is stable.
+		}
+		// Sadly unable to observe at the root.
+		observe(this.filtersRow.Level, setState)
+		observe(this.filtersRow.Baseline, setState)
+		observe(this.filtersRow.Suppression, setState)
+		observe(this.filtersColumn.Columns, setState)
+
 		intercept(this.logs, (change: any) => {
 			if (change.type !== 'splice') throw new Error(`Unexpected change type. ${change.type}`)
 			change.added.forEach(augmentLog)
@@ -52,31 +66,8 @@ export class Store {
 		return this.runs.map(run => run.results).flat()
 	}
 
-	@observable filtersRow = {
-		Level: {
-			'Error': true,
-			'Warning': true,
-			'Updated': true,
-			'None': true,
-		},
-		Baseline: {
-			'New': true,
-			'Unchanged': true,
-			'Updated': true,
-			'Absent': false,
-		},
-		Suppression: {
-			'Not Suppressed': true,
-			'Suppressed': false,
-		},
-	}
-	@observable filtersColumn = {
-		Columns: {
-			'Baseline': false,
-			'Suppression': false,
-			'Rule': false,
-		},
-	}
+	@observable filtersRow = filtersRow
+	@observable filtersColumn = filtersColumn
 
 	@observable public sortColumn = 'Line' as column
 	@observable public sortDir = SortDir.Asc

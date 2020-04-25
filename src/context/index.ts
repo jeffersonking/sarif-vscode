@@ -1,6 +1,6 @@
-import { computed, intercept, observable, IArrayWillSplice } from 'mobx'
+import { computed, IArrayWillSplice, intercept, observable } from 'mobx'
 import { Log, Result } from 'sarif'
-import { commands, DiagnosticSeverity, ExtensionContext, languages, Range, Selection, TextDocument, ThemeColor, window, workspace } from 'vscode'
+import { commands, DiagnosticSeverity, ExtensionContext, languages, Memento, Range, Selection, TextDocument, ThemeColor, window, workspace } from 'vscode'
 import { mapDistinct, _Region } from '../shared'
 import '../shared/extension'
 import { Baser } from './Baser'
@@ -41,6 +41,7 @@ export const regionToSelection = (doc: TextDocument, region: _Region) => {
 
 export class Store {
 	static extensionPath: string | undefined
+	static globalState: Memento
 
 	@observable.shallow logs = [] as Log[]
 	@computed public get results() {
@@ -62,8 +63,13 @@ export class Store {
 }
 
 export async function activate(context: ExtensionContext) {
-	Store.extensionPath = context.extensionPath
 	const disposables = context.subscriptions
+	Store.extensionPath = context.extensionPath
+	Store.globalState = context.globalState
+	disposables.push(commands.registerCommand('sarif.clearState', () => {
+		context.globalState.update('view', undefined)
+		commands.executeCommand('workbench.action.reloadWindow')
+	}))
 	const store = new Store()
 
 	// Boot

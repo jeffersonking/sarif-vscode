@@ -2,7 +2,7 @@ import { IArraySplice, observable, observe } from 'mobx'
 import { Log, Result } from 'sarif'
 import { commands, ExtensionContext, TextEditorRevealType, Uri, ViewColumn, WebviewPanel, window, workspace } from 'vscode'
 import { regionToSelection, Store } from '.'
-import { ResultId, _Region, parseRegion } from '../shared'
+import { filtersColumn, filtersRow, parseRegion, ResultId, _Region } from '../shared'
 import { Baser } from './Baser'
 import { loadLogs } from './loadLogs'
 
@@ -43,6 +43,12 @@ export class Panel {
 		this.panel.onDidDispose(() => this.panel = null)
 		
 		const src = Uri.file(`${context.extensionPath}/out/panel.js`)
+		const defaultState = {
+			version: 0,
+			filtersRow,
+			filtersColumn,
+		}
+		const state = Store.globalState.get('view', defaultState)
 		webview.html = `<!DOCTYPE html>
 			<html lang="en">
 			<head>
@@ -59,8 +65,9 @@ export class Panel {
 				<div id="root"></div>
 				<script src="${webview.asWebviewUri(src).toString()}"></script>
 				<script>
+					vscode = acquireVsCodeApi()
 					ReactDOM.render(
-						React.createElement(Index, { store: new Store() }),
+						React.createElement(Index, { store: new Store(${JSON.stringify(state)}) }),
 						document.getElementById('root'),
 					)
 				</script>
@@ -100,6 +107,11 @@ export class Panel {
 				if (!validatedUri) return
 
 				await this.selectLocal(logUri, validatedUri, region)
+			}
+			if (command === 'setState') {
+				const oldState = Store.globalState.get('view', defaultState)
+				const {state} = message
+				await Store.globalState.update('view', Object.assign(oldState, JSON.parse(state)))
 			}
 		}, undefined, context.subscriptions)
 
