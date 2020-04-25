@@ -58,7 +58,10 @@ const levelToIcon = {
 				<div className="svListHeader">
 					<TabBar titles={store.tabs} selection={store.selectedTab} />
 					<div className="flexFill"></div>
-					<Icon name="filter" title="Filter Options" onMouseDown={e => e.stopPropagation()} onClick={e => showFilterPopup.set(!showFilterPopup.get())} />
+					<div className="svFilterCombo">
+						<input type="text" placeholder="Filter. E.g: text" />
+						<Icon name="filter" title="Filter Options" onMouseDown={e => e.stopPropagation()} onClick={e => showFilterPopup.set(!showFilterPopup.get())} />
+					</div>
 					<Icon name="collapse-all" title="Collapse All" onClick={() => store.groupsFilteredSorted.forEach(group => group.expanded = false)} />
 					<Icon name="folder-opened" title="Open Log" onClick={() => vscode.postMessage({ command: 'open' })} />
 				</div>
@@ -143,7 +146,7 @@ const levelToIcon = {
 											if (!isSelected || !td) return
 											requestAnimationFrame(() => td.scrollIntoView({ behavior: 'smooth', block: 'nearest' }))
 										}}>
-										
+
 										<td className="svSpacer"></td>
 										{columns.map((col, i) =>
 											<td key={col}><span className="svCell">
@@ -174,7 +177,7 @@ const levelToIcon = {
 										)}
 									</tr>
 								})}
-							</tbody>	
+							</tbody>
 						</table>}
 				</div>
 			</div>
@@ -211,7 +214,7 @@ const levelToIcon = {
 					</div>
 				</TabPanel>}
 			</div>
-			<Popover show={showFilterPopup} style={{ top: 35, right: 35 * 2 }}>
+			<Popover show={showFilterPopup} style={{ top: 35, right: 8 + 35 + 35 + 8 }}>
 				{Object.entries(store.filtersRow).map(([name, state]) => <Fragment key={name}>
 					<div className="svPopoverTitle">{name}</div>
 					{Object.keys(state).map(name => <Checkrow key={name} label={name} state={state} />)}
@@ -243,7 +246,7 @@ const levelToIcon = {
 		if (!event.data) return // Ignore mysterious empty message
 		if (event.data?.source) return // Ignore 'react-devtools-*'
 		if (event.data?.type) return // Ignore 'webpackOk'
-		
+
 		const {store} = this.props
 		const command = event.data?.command
 
@@ -264,7 +267,7 @@ const levelToIcon = {
 		if (command === 'spliceLogs') {
 			for (const uri of event.data.removed) {
 				const i = store.logs.findIndex(log => log._uri === uri)
-				if (i >= 0) store.logs.splice(i, 1)	
+				if (i >= 0) store.logs.splice(i, 1)
 			}
 			for (const {uri, webviewUri} of event.data.added) {
 				const response = await fetch(webviewUri)
