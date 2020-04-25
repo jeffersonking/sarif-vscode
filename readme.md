@@ -48,6 +48,11 @@ Once you have started running this extension in Visual Studio Code, there are a 
   * If non-empty, you can use the Folder Icon on the top right to open.
   * As a refresher, commands can be executed via `Ctrl+Shift+P` or `Cmd+Shift+P`.
 
+SARIF Logs reference Artifacts (aka source files). Paths for these Artifacts commonly require reconciliation between the production machine/environment and your local one. You may be prompted to `Locate...` the file in these cases. To help out, the extension will:
+* Attempt to automatically match files present in your workspace.
+* Attempt to automatically match documents currently open if no workspace (folder) is open.
+* Extrapolate paths from file you have already located.
+
 ## Not Yet Implemented
 
 The following features of [sarif-vscode-extension](https://github.com/microsoft/sarif-vscode-extension) have yet to be implemented in this project.
