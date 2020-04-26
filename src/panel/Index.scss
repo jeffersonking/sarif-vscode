@@ -21,6 +21,11 @@ a {
 	color: var(--vscode-input-placeholderForeground);
 }
 
+mark {
+	color: unset;
+	background: var(--vscode-editor-findMatchHighlightBackground);
+}
+
 // ^^ Move to index.html ^^
 
 #root {
@@ -258,4 +263,14 @@ a {
 	background-color: var(--vscode-editorGroup-border);
 	height: 1px;
 	position: relative; // For handle.
+}
+
+.svMarkDown {
+	& > :first-child {
+		margin-top: 0;
+	}
+
+	& > :last-child {
+		margin-bottom: 0;
+	}
 }

@@ -7,7 +7,8 @@ import { Log } from 'sarif'
 import '../shared/extension'
 import './codicon.css'
 import './Index.scss'
-import { Badge, Checkrow, Icon, Popover, renderMessageWithEmbeddedLinks, ResizeHandle, TabBar, TabPanel } from './Index.widgets'
+export const FilterKeywordContext = React.createContext('') // Must come before Hi
+import { Badge, Checkrow, Hi, Icon, Popover, renderMessageWithEmbeddedLinks, ResizeHandle, TabBar, TabPanel } from './Index.widgets'
 import { column, Group, SortDir, Store } from './Store'
 
 export * as React from 'react'
@@ -54,18 +55,20 @@ const levelToIcon = {
 				: desc.text
 		}
 
-		const {logs, selectedTab, groupBy, rows, sortColumn, sortDir, visibleColumns, groupsFilteredSorted} = store
+		const {logs, selectedTab, groupBy, rows, sortColumn, sortDir, visibleColumns, groupsFilteredSorted, keywords} = store
 		const {showFilterPopup, detailsPaneHeight} = this
 		const allCollapsed = groupsFilteredSorted.every(group => !group.expanded)
 		const columns = visibleColumns
 		const selected = store.selectedItem?.data
-		return <>
+		return <FilterKeywordContext.Provider value={keywords ?? ''}>
 			<div tabIndex={0} ref={ref => ref} className="svListPane">
 				<div className="svListHeader">
 					<TabBar titles={store.tabs} selection={store.selectedTab} />
 					<div className="flexFill"></div>
 					<div className="svFilterCombo">
-						<input type="text" placeholder="Filter results" value={store.keywords} onChange={e => store.keywords = e.target.value} />
+						<input type="text" placeholder="Filter results" value={store.keywords}
+							onChange={e => store.keywords = e.target.value}
+							onKeyDown={e => { if (e.key === 'Escape') { store.keywords = '' } } }/>
 						<Icon name="filter" title="Filter Options" onMouseDown={e => e.stopPropagation()} onClick={e => showFilterPopup.set(!showFilterPopup.get())} />
 					</div>
 					<Icon name={allCollapsed ? 'expand-all' : 'collapse-all'}
@@ -134,15 +137,15 @@ const levelToIcon = {
 														? (() => {
 															const {pathname} = new URL(title, 'file:')
 															return <>
-																<div>{pathname.file || 'No Location'}</div>
-																<div className="ellipsis svSecondary">{pathname.path}</div>
+																<Hi>{pathname.file || 'No Location'}</Hi>
+																<Hi className="ellipsis svSecondary">{pathname.path}</Hi>
 															</>
 														})()
 														: (() => {
 															const [ruleName, ruleId] = title.split('|')
 															return <>
-																<div>{ruleName}</div>
-																<div className="ellipsis svSecondary">{ruleId}</div>
+																<Hi>{ruleName}</Hi>
+																<Hi className="ellipsis svSecondary">{ruleId}</Hi>
 															</>
 														})()}
 													<Badge text={itemsFiltered.length} />
@@ -167,23 +170,23 @@ const levelToIcon = {
 													{(() => {
 														switch (col) {
 															case 'Line':
-																return <div>{result._line < 0 ? '—' : result._line}</div>
+																return <Hi>{result._line < 0 ? '—' : result._line}</Hi>
 															case 'File':
-																return <div className="ellipsis" title={result._uri ?? '—'}>{result._uri?.file ?? '—'}</div>
+																return <Hi className="ellipsis" title={result._uri ?? '—'}>{result._uri?.file ?? '—'}</Hi>
 															case 'Message':
-																return <div className="ellipsis" title={result._message}>
+																return <Hi className="ellipsis" title={result._message}>
 																	{renderMessageWithEmbeddedLinks(result, vscode.postMessage)}
-																</div>
+																</Hi>
 															case 'Rule':
 																return <>
-																	<div>{result._rule?.name ?? '—'}</div>
-																	<div className="svSecondary">{result.ruleId}</div>
+																	<Hi>{result._rule?.name ?? '—'}</Hi>
+																	<Hi className="svSecondary">{result.ruleId}</Hi>
 																</>
 															default:
 																const capitalize = str => `${str[0].toUpperCase()}${str.slice(1)}`
 																const selector = store.groupings[col]
 																const text = capitalize(selector(result))
-																return <div className="ellipsis" title={text}>{text}</div>
+																return <Hi className="ellipsis" title={text}>{text}</Hi>
 														}
 													})()}
 												</span></td>
@@ -244,7 +247,7 @@ const levelToIcon = {
 					{Object.keys(state).map(name => <Checkrow key={name} label={name} state={state} />)}
 				</Fragment>)}
 			</Popover>
-		</>
+		</FilterKeywordContext.Provider>
 	}
 
 	@action.bound private onKeyDown(e: KeyboardEvent) {

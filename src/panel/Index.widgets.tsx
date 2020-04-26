@@ -3,6 +3,7 @@ import { observer } from 'mobx-react'
 import * as React from 'react'
 import { Component, CSSProperties, PureComponent } from 'react'
 import { Result } from 'sarif'
+import { FilterKeywordContext } from './Index'
 import './Index.widgets.scss'
 
 export class Badge extends PureComponent<{ text: { toString: () => string } }> {
@@ -28,6 +29,26 @@ export class Icon extends PureComponent<{ name: string, title?: string } & React
 	render() {
 		const {name, ...divProps} = this.props
 		return <div className={`codicon codicon-${name}`} {...divProps}></div>
+	}
+}
+
+// Adapated from sarif-web-component.
+export class Hi extends React.Component<React.HTMLAttributes<HTMLDivElement>> {
+	static contextType = FilterKeywordContext
+	render() {
+		const {children, ...divProps} = this.props
+		return <div {...divProps}>{(() => {
+			if (!children) return null
+			if (!['number', 'string'].includes(typeof children)) return children // Gracefully (and sliently) fail if not a string.
+
+			let term = this.context
+			if (!term || term.length <= 1) return children
+
+			term = term && term.replace(/[\-\[\]\/\{\}\(\)\+\?\.\\\^\$\|]/g, '\\$&').replace(/\*/g, '.*')
+			return (children + '')
+				.split(new RegExp(`(${term.split(/\s+/).filter(part => part).join('|')})`, 'i'))
+				.map((word, i) => i % 2 === 1 ? <mark key={i}>{word}</mark> : word)
+		})()}</div>
 	}
 }
 
