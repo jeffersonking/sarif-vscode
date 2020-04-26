@@ -30,6 +30,7 @@ declare module 'sarif' {
 
 // console.log(format(`'{0}' was not evaluated for check '{2}' as the analysis is not relevant based on observed metadata: {1}.`, ['x', 'y', 'z']))
 function format(template: string, args?: string[]) {
+	if (!template) return undefined
 	if (!args) return template
 	return template.replace(/{(\d+)}/g, (_, group) => args[group])
 }
@@ -87,8 +88,8 @@ export function augmentLog(log: Log) {
 			result._line = result._region?.[0] ?? result._region ?? -1 // _line is sugar for _region
 
 			result._rule = run.tool.driver.rules?.[result.ruleIndex] // If result.ruleIndex is undefined, that's okay.
-			const template = result._rule?.messageStrings?.[result.message.id].text ?? result.message.text ?? '—'
-			result._message = format(template, result.message.arguments)
+			const message = result._rule?.messageStrings?.[result.message.id] ?? result.message
+			result._message = format(message.text ?? message.text, result.message.arguments) ?? '—'
 
 			result.level = result.level ?? 'warning'
 			result.baselineState = result.baselineState ?? 'new'
