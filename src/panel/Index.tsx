@@ -46,8 +46,9 @@ const levelToIcon = {
 			</div>
 		}
 
-		const {logs, selectedTab, groupBy, rows, sortColumn, sortDir, visibleColumns} = store
+		const {logs, selectedTab, groupBy, rows, sortColumn, sortDir, visibleColumns, groupsFilteredSorted} = store
 		const {showFilterPopup, detailsPaneHeight} = this
+		const allCollapsed = groupsFilteredSorted.every(group => !group.expanded)
 		const columns = visibleColumns
 		const selected = store.selectedItem?.data
 		return <>
@@ -59,7 +60,9 @@ const levelToIcon = {
 						<input type="text" placeholder="Filter. E.g: text" value={store.keywords} onChange={e => store.keywords = e.target.value} />
 						<Icon name="filter" title="Filter Options" onMouseDown={e => e.stopPropagation()} onClick={e => showFilterPopup.set(!showFilterPopup.get())} />
 					</div>
-					<Icon name="collapse-all" title="Collapse All" onClick={() => store.groupsFilteredSorted.forEach(group => group.expanded = false)} />
+					<Icon name={allCollapsed ? 'expand-all' : 'collapse-all'}
+						title={allCollapsed ? 'Expand All' : 'Collapse All'}
+						onClick={() => store.groupsFilteredSorted.forEach(group => group.expanded = allCollapsed)} />
 					<Icon name="folder-opened" title="Open Log" onClick={() => vscode.postMessage({ command: 'open' })} />
 				</div>
 				<div className="svListTableScroller">
