@@ -1,4 +1,4 @@
-import { computed, intercept, observable, observe, toJS } from 'mobx'
+import { action, computed, intercept, observable, observe, toJS } from 'mobx'
 import { Log, Result } from 'sarif'
 import { augmentLog, filtersColumn, filtersRow } from '../shared'
 import '../shared/extension'
@@ -71,6 +71,15 @@ export class Store {
 	@observable keywords = ''
 	@observable filtersRow = filtersRow
 	@observable filtersColumn = filtersColumn
+
+	@action public clearFilters() {
+		this.keywords = ''
+		for (const column in this.filtersRow) {
+			for (const value in this.filtersRow[column]) {
+				this.filtersRow[column][value] = true
+			}
+		}
+	}
 
 	@observable public sortColumn = 'Line' as column
 	@observable public sortDir = SortDir.Asc

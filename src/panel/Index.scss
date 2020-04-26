@@ -45,6 +45,7 @@ a {
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
+	& > * + * { margin-top: 16px; }
 
 	& > div {
 		color: var(--vscode-button-foreground);
@@ -107,6 +108,7 @@ a {
 		overflow-y: overlay;
 		margin-top: 12px - 4px; // 4px optical to compensate for TH line height.
 		scroll-padding: 48px 0;
+		display: grid;
 	}
 }
 
