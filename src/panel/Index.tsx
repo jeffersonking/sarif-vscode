@@ -38,7 +38,7 @@ const levelToIcon = {
 
 	render() {
 		const {store} = this.props
-		if (!store.results.length) {
+		if (!store.logs.length) {
 			return <div className="svZeroData">
 				<div onClick={() => vscode.postMessage({ command: 'open' })}>
 					Open SARIF file
