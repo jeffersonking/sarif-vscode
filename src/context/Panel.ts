@@ -41,7 +41,7 @@ export class Panel {
 			}
 		)
 		this.panel.onDidDispose(() => this.panel = null)
-		
+
 		const src = Uri.file(`${context.extensionPath}/out/panel.js`)
 		const defaultState = {
 			version: 0,
@@ -60,6 +60,9 @@ export class Panel {
 					script-src  vscode-resource: 'unsafe-inline';
 					style-src   vscode-resource: 'unsafe-inline';
 					">
+				<style>
+					code { font-family: ${workspace.getConfiguration('editor').get('fontFamily')} }
+				</style>
 			</head>
 			<body>
 				<div id="root"></div>
