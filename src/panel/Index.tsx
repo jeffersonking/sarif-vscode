@@ -2,6 +2,7 @@ import { action, autorun, IObservableValue, IReactionDisposer, observable } from
 import { observer } from 'mobx-react'
 import * as React from 'react'
 import { Component, Fragment } from 'react'
+import ReactMarkdown from 'react-markdown'
 import { Log } from 'sarif'
 import '../shared/extension'
 import './codicon.css'
@@ -23,7 +24,7 @@ const levelToIcon = {
 
 @observer export class Index extends Component<{ store: Store }> {
 	private showFilterPopup = observable.box(false)
-	private detailsPaneHeight = observable.box(250)
+	private detailsPaneHeight = observable.box(300)
 
 	private columnWidths = new Map<column, IObservableValue<number>>([
 		['Line', observable.box(50)],
@@ -44,6 +45,13 @@ const levelToIcon = {
 					Open SARIF file
 				</div>
 			</div>
+		}
+
+		const renderRuleDesc = (desc?: { text: string, markdown?: string }) => {
+			if (!desc) return '—'
+			return desc.markdown
+				? <ReactMarkdown className="svMarkDown" source={desc.markdown} />
+				: desc.text
 		}
 
 		const {logs, selectedTab, groupBy, rows, sortColumn, sortDir, visibleColumns, groupsFilteredSorted} = store
@@ -194,11 +202,15 @@ const levelToIcon = {
 			<div className="svDetailsPane" style={{ height: detailsPaneHeight.get() }}>
 				{selected && <TabPanel titles={['Info', 'Call Trees']}>
 					<div className="svDetailsBody --svDetailsBodyInfo">
-						<div className="svDetailsMessage">{renderMessageWithEmbeddedLinks(selected, vscode.postMessage)}</div>
+						<div className="svDetailsMessage">
+							{selected._markdown
+								? <ReactMarkdown className="svMarkDown" source={selected._markdown} escapeHtml={false} />
+								: renderMessageWithEmbeddedLinks(selected, vscode.postMessage)}</div>
 						<div className="svDetailsInfo">
 							<span>Rule Id</span>			<span>{selected.ruleId}</span>
 							<span>Rule Name</span>			<span>{selected._rule?.name ?? '—'}</span>
-							<span>Rule Description</span>	<span>{selected._rule?.fullDescription?.text ?? selected._rule?.shortDescription?.text ?? '—'}</span>
+							<span>Rule Desc Short</span>	<span>{renderRuleDesc(selected._rule?.shortDescription)}</span>
+							<span>Rule Desc Full</span>		<span>{renderRuleDesc(selected._rule?.fullDescription)}</span>
 							<span>Level</span>				<span>{selected.level}</span>
 							<span>Kind</span>				<span>{selected.kind ?? '—'}</span>
 							<span>Baseline State</span>		<span>{selected.baselineState}</span>
