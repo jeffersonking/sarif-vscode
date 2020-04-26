@@ -167,23 +167,23 @@ const levelToIcon = {
 													{(() => {
 														switch (col) {
 															case 'Line':
-																return <span>{result._line < 0 ? '—' : result._line}</span>
+																return <div>{result._line < 0 ? '—' : result._line}</div>
 															case 'File':
-																return <span className="ellipsis" title={result._uri ?? '—'}>{result._uri?.file ?? '—'}</span>
+																return <div className="ellipsis" title={result._uri ?? '—'}>{result._uri?.file ?? '—'}</div>
 															case 'Message':
-																return <span className="ellipsis" title={result._message}>
+																return <div className="ellipsis" title={result._message}>
 																	{renderMessageWithEmbeddedLinks(result, vscode.postMessage)}
-																</span>
+																</div>
 															case 'Rule':
 																return <>
-																	<span>{result._rule?.name ?? '—'}</span>
-																	<span className="svSecondary">{result.ruleId}</span>
+																	<div>{result._rule?.name ?? '—'}</div>
+																	<div className="svSecondary">{result.ruleId}</div>
 																</>
 															default:
 																const capitalize = str => `${str[0].toUpperCase()}${str.slice(1)}`
 																const selector = store.groupings[col]
 																const text = capitalize(selector(result))
-																return <span className="ellipsis" title={text}>{text}</span>
+																return <div className="ellipsis" title={text}>{text}</div>
 														}
 													})()}
 												</span></td>
