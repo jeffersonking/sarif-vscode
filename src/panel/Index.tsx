@@ -46,20 +46,17 @@ const levelToIcon = {
 			</div>
 		}
 
-		const {logs, selectedTab, groupBy, rows, sortColumn, sortDir, filtersColumn} = store
+		const {logs, selectedTab, groupBy, rows, sortColumn, sortDir, visibleColumns} = store
 		const {showFilterPopup, detailsPaneHeight} = this
-		const columnsOptional = Object.entries(filtersColumn.Columns)
-			.filter(([_, state]) => state)
-			.map(([name, ]) => name)
-		const columns = ['File', 'Line', 'Message', ...columnsOptional].filter(col => col !== groupBy) as column[]
+		const columns = visibleColumns
 		const selected = store.selectedItem?.data
 		return <>
-			<div tabIndex={0} ref={ref => ref?.focus()} className="svListPane">
+			<div tabIndex={0} ref={ref => ref} className="svListPane">
 				<div className="svListHeader">
 					<TabBar titles={store.tabs} selection={store.selectedTab} />
 					<div className="flexFill"></div>
 					<div className="svFilterCombo">
-						<input type="text" placeholder="Filter. E.g: text" />
+						<input type="text" placeholder="Filter. E.g: text" value={store.keywords} onChange={e => store.keywords = e.target.value} />
 						<Icon name="filter" title="Filter Options" onMouseDown={e => e.stopPropagation()} onClick={e => showFilterPopup.set(!showFilterPopup.get())} />
 					</div>
 					<Icon name="collapse-all" title="Collapse All" onClick={() => store.groupsFilteredSorted.forEach(group => group.expanded = false)} />

@@ -31,6 +31,8 @@ export class Item<T> {
 	constructor(readonly data: T) {}
 }
 
+const isMatch = (field: string, keywords: string[]) => !keywords.length || keywords.some(keyword => field.includes(keyword))
+
 export type column = 'File' | 'Line' | 'Message' | 'Baseline' | 'Suppression' | 'Rule'
 
 export class Store {
@@ -66,6 +68,7 @@ export class Store {
 		return this.runs.map(run => run.results).flat()
 	}
 
+	@observable keywords = ''
 	@observable filtersRow = filtersRow
 	@observable filtersColumn = filtersColumn
 
@@ -78,19 +81,28 @@ export class Store {
 		Locations: 'File',
 		Rules: 'Rule',
 		Logs: 'File', // Temporary incorrect.
-	}
+	} as Record<string, column>
+
 	@computed public get groupBy() {
 		return this.mapTabToGroup[this.selectedTab.get()]
 	}
 
 	public groupings = { // aka columns
 		'File':        result => result._relativeUri,
-		'Line':        _      => '', // Not ever expected to be grouped.
+		'Line':        result => result._line + '', // Not ever expected to be grouped, but will be searched.
 		'Message':     result => result._message,
 		'Baseline':    result => result.baselineState,
 		'Suppression': result => result._suppression,
 		'Rule':        result => `${result._rule?.name ?? '—'}|${result.ruleId ?? '—'}`,
 	} as Record<column, (_: Result) => string>
+
+	@computed get visibleColumns() {
+		const {filtersColumn, groupBy} = this
+		const columnsOptional = Object.entries(filtersColumn.Columns)
+			.filter(([_, state]) => state)
+			.map(([name, ]) => name)
+		return ['File', 'Line', 'Message', ...columnsOptional].filter(col => col !== groupBy) as column[]
+	}
 
 	private sortings = {
 		'File': result => result._relativeUri?.file ?? '—',
@@ -117,7 +129,7 @@ export class Store {
 	}
 
 	@computed public get groupsFilteredSorted() {
-		const {groups, sortColumn, sortDir} = this
+		const {keywords, groupBy, groups, visibleColumns, sortColumn, sortDir} = this
 		const mapToList = record => Object.entries(record)
 			.filter(([, value]) => value)
 			.map(([label,]) => label.toLowerCase())
@@ -125,13 +137,21 @@ export class Store {
 		const levels = mapToList(this.filtersRow.Level)
 		const baselines = mapToList(this.filtersRow.Baseline)
 		const suppressions = mapToList(this.filtersRow.Suppression)
+
+		const filterKeywords = keywords.toLowerCase().split(/\s+/).filter(part => part)
+		const columns = [groupBy, ...visibleColumns]
+
 		for (const group of groups) {
 			group.itemsFiltered = group.items.filter(item => {
 				const result = item.data
 				if (!levels.includes(result.level)) return false
 				if (!baselines.includes(result.baselineState)) return false
 				if (!suppressions.includes(result._suppression)) return false
-				return true
+				return columns.some(colName => {
+					const selector = this.groupings[colName]
+					const field = selector(result).toLowerCase()
+					return isMatch(field, filterKeywords)
+				})
 			})
 		}
 
