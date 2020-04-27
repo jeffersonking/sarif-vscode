@@ -1,4 +1,4 @@
-import { IArraySplice, observable, observe } from 'mobx'
+import { autorun, IArraySplice, observable, observe } from 'mobx'
 import { Log, Result } from 'sarif'
 import { commands, ExtensionContext, TextEditorRevealType, Uri, ViewColumn, WebviewPanel, window, workspace } from 'vscode'
 import { regionToSelection, Store } from '.'
@@ -18,7 +18,8 @@ export class Panel {
 			const {type, removed, added} = change as unknown as IArraySplice<Log>
 			if (type !== 'splice') throw new Error('Only splice allowed on store.logs.')
 			this.spliceLogs(removed, added)
-
+		})
+		autorun(() => {
 			const count = store.results.length
 			if (!this.panel) return
 			this.panel.title = `${count} ${this.title}${count === 1 ? '' : 's'}`
