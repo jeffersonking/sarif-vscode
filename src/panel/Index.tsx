@@ -220,7 +220,7 @@ const levelToIcon = {
 							<span>Location</span>			<span>
 																{selected.locations?.map((loc, i) => {
 																	const uri = loc.physicalLocation?.artifactLocation?.uri.file
-																	return <span className="ellipsis">{uri}</span>
+																	return <span key={i} className="ellipsis">{uri}</span>
 																}) ?? <span>—</span>}
 															</span>
 							{/* <span>Properties</span>		<span><pre><code>{JSON.stringify(selected.properties, null, '  ')}</code></pre></span> */}
