@@ -224,44 +224,6 @@ mark {
 	}
 }
 
-.svDetailsPane {
-	box-sizing: border-box;
-	flex: 0 0 auto;
-	
-	overflow-y: overlay;
-
-	.svDetailsBody {
-		padding: 12px 22px;
-
-		&.svDetailsBodyCodeflow {
-			// margin: 0 -22px;
-			& > .svListItem {
-				// padding: 0 22px;
-				display: flex;
-				white-space: nowrap;
-			}
-		}
-
-		.svDetailsMessage {
-			margin-bottom: 16px;
-		}
-	
-		.svDetailsInfo {
-			display: grid;
-			grid-template-columns: 130px auto;
-			grid-column-gap: 4px;
-			grid-row-gap: 4px;
-
-			& > * {
-				display: grid;
-				&:nth-child(odd) {
-					@extend .svSecondary;
-				}
-			}
-		}
-	}
-}
-
 .svResizer {
 	flex: 0 0 auto;
 	background-color: var(--vscode-editorGroup-border);

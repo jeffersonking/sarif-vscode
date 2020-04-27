@@ -2,13 +2,13 @@ import { action, autorun, IObservableValue, IReactionDisposer, observable } from
 import { observer } from 'mobx-react'
 import * as React from 'react'
 import { Component, Fragment } from 'react'
-import ReactMarkdown from 'react-markdown'
 import { Log } from 'sarif'
 import '../shared/extension'
 import './codicon.css'
+export const FilterKeywordContext = React.createContext('') // Must come before Details and Hi
+import { Details } from './Index.details'
 import './Index.scss'
-export const FilterKeywordContext = React.createContext('') // Must come before Hi
-import { Badge, Checkrow, Hi, Icon, Popover, renderMessageWithEmbeddedLinks, ResizeHandle, TabBar, TabPanel } from './Index.widgets'
+import { Badge, Checkrow, Hi, Icon, Popover, renderMessageWithEmbeddedLinks, ResizeHandle, TabBar } from './Index.widgets'
 import { column, Group, SortDir, Store } from './Store'
 
 export * as React from 'react'
@@ -46,13 +46,6 @@ const levelToIcon = {
 					Open SARIF file
 				</div>
 			</div>
-		}
-
-		const renderRuleDesc = (desc?: { text: string, markdown?: string }) => {
-			if (!desc) return '—'
-			return desc.markdown
-				? <ReactMarkdown className="svMarkDown" source={desc.markdown} />
-				: desc.text
 		}
 
 		const {logs, selectedTab, groupBy, rows, sortColumn, sortDir, visibleColumns, groupsFilteredSorted, keywords} = store
@@ -202,54 +195,7 @@ const levelToIcon = {
 			<div className="svResizer">
 				<ResizeHandle size={detailsPaneHeight} />
 			</div>
-			<div className="svDetailsPane" style={{ height: detailsPaneHeight.get() }}>
-				{selected && <TabPanel titles={['Info', 'Call Trees']}>
-					<div className="svDetailsBody --svDetailsBodyInfo">
-						<div className="svDetailsMessage">
-							{selected._markdown
-								? <ReactMarkdown className="svMarkDown" source={selected._markdown} escapeHtml={false} />
-								: renderMessageWithEmbeddedLinks(selected, vscode.postMessage)}</div>
-						<div className="svDetailsInfo">
-							<span>Rule Id</span>			<span>{selected.ruleId}</span>
-							<span>Rule Name</span>			<span>{selected._rule?.name ?? '—'}</span>
-							<span>Rule Desc Short</span>	<span>{renderRuleDesc(selected._rule?.shortDescription)}</span>
-							<span>Rule Desc Full</span>		<span>{renderRuleDesc(selected._rule?.fullDescription)}</span>
-							<span>Level</span>				<span>{selected.level}</span>
-							<span>Kind</span>				<span>{selected.kind ?? '—'}</span>
-							<span>Baseline State</span>		<span>{selected.baselineState}</span>
-							<span>Locations</span>			<span>
-																{selected.locations?.map((loc, i) => {
-																	const uri = loc.physicalLocation?.artifactLocation?.uri.file
-																	return <span key={i} className="ellipsis">{uri}</span>
-																}) ?? <span>—</span>}
-															</span>
-							<span>Log</span>				<a href="#" title={selected._log._uri}
-																onClick={e => {
-																	e.preventDefault() // Cancel # nav.
-																	vscode.postMessage({ command: 'select', id: selected._id, gotoLog: true })}
-																}>
-																{selected._log._uri.file}
-															</a>
-							{/* <span>Properties</span>		<span><pre><code>{JSON.stringify(selected.properties, null, '  ')}</code></pre></span> */}
-						</div>
-					</div>
-					<div className="svDetailsBody svDetailsBodyCodeflow">
-						{selected.codeFlows
-							? selected.codeFlows[0]?.threadFlows?.[0].locations
-								.filter(tfLocation => tfLocation.location)
-								.map((tfLocation, i) => {
-									const {message, physicalLocation} = tfLocation.location
-									const fileName = physicalLocation?.artifactLocation?.uri?.split('/').pop() ?? '—'
-									return <div key={i} className="svListItem">
-										<div className="ellipsis">{message?.text ?? '—'}</div>
-										<div className="svSecondary">{fileName} [{physicalLocation.region.startLine}]</div>
-									</div>
-								})
-							: <span className="svSecondary">None</span>
-						}
-					</div>
-				</TabPanel>}
-			</div>
+			<Details result={selected} height={detailsPaneHeight} />
 			<Popover show={showFilterPopup} style={{ top: 35, right: 8 + 35 + 35 + 8 }}>
 				{Object.entries(store.filtersRow).map(([name, state]) => <Fragment key={name}>
 					<div className="svPopoverTitle">{name}</div>
