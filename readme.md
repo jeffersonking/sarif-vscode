@@ -36,6 +36,8 @@ Run `npm start` to start watching and building the project. Then:
 
 Run `npm test` to start watchiing and running the unit tests. These tests do not launch VS Code. Integration testing TBD.
 
+Run `npx vsce package` to produce a VSIX.
+
 ## Usage
 
 Once you have started running this extension in Visual Studio Code, there are a few ways to open/load SARIF Logs.
