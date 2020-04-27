@@ -1,5 +1,9 @@
 import { Log, Region } from 'sarif'
 
+type JsonLocation = { line: number, column: number } // Unused: pos
+type JsonRange = { value: JsonLocation, valueEnd: JsonLocation } // Unused: key, keyEnd
+export type JsonMap = Record<string, JsonRange>
+
 export type ResultId = [string, number, number]
 export type _Region = number | [number, number] | [number, number, number, number]
 
@@ -8,6 +12,7 @@ declare module 'sarif' {
 	interface Log {
 		_uri?: string
 		_uriUpgraded?: string
+		_jsonMap?: JsonMap
 		_augmented?: boolean
 		_distinct?: Map<string, string> // Technically per Run, practially does't matter right now.
 	}
@@ -17,7 +22,9 @@ declare module 'sarif' {
 	}
 
 	interface Result {
+		_log: Log
 		_id?: ResultId
+		_logRegion?: _Region
 		_uri?: string
 		_relativeUri?: string
 		_region?: _Region
@@ -60,10 +67,16 @@ export function augmentLog(log: Log) {
 
 		let implicitBase = undefined as string[]
 		run.results.forEach((result, resultIndex) => {
+			result._log = log
 			result._id = [log._uri, runIndex, resultIndex]
+			result._logRegion = (() => {
+				const region = log._jsonMap?.[`/runs/${runIndex}/results/${resultIndex}`]
+				if (!region) return // Panel will not have a jsonMap
+				const {value, valueEnd} = region
+				return [ value.line, value.column, valueEnd.line, valueEnd.column ] as _Region
+			})()
 
 			const ploc = result.locations?.[0]?.physicalLocation
-
 			let uri = ploc?.artifactLocation?.uri
 
 			// Special handling of binary files.
@@ -106,6 +119,7 @@ export function augmentLog(log: Log) {
 		}
 	})
 	log._distinct = mapDistinct(fileAndUris)
+	log._jsonMap = undefined // Free-up memory.
 }
 
 export function parseRegion(region: Region): _Region {

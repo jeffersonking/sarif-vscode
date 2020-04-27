@@ -98,6 +98,11 @@ export class Panel {
 				if (!result) return
 
 				const [uri, region] = (() => {
+					if (message.gotoLog) {
+						const log = store.logs.find(log => log._uri === logUri)
+						return [log._uriUpgraded ?? log._uri, result._logRegion]
+					}
+
 					const relatedId = message.relatedLocationId as number
 					if (relatedId !== undefined) {
 						const rploc = result?.relatedLocations?.find(rloc => rloc.id === +relatedId)?.physicalLocation

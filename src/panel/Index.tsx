@@ -217,12 +217,19 @@ const levelToIcon = {
 							<span>Level</span>				<span>{selected.level}</span>
 							<span>Kind</span>				<span>{selected.kind ?? '—'}</span>
 							<span>Baseline State</span>		<span>{selected.baselineState}</span>
-							<span>Location</span>			<span>
+							<span>Locations</span>			<span>
 																{selected.locations?.map((loc, i) => {
 																	const uri = loc.physicalLocation?.artifactLocation?.uri.file
 																	return <span key={i} className="ellipsis">{uri}</span>
 																}) ?? <span>—</span>}
 															</span>
+							<span>Log</span>				<a href="#" title={selected._log._uri}
+																onClick={e => {
+																	e.preventDefault() // Cancel # nav.
+																	vscode.postMessage({ command: 'select', id: selected._id, gotoLog: true })}
+																}>
+																{selected._log._uri.file}
+															</a>
 							{/* <span>Properties</span>		<span><pre><code>{JSON.stringify(selected.properties, null, '  ')}</code></pre></span> */}
 						</div>
 					</div>

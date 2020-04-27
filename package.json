@@ -46,6 +46,7 @@
 		"@types/vscode": "1.44.0",
 		"copy-webpack-plugin": "5.1.1",
 		"css-loader": "3.4.2",
+		"json-source-map": "0.6.1",
 		"mocha": "7.1.1",
 		"mock-require": "3.0.3",
 		"node-sass": "4.13.1",

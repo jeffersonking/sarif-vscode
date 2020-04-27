@@ -1,12 +1,13 @@
 import { execSync } from 'child_process'
 import * as fs from 'fs'
+import jsonMap from 'json-source-map'
 import { join } from 'path'
 import { Log } from 'sarif'
 import { eq, gt, lt } from 'semver'
 import { tmpNameSync } from 'tmp'
 import { ProgressLocation, Uri, window } from 'vscode'
 import { Store } from '.'
-import { augmentLog } from '../shared'
+import { augmentLog, JsonMap } from '../shared'
 
 export async function loadLogs(uris: Uri[]) {
 	const logs = uris.slice(0, 20)
@@ -14,8 +15,9 @@ export async function loadLogs(uris: Uri[]) {
 			try {
 				const file = fs.readFileSync(uri.fsPath, 'utf8')  // Assume scheme file.
 					.replace(/^\uFEFF/, '') // Trim BOM.
-				const log = JSON.parse(file) as Log
+				const {data: log, pointers} = jsonMap.parse(file) as { data: Log, pointers: JsonMap}
 				log._uri = uri.toString()
+				log._jsonMap = pointers
 				return log
 			} catch (error) {
 				window.showErrorMessage(`Failed to parse '${uri.fsPath}'`)
@@ -41,9 +43,10 @@ export async function loadLogs(uris: Uri[]) {
 					try {
 						const tempPath = upgradeLog(fsPath)
 						const file = fs.readFileSync(tempPath, 'utf8') // Assume scheme file.
-						const log = JSON.parse(file) as Log
+						const {data: log, pointers} = jsonMap.parse(file) as { data: Log, pointers: JsonMap}
 						log._uri = oldLog._uri
 						log._uriUpgraded = Uri.file(tempPath).toString()
+						log._jsonMap = pointers
 						logsNoUpgrade.push(log)
 					} catch {
 						window.showErrorMessage(`Failed to upgrade '${fsPath}'`)
@@ -83,6 +86,6 @@ export function upgradeLog(path: string) {
 	const name = tmpNameSync()
 	const multitoolExe = `Sarif.Multitool${process.platform === 'win32' ? '.exe' : ''}`
 	const multitoolExePath = join(Store.extensionPath || process.cwd(), 'out', multitoolExe)
-	execSync(`${multitoolExePath} transform ${path} --force --output ${name}`)
+	execSync(`${multitoolExePath} transform ${path} --force --pretty-print --output ${name}`)
 	return name
 }

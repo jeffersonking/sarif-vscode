@@ -15,6 +15,7 @@ body {
 a {
 	text-decoration: none;
 	&:hover { text-decoration: underline; }
+	&:focus { outline: none; }
 }
 
 ::placeholder {
@@ -251,7 +252,7 @@ mark {
 			grid-column-gap: 4px;
 			grid-row-gap: 4px;
 
-			& > span {
+			& > * {
 				display: grid;
 				&:nth-child(odd) {
 					@extend .svSecondary;
