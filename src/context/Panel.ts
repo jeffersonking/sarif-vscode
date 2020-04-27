@@ -107,7 +107,7 @@ export class Panel {
 				})() as [string, _Region]
 				if (!uri) return
 
-				const validatedUri = await basing.translateArtifactToLocal(result._uri)
+				const validatedUri = await basing.translateArtifactToLocal(uri)
 				if (!validatedUri) return
 
 				await this.selectLocal(logUri, validatedUri, region)
