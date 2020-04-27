@@ -25,7 +25,7 @@ export async function loadLogs(uris: Uri[]) {
 		.filter(log => log)
 	const logsNoUpgrade = [] as Log[]
 	const logsToUpgrade = [] as Log[]
-	let warnUpgradeExtension = logs.some(log => detectUpgrade(log, logsNoUpgrade, logsToUpgrade))
+	const warnUpgradeExtension = logs.some(log => detectUpgrade(log, logsNoUpgrade, logsToUpgrade))
 	const upgrades = logsToUpgrade.length
 	if (upgrades) {
 		await window.withProgress(
