@@ -27,7 +27,10 @@
 			{
 				"command": "sarif.clearState",
 				"title": "SARIF: Clear State"
-			}
+			},
+			{ "command": "sarif.apiOpenLogs", "title": "SARIF: Test Open Logs via API" },
+			{ "command": "sarif.apiCloseLogs", "title": "SARIF: Test Close Logs via API" },
+			{ "command": "sarif.apiCloseAllLogs", "title": "SARIF: Test Close All Logs via API" }
 		]
 	},
 	"scripts": {
