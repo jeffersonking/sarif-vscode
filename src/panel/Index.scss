@@ -251,8 +251,11 @@ mark {
 			grid-column-gap: 4px;
 			grid-row-gap: 4px;
 
-			span:nth-child(odd) {
-				@extend .svSecondary;
+			& > span {
+				display: grid;
+				&:nth-child(odd) {
+					@extend .svSecondary;
+				}
 			}
 		}
 	}

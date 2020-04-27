@@ -217,6 +217,13 @@ const levelToIcon = {
 							<span>Level</span>				<span>{selected.level}</span>
 							<span>Kind</span>				<span>{selected.kind ?? '—'}</span>
 							<span>Baseline State</span>		<span>{selected.baselineState}</span>
+							<span>Location</span>			<span>
+																{selected.locations?.map((loc, i) => {
+																	const uri = loc.physicalLocation?.artifactLocation?.uri.file
+																	return <span className="ellipsis">{uri}</span>
+																}) ?? <span>—</span>}
+															</span>
+							{/* <span>Properties</span>		<span><pre><code>{JSON.stringify(selected.properties, null, '  ')}</code></pre></span> */}
 						</div>
 					</div>
 					<div className="svDetailsBody svDetailsBodyCodeflow">
