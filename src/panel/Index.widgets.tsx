@@ -38,7 +38,7 @@ export class Hi extends React.Component<React.HTMLAttributes<HTMLDivElement>> {
 	render() {
 		const {children, ...divProps} = this.props
 		return <div {...divProps}>{(() => {
-			if (!children) return null
+			if (children === undefined) return null
 			if (!['number', 'string'].includes(typeof children)) return children // Gracefully (and sliently) fail if not a string.
 
 			let term = this.context
@@ -111,7 +111,7 @@ export class Hi extends React.Component<React.HTMLAttributes<HTMLDivElement>> {
 export class ResizeHandle extends Component<{ size: IObservableValue<number>, horizontal?: boolean }> {
 	private startingMouse = Number.NaN
 	private startingSize = Number.NaN
-	
+
 	@action.bound private onMouseDown(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
 		const {horizontal} = this.props
 		this.startingMouse = horizontal ? e.nativeEvent.x : e.nativeEvent.y
