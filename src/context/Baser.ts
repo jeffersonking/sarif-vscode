@@ -59,6 +59,10 @@ export class Baser {
 		if (artifactPath.startsWith('sarif:')) return artifactPath
 
 		// Hacky.
+		// Note: Uri.parse()
+		// Uri.parse('a/b.c')	 => file:///a/b.c
+		// Uri.parse('/a/b.c')	 => file:///a/b.c
+		// Uri.parse('c:\a\b.c') => c:a%08.c
 		const pathExists = async (path: string) => {
 			try {
 				await workspace.openTextDocument(Uri.parse(path))
@@ -78,9 +82,12 @@ export class Baser {
 				return artifactPath
 
 			// Known Bases
-			for (const [oldBase, newBase] of this.basesArtifactToLocal) {
-				if (!artifactPath.startsWith(oldBase)) continue // Just let it fall through?
-				const localPath = artifactPath.replace(oldBase, newBase)
+			for (const [artifactBase, localBase] of this.basesArtifactToLocal) {
+				if (!artifactPath.startsWith(artifactBase)) continue // Just let it fall through?
+
+				const normalizedArtifactPath = `${artifactPath.startsWith('/') ? '' : '/'}${artifactPath}`
+				const localPath = normalizedArtifactPath.replace(artifactBase, localBase)
+
 				if (await pathExists(localPath)) {
 					this.updateValidatedPaths(artifactPath, localPath)
 					return localPath
@@ -95,7 +102,7 @@ export class Baser {
 				this.updateBases(artifactPath.split('/'), localPath.split('/'))
 				return localPath
 			}
-			
+
 			// Open Docs
 			for (const doc of workspace.textDocuments) {
 				const localPath = doc.uri.path
@@ -121,7 +128,7 @@ export class Baser {
 					// Consider allowing folders.
 				})
 				if (!files) return // User cancelled.
-				
+
 				const partsOld = artifactPath.split('/')
 				const partsNew = files[0]?.path.split('/')
 				if (partsOld.last !== partsNew.last) {

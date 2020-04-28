@@ -21,7 +21,8 @@ mock('vscode', {
 	Uri,
 	window: {
 		showWarningMessage: () => {},
-		withProgress: async (_options, task) => await task(progress)
+		withProgress: async (_options, task) => await task(progress),
+		showErrorMessage: async (message) => {}
 	}
 })
 
