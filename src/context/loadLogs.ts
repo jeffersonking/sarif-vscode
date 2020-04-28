@@ -48,7 +48,7 @@ export async function loadLogs(uris: Uri[]) {
 						log._uriUpgraded = Uri.file(tempPath).toString()
 						log._jsonMap = pointers
 						logsNoUpgrade.push(log)
-					} catch {
+					} catch (error) {
 						window.showErrorMessage(`Failed to upgrade '${fsPath}'`)
 					}
 				}
