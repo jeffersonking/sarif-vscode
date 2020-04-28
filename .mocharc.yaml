@@ -2,7 +2,7 @@
 spec: src/**/*.spec.ts
 extension:
 - ts
-reporter: min
+reporter: spec
 require: ts-node/register
 timeout: 3000 # For log upgrades.
 watch: true
