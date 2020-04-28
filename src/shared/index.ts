@@ -26,6 +26,7 @@ declare module 'sarif' {
 		_id?: ResultId
 		_logRegion?: _Region
 		_uri?: string
+		_uriContents?: string // ArtifactContent. Do not use this uri for display.
 		_relativeUri?: string
 		_region?: _Region
 		_line?: number
@@ -77,16 +78,7 @@ export function augmentLog(log: Log) {
 			})()
 
 			const ploc = result.locations?.[0]?.physicalLocation
-			let uri = ploc?.artifactLocation?.uri
-
-			// Special handling of binary files.
-			const artIndex = ploc?.artifactLocation?.index
-			const artifact = run.artifacts?.[artIndex]
-			const contents = artifact?.contents
-			if (contents?.text || contents?.binary) {
-				uri = encodeURI(`sarif:${encodeURIComponent(log._uri)}/${runIndex}/${artIndex}/${artifact.location?.uri.file ?? 'Untitled'}`)
-			}
-
+			const uri = ploc?.artifactLocation?.uri
 			result._uri = uri
 			{
 				const parts = uri?.split('/')
@@ -100,6 +92,14 @@ export function augmentLog(log: Log) {
 			}
 			result._region = parseRegion(ploc?.region)
 			result._line = result._region?.[0] ?? result._region ?? -1 // _line is sugar for _region
+			{ // Special handling of binary files.
+				const artIndex = ploc?.artifactLocation?.index
+				const artifact = run.artifacts?.[artIndex]
+				const contents = artifact?.contents
+				if (contents?.text || contents?.binary) {
+					result._uriContents = encodeURI(`sarif:${encodeURIComponent(log._uri)}/${runIndex}/${artIndex}/${artifact.location?.uri.file ?? 'Untitled'}`)
+				}
+			}
 
 			result._rule = run.tool.driver.rules?.[result.ruleIndex] // If result.ruleIndex is undefined, that's okay.
 			const message = result._rule?.messageStrings?.[result.message.id] ?? result.message
