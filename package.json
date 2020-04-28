@@ -36,6 +36,7 @@
 	"scripts": {
 		"start": "webpack-dev-server --mode development & webpack --watch",
 		"test": "mocha",
+		"package": "npx vsce package",
 		"vscode:prepublish": "webpack"
 	},
 	"devDependencies": {
