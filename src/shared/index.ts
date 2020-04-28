@@ -22,7 +22,7 @@ declare module 'sarif' {
 	}
 
 	interface Result {
-		_log: Log
+		_log?: Log
 		_id?: ResultId
 		_logRegion?: _Region
 		_uri?: string
