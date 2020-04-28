@@ -108,7 +108,7 @@ export class Panel {
 						const rploc = result?.relatedLocations?.find(rloc => rloc.id === +relatedId)?.physicalLocation
 						return [rploc?.artifactLocation?.uri, parseRegion(rploc?.region)]
 					}
-					return [result._uriContents, result._uri, result._region]
+					return [result._uriContents ?? result._uri, result._region]
 				})() as [string, _Region]
 				if (!uri) return
 
