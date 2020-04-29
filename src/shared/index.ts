@@ -149,7 +149,7 @@ export const filtersRow = {
 	Level: {
 		'Error': true,
 		'Warning': true,
-		'Updated': true,
+		'Note': true,
 		'None': true,
 	},
 	Baseline: {
