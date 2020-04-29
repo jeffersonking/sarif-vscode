@@ -6,7 +6,13 @@ jobs:
         name: Package
         runs-on: macos-latest
         steps:
-            - uses: actions/checkout@v2
+            - uses: actions/checkout@v2            
+            - uses: actions/cache@v1
+              with:
+                  path: ~/.npm
+                  key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+                  restore-keys: |
+                      ${{ runner.os }}-node-
             - run: |
                   npm install
                   npm install --force @microsoft/sarif-multitool-darwin @microsoft/sarif-multitool-win32
