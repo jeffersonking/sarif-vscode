@@ -11,6 +11,6 @@ jobs:
                   npm install
                   npm install --force @microsoft/sarif-multitool-darwin @microsoft/sarif-multitool-win32
                   npx vsce package
-            - uses: actions/upload-artifact@v1
+            - uses: actions/upload-artifact@v2
               with:
                   path: sarif-vscode-0.0.0.vsix
