@@ -47,6 +47,7 @@
 		]
 	},
 	"scripts": {
+		"prestart": "npm install",
 		"start": "webpack-dev-server --mode development & webpack --watch",
 		"test": "mocha",
 		"package": "npx vsce package",
