@@ -1,12 +1,12 @@
 import { computed, IArrayWillSplice, intercept, observable } from 'mobx'
 import { Log, Result } from 'sarif'
-import { commands, DiagnosticSeverity, ExtensionContext, languages, Memento, Range, Selection, TextDocument, ThemeColor, window, workspace } from 'vscode'
+import { commands, DiagnosticSeverity, ExtensionContext, extensions, languages, Memento, Range, Selection, TextDocument, ThemeColor, Uri, window, workspace } from 'vscode'
 import { mapDistinct, _Region } from '../shared'
 import '../shared/extension'
 import { Baser } from './Baser'
 import { loadLogs } from './loadLogs'
 import { Panel } from './Panel'
-import { extensions, Uri } from 'vscode' // For API
+import { update } from './update'
 
 declare module 'vscode' {
 	interface Diagnostic {
@@ -182,6 +182,9 @@ export async function activate(context: ExtensionContext) {
 			token.isCancellationRequested = true
 		}
 	})
+
+	// Update
+	commands.registerCommand('sarif.updateExtension', async () => await update())
 
 	// API
 	commands.registerCommand('sarif.apiOpenLogs', async () => {

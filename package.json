@@ -28,6 +28,10 @@
 				"command": "sarif.clearState",
 				"title": "SARIF: Clear State"
 			},
+			{
+				"command": "sarif.updateExtension",
+				"title": "SARIF: Update Extension"
+			},
 			{ "command": "sarif.apiOpenLogs", "title": "SARIF: Test Open Logs via API" },
 			{ "command": "sarif.apiCloseLogs", "title": "SARIF: Test Close Logs via API" },
 			{ "command": "sarif.apiCloseAllLogs", "title": "SARIF: Test Close All Logs via API" }
@@ -41,6 +45,7 @@
 	},
 	"devDependencies": {
 		"@actions/core": "1.2.3",
+		"@types/follow-redirects": "1.8.0",
 		"@actions/github": "2.1.1",
 		"@types/mocha": "2.2.48",
 		"@types/node": "10.12.21",
@@ -71,6 +76,7 @@
 		"webpack-dev-server": "3.10.3"
 	},
 	"dependencies": {
+		"follow-redirects": "1.11.0",
 		"mobx": "5.15.4",
 		"mobx-react": "6.1.8",
 		"react": "16.13.1",
