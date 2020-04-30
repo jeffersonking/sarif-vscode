@@ -1,0 +1,23 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "start",
+			"isBackground": true,
+			"promptOnClose": true,
+			"problemMatcher": {
+				"background": {
+					"beginsPattern": "webpack is watching the files…",
+					"endsPattern": "Compiled (successfully|with warnings)"
+				},
+				"pattern": {
+					"regexp": "Failed to compile.",
+					"kind": "file",
+					"file": 0,
+					"message": 0
+				}
+			}
+		}
+	]
+}
