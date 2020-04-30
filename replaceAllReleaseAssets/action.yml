@@ -1,0 +1,19 @@
+name: 'Replace All Release Assets'
+description: 'Replace All Release Assets.'
+author: 'Jeff King'
+inputs:
+  release_id:
+    description: 'The ID of the release in which you want to replace assets.'
+    required: true
+  asset_path:
+    description: 'The path to the asset you want to upload'
+    required: true
+  asset_name:
+    description: 'The name of the asset you want to upload'
+    required: true
+  asset_content_type:
+    description: 'The content-type of the asset you want to upload. See the supported Media Types here: https://www.iana.org/assignments/media-types/media-types.xhtml for more information'
+    required: true
+runs:
+  using: 'node12'
+  main: 'index.js'

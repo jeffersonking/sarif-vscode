@@ -2,21 +2,26 @@ name: Package
 on: push
 
 jobs:
-    package:
-        name: Package
-        runs-on: macos-latest
-        steps:
-            - uses: actions/checkout@v2            
-            - uses: actions/cache@v1
-              with:
-                  path: ~/.npm
-                  key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-                  restore-keys: |
-                      ${{ runner.os }}-node-
-            - run: |
-                  npm install
-                  npm install --force @microsoft/sarif-multitool-darwin @microsoft/sarif-multitool-win32
-                  npx vsce package
-            - uses: actions/upload-artifact@v2
-              with:
-                  path: sarif-vscode-0.0.0.vsix
+  package:
+    name: Package
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/cache@v1
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+    - run: |
+        npm install
+        npm install --force @microsoft/sarif-multitool-darwin @microsoft/sarif-multitool-win32
+        npx vsce package
+    - uses: ./replaceAllReleaseAssets
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        release_id: 26029733
+        asset_path: ./sarif-vscode-0.0.0.vsix
+        asset_name: sarif-vscode-0.0.0.vsix
+        asset_content_type: application/vsix

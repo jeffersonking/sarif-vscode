@@ -40,6 +40,8 @@
 		"vscode:prepublish": "webpack"
 	},
 	"devDependencies": {
+		"@actions/core": "1.2.3",
+		"@actions/github": "2.1.1",
 		"@types/mocha": "2.2.48",
 		"@types/node": "10.12.21",
 		"@types/react": "16.9.26",
@@ -48,6 +50,7 @@
 		"@types/semver": "7.1.0",
 		"@types/tmp": "0.1.0",
 		"@types/vscode": "1.44.0",
+		"@zeit/ncc": "0.22.1",
 		"copy-webpack-plugin": "5.1.1",
 		"css-loader": "3.4.2",
 		"json-source-map": "0.6.1",
