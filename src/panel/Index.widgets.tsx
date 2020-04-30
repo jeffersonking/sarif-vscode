@@ -92,18 +92,14 @@ export class Hi extends React.Component<React.HTMLAttributes<HTMLDivElement>> {
 }
 
 @observer export class TabPanel extends Component<{ titles: string[] }> {
-	@observable private selected = 0
+	private selection = observable.box(this.props.titles[0])
 	render() {
-		const {selected} = this
+		const {selection} = this
 		const {children, titles} = this.props
 		const array = React.Children.toArray(children)
 		return <>
-			<div className="svTabs">
-				{titles.map((title, i) => <div key={i} onClick={() => this.selected = i}>
-					<div className={selected === i ? 'svTabSelected' : ''}>{title}</div>
-				</div>)}
-			</div>
-			{array[selected]}
+			<TabBar titles={titles} selection={selection} />
+			{array[titles.indexOf(selection.get())]}
 		</>
 	}
 }
