@@ -54,7 +54,7 @@ const levelToIcon = {
 		const columns = visibleColumns
 		const selected = store.selectedItem?.data
 		return <FilterKeywordContext.Provider value={keywords ?? ''}>
-			<div tabIndex={0} ref={ref => ref} className="svListPane">
+			<div className="svListPane">
 				<div className="svListHeader">
 					<TabBar titles={store.tabs} selection={store.selectedTab} />
 					<div className="flexFill"></div>
@@ -69,7 +69,7 @@ const levelToIcon = {
 						onClick={() => store.groupsFilteredSorted.forEach(group => group.expanded = allCollapsed)} />
 					<Icon name="folder-opened" title="Open Log" onClick={() => vscode.postMessage({ command: 'open' })} />
 				</div>
-				<div className="svListTableScroller">
+				<div className="svListTableScroller" tabIndex={0} onKeyDown={this.onKeyDown}>
 					{selectedTab.get() === 'Logs'
 						? <div className="svLogsPane">
 							{logs.map((log, i) => {
@@ -210,12 +210,14 @@ const levelToIcon = {
 		</FilterKeywordContext.Provider>
 	}
 
-	@action.bound private onKeyDown(e: KeyboardEvent) {
+	@action.bound private onKeyDown(e: React.KeyboardEvent) {
 		const {store} = this.props
 		if (e.key === 'ArrowUp') {
+			e.preventDefault() // Prevent Scroll
 			store.selectedItem = store.selectedItem?.prev ?? store.selectedItem
 		}
 		if (e.key === 'ArrowDown') {
+			e.preventDefault() // Prevent Scroll
 			store.selectedItem = store.selectedItem?.next ?? store.selectedItem
 		}
 		if (e.key === 'Escape') {
@@ -263,7 +265,6 @@ const levelToIcon = {
 	private selectionAutoRunDisposer: IReactionDisposer
 
 	componentDidMount() {
-		addEventListener('keydown', this.onKeyDown)
 		addEventListener('message', this.onMessage)
 		this.selectionAutoRunDisposer = autorun(() => {
 			const result = this.props.store.selectedItem?.data
@@ -273,7 +274,6 @@ const levelToIcon = {
 	}
 
 	componentWillUnmount() {
-		removeEventListener('keydown', this.onKeyDown)
 		removeEventListener('message', this.onMessage)
 		this.selectionAutoRunDisposer()
 	}
