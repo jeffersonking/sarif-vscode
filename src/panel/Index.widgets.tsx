@@ -6,6 +6,10 @@ import { Result } from 'sarif'
 import { FilterKeywordContext } from './Index'
 import './Index.widgets.scss'
 
+function css(...names: (string | false)[]) {
+	return names.filter(name => name).join(' ')
+}
+
 export class Badge extends PureComponent<{ text: { toString: () => string } }> {
 	render() {
 		return <span className="svBadge">{this.props.text.toString()}</span>
@@ -49,6 +53,37 @@ export class Hi extends React.Component<React.HTMLAttributes<HTMLDivElement>> {
 				.split(new RegExp(`(${term.split(/\s+/).filter(part => part).join('|')})`, 'i'))
 				.map((word, i) => i % 2 === 1 ? <mark key={i}>{word}</mark> : word)
 		})()}</div>
+	}
+}
+
+export interface ListProps<T> {
+	items?: ReadonlyArray<T>
+	renderItem: (item: T, i: number) => React.ReactNode,
+	selection?: IObservableValue<number>
+}
+@observer export class List<T> extends PureComponent<ListProps<T>> {
+	private selection = this.props.selection ?? observable.box(0)
+	render() {
+		const {items, renderItem, children} = this.props
+		return !items?.length
+			? <div className="svList svListZero">{children}</div>
+			: <div tabIndex={0} className="svList" onKeyDown={this.onKeyDown}>
+				{(items || []).map((item, i) => {
+					return <div key={i}
+						className={css('svListItem', i === this.selection.get() && 'svItemSelected')}
+						onClick={() => this.selection.set(i)}>
+						{renderItem(item, i)}
+					</div>
+				})}
+			</div>
+	}
+	@action.bound private onKeyDown(e: React.KeyboardEvent<Element>) {
+		e.stopPropagation()
+		const handlers = {
+			ArrowUp:   () => this.selection.set(Math.max(this.selection.get() - 1, 0)),
+			ArrowDown: () => this.selection.set(Math.min(this.selection.get() + 1, this.props.items.length - 1))
+		}
+		handlers[e.key]?.()
 	}
 }
 

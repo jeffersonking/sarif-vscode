@@ -45,6 +45,18 @@
 	}
 }
 
+.svList {
+	&.svListZero {
+		display: grid;
+		align-items: center;
+		justify-items: center;
+	}
+
+	.svItemSelected {
+		background-color: var(--vscode-list-inactiveSelectionBackground);
+	}
+}
+
 .svPopover {
 	position: absolute;
 	z-index: 1;
