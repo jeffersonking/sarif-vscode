@@ -47,7 +47,8 @@
 		]
 	},
 	"scripts": {
-		"prestart": "npm install",
+		"postinstall": "npm install --force --E @microsoft/sarif-multitool-darwin @microsoft/sarif-multitool-win32",
+		"prestart": "node install",
 		"start": "webpack-dev-server -d & webpack --watch",
 		"test": "mocha",
 		"package": "npx vsce package",

@@ -17,26 +17,19 @@
     index.html          For Webpack Dev Server.
 ```
 
-## Installation
-```
-npm install
-npm install --force @microsoft/sarif-multitool-darwin @microsoft/sarif-multitool-win32
-```
-The Multitool in installed with force to override the normal platform/OS guards.
-
-On MacOS, run `chmod u+x Sarif.Multitool` on the Multitool binary to enable execution. Will look at automating this in the future.
-
 ## Development
 
-Run `npm start` to start watching and building the project. Then:
-* `Start Debugging` or `Run Without Debugging` to run via the VS Code Extension Host.
-* Open `http://localhost:8000/` to run the `Panel` portion by itself. This will live refresh.
+F5 (`Start Debugging` or `Run Without Debugging`) to launch this extension within (a new instance of) VS Code.
+* `npm install` will automatically run if needed.
+* Subsequent changes are watched and automatically rebuilt. Use command `workbench.action.reloadWindow` to see the changes.
+* Optionally open `http://localhost:8000/` to run the `Panel` portion by itself. This will live refresh.
   * Requires files from the `/samples` which you will need to provide yourself.
-* If `npm start` is not working, the backup is to run `npx webpack` to build manually.
+* If F5 or `npm start` is not working, the backup is to run `npx webpack` to build manually.
 
-Run `npm test` to start watchiing and running the unit tests. These tests do not launch VS Code. Integration testing TBD.
+Run `npm test` to start watching and running the unit tests. This script assumes `npm install` has already happened.
 
 Run `npx vsce package` to produce a VSIX.
+
 
 ## Usage
 
@@ -54,6 +47,7 @@ SARIF Logs reference Artifacts (aka source files). Paths for these Artifacts com
 * Attempt to automatically match files present in your workspace.
 * Attempt to automatically match documents currently open if no workspace (folder) is open.
 * Extrapolate paths from file you have already located.
+
 
 ## Not Yet Implemented
 
