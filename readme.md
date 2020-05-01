@@ -25,7 +25,7 @@ Other common tasks:
 | Command | Comments |
 | --- | --- |
 | `npm run server` | Run the `Panel` standalone at `http://localhost:8000`. Auto-refreshes. |
-| `npm test` | Start watching and running the unit tests. This script assumes `npm install` has already happened.
+| `npm test` | Run and watch unit tests.
 | `npx webpack` | Build manually. |
 | `npx vsce package` | Produce a VSIX. |
 
