@@ -36,8 +36,9 @@ const common = {
 		all: false,
 		assets: true,
 		builtAt: true,
-		timings: true,
+		errors: true,
 		performance: true,
+		timings: true,
 	},
 }
 

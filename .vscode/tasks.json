@@ -11,12 +11,17 @@
 					"beginsPattern": "webpack is watching the files…",
 					"endsPattern": "Compiled (successfully|with warnings)"
 				},
-				"pattern": {
-					"regexp": "Failed to compile.",
-					"kind": "file",
-					"file": 0,
-					"message": 0
-				}
+				"pattern": [
+					{
+						"regexp": "ERROR in (.+)$",
+						"kind": "file",
+						"file": 1
+					},
+					{
+						"regexp": "(.+)$",
+						"message": 1
+					}
+				]
 			}
 		}
 	]
