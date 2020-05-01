@@ -127,7 +127,6 @@ mark {
 	line-height: 22px;
 
 	cursor: pointer;
-	&:hover:not(.svItemSelected) { background-color: var(--vscode-list-hoverBackground); }
 }
 
 .svSecondary {
@@ -220,6 +219,10 @@ mark {
 		align-items: baseline !important; // Override .svListTable td > .svCell
 		padding-right: 24px;
 		.svSecondary { font-size: .9em; line-height: 10px; }
+	}
+
+	.svListItem {
+		&:hover:not(.svItemSelected) { background-color: var(--vscode-list-hoverBackground); }
 	}
 
 	.svItemSelected {
