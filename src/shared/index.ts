@@ -68,7 +68,7 @@ export function augmentLog(log: Log) {
 	log.runs.forEach((run, runIndex) => {
 
 		let implicitBase = undefined as string[]
-		run.results.forEach((result, resultIndex) => {
+		run.results?.forEach((result, resultIndex) => {
 			result._log = log
 			result._run = run
 			result._id = [log._uri, runIndex, resultIndex]
@@ -116,9 +116,9 @@ export function augmentLog(log: Log) {
 		})
 
 		run._implicitBase = implicitBase?.join('/')
-		for (const result of run.results) {
+		run.results?.forEach(result => {
 			result._relativeUri = result._uri?.replace(run._implicitBase , '') ?? '' // For grouping, Empty works more predictably than undefined
-		}
+		})
 	})
 	log._distinct = mapDistinct(fileAndUris)
 	log._jsonMap = undefined // Free-up memory.

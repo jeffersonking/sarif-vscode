@@ -72,7 +72,7 @@ export class Store {
 	}
 
 	@computed public get results() {
-		return this.runs.map(run => run.results).flat()
+		return this.runs.map(run => run.results || []).flat()
 	}
 
 	@observable keywords = ''
