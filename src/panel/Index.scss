@@ -15,7 +15,6 @@ body {
 a {
 	text-decoration: none;
 	&:hover { text-decoration: underline; }
-	&:focus { outline: none; }
 }
 
 ::placeholder {
@@ -25,6 +24,11 @@ a {
 mark {
 	color: unset;
 	background: var(--vscode-editor-findMatchHighlightBackground);
+}
+
+*:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
 }
 
 // ^^ Move to index.html ^^
@@ -210,7 +214,7 @@ mark {
 	.svBadge {
 		margin-left: 10px;
 		background-color: var(--vscode-badge-background);
-    	color: var(--vscode-badge-foreground);
+		color: var(--vscode-badge-foreground);
 	}
 
 	.svGroup {
