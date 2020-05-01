@@ -40,19 +40,25 @@ export class Icon extends PureComponent<{ name: string, title?: string } & React
 export class Hi extends React.Component<React.HTMLAttributes<HTMLDivElement>> {
 	static contextType = FilterKeywordContext
 	render() {
-		const {children, ...divProps} = this.props
-		return <div {...divProps}>{(() => {
-			if (children === undefined) return null
-			if (!['number', 'string'].includes(typeof children)) return children // Gracefully (and sliently) fail if not a string.
-
-			let term = this.context
+		let term = this.context
+		function hi(children: React.ReactNode) {
 			if (!term || term.length <= 1) return children
-
-			term = term && term.replace(/[\-\[\]\/\{\}\(\)\+\?\.\\\^\$\|]/g, '\\$&').replace(/\*/g, '.*')
+			if (children === undefined)
+				return null
+			if (Array.isArray(children))
+				return React.Children.map(children, hi)
+			if (React.isValidElement(children))
+				return React.cloneElement(children, undefined, hi(children.props.children))
+			if (!['number', 'string'].includes(typeof children))
+				return children
+			term = term.replace(/[\-\[\]\/\{\}\(\)\+\?\.\\\^\$\|]/g, '\\$&').replace(/\*/g, '.*')
 			return (children + '')
 				.split(new RegExp(`(${term.split(/\s+/).filter(part => part).join('|')})`, 'i'))
 				.map((word, i) => i % 2 === 1 ? <mark key={i}>{word}</mark> : word)
-		})()}</div>
+		}
+
+		const {children, ...divProps} = this.props
+		return <div {...divProps}>{hi(children)}</div>
 	}
 }
 
