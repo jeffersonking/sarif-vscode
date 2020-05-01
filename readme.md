@@ -19,17 +19,17 @@
 
 ## Development
 
-F5 (`Start Debugging` or `Run Without Debugging`) to launch this extension within (a new instance of) VS Code.
-* `npm install` will automatically run if needed.
-* Subsequent changes are watched and automatically rebuilt. Use command `workbench.action.reloadWindow` to see the changes.
-* Optionally open `http://localhost:8000/` to run the `Panel` portion by itself. This will live refresh.
-  * Requires files from the `/samples` which you will need to provide yourself.
-* If F5 or `npm start` is not working, the backup is to run `npx webpack` to build manually.
+`F5` to launch this extension. Subsequent changes are watched and rebuilt. Use command `workbench.action.reloadWindow` to see the changes.
 
-Run `npm test` to start watching and running the unit tests. This script assumes `npm install` has already happened.
+Other common tasks:
+| Command | Comments |
+| --- | --- |
+| `npm run server` | Run the `Panel` standalone at `http://localhost:8000`. Auto-refreshes. |
+| `npm test` | Start watching and running the unit tests. This script assumes `npm install` has already happened.
+| `npx webpack` | Build manually. |
+| `npx vsce package` | Produce a VSIX. |
 
-Run `npx vsce package` to produce a VSIX.
-
+\* Note `Panel` standalone mode requires files from the `/samples` which you will need to provide yourself.
 
 ## Usage
 
