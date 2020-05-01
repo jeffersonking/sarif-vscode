@@ -200,8 +200,8 @@ export function renderMessageWithEmbeddedLinks(result: Result, postMessage: (_: 
 				if (i % 2 === 0) return item
 				const [_, text, id] = item.match(rxLink)
 				return isNaN(+id)
-					? <a key={i} href={id}>{text}</a>
-					: <a key={i} href="#" onClick={e => {
+					? <a key={i} tabIndex={-1} href={id}>{text}</a>
+					: <a key={i} tabIndex={-1} href="#" onClick={e => {
 						e.preventDefault() // Don't leave a # in the url.
 						e.stopPropagation()
 						postMessage({ command: 'select', id: result._id, relatedLocationId: +id })
