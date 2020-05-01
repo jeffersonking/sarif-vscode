@@ -6,7 +6,7 @@ import { Component } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { Result } from 'sarif'
 import { parseRegion } from '../shared'
-import './Index.details.scss'
+import './Details.scss'
 import { List, renderMessageWithEmbeddedLinks, TabPanel } from './Index.widgets'
 
 @observer export class Details extends Component<{ result: Result, height: IObservableValue<number> }> {

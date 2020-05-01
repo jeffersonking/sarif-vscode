@@ -6,7 +6,7 @@ import { Log } from 'sarif'
 import '../shared/extension'
 import './codicon.css'
 export const FilterKeywordContext = React.createContext('') // Must come before Details and Hi
-import { Details } from './Index.details'
+import { Details } from './Details'
 import './Index.scss'
 import { Badge, Checkrow, css, Hi, Icon, Popover, renderMessageWithEmbeddedLinks, ResizeHandle, TabBar } from './Index.widgets'
 import { column, Group, SortDir, Store } from './Store'
