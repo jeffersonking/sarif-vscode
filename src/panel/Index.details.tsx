@@ -19,7 +19,7 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './Index.widgets'
 		}
 
 		const {result, height: detailsPaneHeight} = this.props
-		const {helpUri} = result._rule
+		const helpUri = result?._rule?.helpUri
 		return <div className="svDetailsPane" style={{ height: detailsPaneHeight.get() }}>
 			{result && <TabPanel titles={['Info', 'Code Flows']}>
 				<div className="svDetailsBody svDetailsInfo">
