@@ -5,4 +5,4 @@ const fs = require('fs')
 const { execSync } = require('child_process')
 
 if (!fs.existsSync('node_modules'))
-	execSync('npm install')
+	execSync('npm install', { stdio: 'inherit' })
