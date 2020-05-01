@@ -10,7 +10,11 @@
 		&.svDetailsInfo {
 			padding: 12px 22px;
 
-			&.svDetailsGrid {
+			.svDetailsMessage {
+				margin-bottom: 16px;
+			}
+
+			.svDetailsGrid {
 				display: grid;
 				grid-template-columns: 130px auto;
 				grid-column-gap: 4px;
@@ -21,10 +25,6 @@
 					&:nth-child(odd) {
 						color: rgb(139, 139, 139); // svSecondary.
 					}
-				}
-
-				.svDetailsMessage {
-					margin-bottom: 16px;
 				}
 			}
 		}

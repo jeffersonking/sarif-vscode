@@ -10,6 +10,7 @@ body {
 	background-color: var(--vscode-menu-background); // Borrowed from Explorer background
 	display: flex;
 	flex-direction: column;
+	margin-left: 1px; // VS Code Webview splitter eats an extra pixel on the left.
 }
 
 a {
