@@ -10,21 +10,13 @@
 		<div id="root" style="margin: 50px 300px; position: relative;"></div><!-- relative for Popover -->
 		<script>
 			acquireVsCodeApi = (() => ({ postMessage: message => {
-				const {command} = message
-				if (command === 'updateTitle') {
-					document.title = `${message.count} SARIF Result(s)`
-					return
-				}
-				if (command === 'open') {
-					postMessage({ command: 'demo' })
-					return
-				}
+				const {command, ...rest} = message
 				if (command === 'setState') {
 					const {state} = message
 					localStorage.setItem('state', state)
 					return
 				}
-				console.log('unknown message', message)
+				console.log(command, JSON.stringify(rest))
 			} }))
 			vscode = acquireVsCodeApi()
 		</script>
