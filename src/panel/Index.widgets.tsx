@@ -6,7 +6,7 @@ import { Result } from 'sarif'
 import { FilterKeywordContext } from './Index'
 import './Index.widgets.scss'
 
-function css(...names: (string | false)[]) {
+export function css(...names: (string | false)[]) {
 	return names.filter(name => name).join(' ')
 }
 
@@ -20,7 +20,7 @@ export class Badge extends PureComponent<{ text: { toString: () => string } }> {
 	render() {
 		const {label, state} = this.props
 		return <div className="svCheckrow" onClick={() => state[label] = !state[label]}>
-			<div className={`svCheckbox ${state[label] ? 'svChecked' : '' }`} tabIndex={0}
+			<div className={css('svCheckbox', state[label] && 'svChecked')} tabIndex={0}
 				role="checkbox" aria-checked="false" aria-label="" title="">
 				<Icon name="check" />
 			</div>
@@ -96,7 +96,7 @@ export interface ListProps<T> {
 	render() {
 		const {children, show, className, ...divProps} = this.props
 		if (!show.get()) return null
-		return <div className={`svPopover ${className ?? ''}`} onMouseDown={e => e.stopPropagation()} {...divProps} >
+		return <div className={css('svPopover', className)} onMouseDown={e => e.stopPropagation()} {...divProps} >
 			{children}
 		</div>
 	}

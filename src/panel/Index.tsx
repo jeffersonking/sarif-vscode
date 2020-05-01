@@ -8,7 +8,7 @@ import './codicon.css'
 export const FilterKeywordContext = React.createContext('') // Must come before Details and Hi
 import { Details } from './Index.details'
 import './Index.scss'
-import { Badge, Checkrow, Hi, Icon, Popover, renderMessageWithEmbeddedLinks, ResizeHandle, TabBar } from './Index.widgets'
+import { Badge, Checkrow, css, Hi, Icon, Popover, renderMessageWithEmbeddedLinks, ResizeHandle, TabBar } from './Index.widgets'
 import { column, Group, SortDir, Store } from './Store'
 
 export * as React from 'react'
@@ -150,7 +150,7 @@ const levelToIcon = {
 										const isSelected = store.selectedItem === item
 										return <tr key={`item${item.key}`}
 											onClick={() => store.selectedItem = item}
-											className={isSelected ? 'svItemSelected' : undefined}
+											className={css(isSelected && 'svItemSelected')}
 											ref={td => {
 												if (!isSelected || !td) return
 												requestAnimationFrame(() => td.scrollIntoView({ behavior: 'smooth', block: 'nearest' }))
