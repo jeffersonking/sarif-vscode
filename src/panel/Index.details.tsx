@@ -63,9 +63,9 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './Index.widgets'
 						const items = result.codeFlows?.[0]?.threadFlows?.[0].locations
 							.filter(tfLocation => tfLocation.location)
 
-						const selection = observable.box(0)
+						const selection = observable.box(items?.[0], { deep: false })
 						selection.observe(change => {
-							const [_, uri, region] = parseTFLoc(items[change.newValue])
+							const [_, uri, region] = parseTFLoc(change.newValue)
 							const logUri = result._log._uri
 							vscode.postMessage({ command: 'select2', logUri, uri, region: parseRegion(region) })
 						})

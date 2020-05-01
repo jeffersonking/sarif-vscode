@@ -57,21 +57,23 @@ export class Hi extends React.Component<React.HTMLAttributes<HTMLDivElement>> {
 }
 
 export interface ListProps<T> {
+	className?: string
+	horiztonal?: boolean
 	items?: ReadonlyArray<T>
-	renderItem: (item: T, i: number) => React.ReactNode,
-	selection?: IObservableValue<number>
+	renderItem: (item: T, i: number) => React.ReactNode
+	selection?: IObservableValue<T>
 }
 @observer export class List<T> extends PureComponent<ListProps<T>> {
-	private selection = this.props.selection ?? observable.box(0)
+	private selection = this.props.selection ?? observable.box(this.props.items[0])
 	render() {
-		const {items, renderItem, children} = this.props
+		const {className, items, renderItem, children} = this.props
 		return !items?.length
-			? <div className="svList svListZero">{children}</div>
-			: <div tabIndex={0} className="svList" onKeyDown={this.onKeyDown}>
+			? <div className={css('svList', 'svListZero', className)}>{children}</div>
+			: <div tabIndex={0} className={css('svList', className)} onKeyDown={this.onKeyDown}>
 				{(items || []).map((item, i) => {
 					return <div key={i}
-						className={css('svListItem', i === this.selection.get() && 'svItemSelected')}
-						onClick={() => this.selection.set(i)}>
+						className={css('svListItem', item === this.selection.get() && 'svItemSelected')}
+						onClick={() => this.selection.set(item)}>
 						{renderItem(item, i)}
 					</div>
 				})}
@@ -79,10 +81,13 @@ export interface ListProps<T> {
 	}
 	@action.bound private onKeyDown(e: React.KeyboardEvent<Element>) {
 		e.stopPropagation()
-		const handlers = {
-			ArrowUp:   () => this.selection.set(Math.max(this.selection.get() - 1, 0)),
-			ArrowDown: () => this.selection.set(Math.min(this.selection.get() + 1, this.props.items.length - 1))
-		}
+		const {items, selection} = this.props
+		const index = items.indexOf(selection.get())
+		const prev = () => selection.set(items[index - 1] ?? items[index])
+		const next = () => selection.set(items[index + 1] ?? items[index])
+		const handlers = this.props.horiztonal
+			? { ArrowLeft: prev, ArrowRight: next }
+			: { ArrowUp: prev, ArrowDown: next }
 		handlers[e.key]?.()
 	}
 }
@@ -118,11 +123,8 @@ export interface ListProps<T> {
 @observer export class TabBar extends Component<{ titles: string[], selection: IObservableValue<string> }> {
 	render() {
 		const {titles, selection} = this.props
-		return <div className="svTabs">
-			{titles.map((title, i) => <div key={i} onClick={() => selection.set(title)}>
-				<div className={selection.get() === title ? 'svTabSelected' : ''}>{title}</div>
-			</div>)}
-		</div>
+		const renderItem = title => <div>{title}</div>
+		return <List className="svTabs" horiztonal items={titles} renderItem={renderItem} selection={selection} />
 	}
 }
 

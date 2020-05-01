@@ -51,10 +51,6 @@
 		align-items: center;
 		justify-items: center;
 	}
-
-	.svItemSelected {
-		background-color: var(--vscode-list-inactiveSelectionBackground);
-	}
 }
 
 .svPopover {
@@ -89,7 +85,7 @@
 	padding: 0 12px;
 	user-select: none;
 
-	& > div {
+	& > .svListItem {
 		cursor: pointer;
 		padding: 4px 10px 3px;
 
@@ -100,11 +96,11 @@
 			line-height: 27px;
 			color: var(--vscode-panelTitle-activeForeground);
 			color: rgb(139, 139, 139); // svSecondary
-	
-			&.svTabSelected {
-				color: var(--vscode-panelTitle-activeForeground);
-				border-bottom-color: var(--vscode-panelTitle-activeForeground);
-			}
+		}
+
+		&.svItemSelected > div {
+			color: var(--vscode-panelTitle-activeForeground);
+			border-bottom-color: var(--vscode-panelTitle-activeForeground);
 		}
 	}
 }
