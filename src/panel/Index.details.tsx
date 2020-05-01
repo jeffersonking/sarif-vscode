@@ -19,6 +19,7 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './Index.widgets'
 		}
 
 		const {result, height: detailsPaneHeight} = this.props
+		const {helpUri} = result._rule
 		return <div className="svDetailsPane" style={{ height: detailsPaneHeight.get() }}>
 			{result && <TabPanel titles={['Info', 'Code Flows']}>
 				<div className="svDetailsBody svDetailsInfo">
@@ -27,7 +28,7 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './Index.widgets'
 							? <ReactMarkdown className="svMarkDown" source={result._markdown} escapeHtml={false} />
 							: renderMessageWithEmbeddedLinks(result, vscode.postMessage)}</div>
 					<div className="svDetailsGrid">
-						<span>Rule Id</span>			<span>{result.ruleId}</span>
+						<span>Rule Id</span>			{helpUri ? <a href={helpUri} target="_blank">{result.ruleId}</a> : <span>{result.ruleId}</span>}
 						<span>Rule Name</span>			<span>{result._rule?.name ?? '—'}</span>
 						<span>Rule Desc Short</span>	<span>{renderRuleDesc(result._rule?.shortDescription)}</span>
 						<span>Rule Desc Full</span>		<span>{renderRuleDesc(result._rule?.fullDescription)}</span>
