@@ -1,4 +1,4 @@
-import { action, computed, intercept, observable, observe, toJS } from 'mobx'
+import { action, computed, intercept, observable, observe, toJS, when } from 'mobx'
 import { Log, Result } from 'sarif'
 import { augmentLog, filtersColumn, filtersRow } from '../shared'
 import '../shared/extension'
@@ -38,7 +38,7 @@ export type column = 'File' | 'Line' | 'Message' | 'Baseline' | 'Suppression' | 
 export class Store {
 	@observable.shallow public logs = [] as Log[]
 
-	constructor(state) {
+	constructor(state, defaultSelection?: boolean) {
 		this.filtersRow = state.filtersRow
 		this.filtersColumn = state.filtersColumn
 		const setState = () => {
@@ -58,6 +58,13 @@ export class Store {
 			change.added.forEach(augmentLog)
 			return change
 		})
+
+		if (defaultSelection) {
+			when(() => !!this.rows.length, () => {
+				const item = this.rows.find(row => row instanceof Item) as Item<Result>
+				this.selectedItem = item
+			})
+		}
 	}
 
 	@computed private get runs() {
@@ -120,7 +127,7 @@ export class Store {
 
 	@observable.ref public selectedItem = null as Item<Result>
 
-	@computed public get items() {
+	@computed({ keepAlive: true }) public get items() {
 		return this.results.map(result => new Item(result))
 	}
 
