@@ -1,22 +1,3 @@
-## File Structure
-
-```
-/out                    Aka 'dist' or 'bin'. Contents here become the VSIX.
-    content.js          Bundled output of context + shared.
-    panel.js            Bundled output of panel + shared.
-/samples                Excluded from the repro (due to privacy), but required for index.html.
-/src
-    /context            The "extension" logic. Node-based.
-        index.ts        Project entry point.
-        Panel.ts        Launches content from /panel
-    /panel              The Webview. Browser-based.
-        codicon.*       Imported icons, do not edit.
-    /shared
-        extension.ts    Extension on built-in types.
-        index.ts        Common logic for both context and panel.
-    index.html          For Webpack Dev Server.
-```
-
 ## Development
 
 `F5` to launch this extension. Subsequent changes are watched and rebuilt. Use command `workbench.action.reloadWindow` to see the changes.
@@ -30,6 +11,7 @@ Other common tasks:
 | `npx vsce package` | Produce a VSIX. |
 
 \* Note `Panel` standalone mode requires files from the `/samples` which you will need to provide yourself.
+
 
 ## Usage
 
@@ -54,3 +36,23 @@ SARIF Logs reference Artifacts (aka source files). Paths for these Artifacts com
 The following features of [sarif-vscode-extension](https://github.com/microsoft/sarif-vscode-extension) have yet to be implemented in this project.
 * Transform from other formats to SARIF (via the Multitool).
 * A fully fleshed-out details pane (Stacks tab, etc).
+
+
+## File Structure
+
+```
+/out                    Aka 'dist' or 'bin'. Contents here become the VSIX.
+    content.js          Bundled output of context + shared.
+    panel.js            Bundled output of panel + shared.
+/samples                Excluded from the repro (due to privacy), but required for index.html.
+/src
+    /context            The "extension" logic. Node-based.
+        index.ts        Project entry point.
+        Panel.ts        Launches content from /panel
+    /panel              The Webview. Browser-based.
+        codicon.*       Imported icons, do not edit.
+    /shared
+        extension.ts    Extension on built-in types.
+        index.ts        Common logic for both context and panel.
+    index.html          For Webpack Dev Server.
+```
