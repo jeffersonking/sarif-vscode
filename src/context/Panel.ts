@@ -117,6 +117,14 @@ export class Panel {
 
 				await this.selectLocal(logUri, validatedUri, region)
 			}
+			if (command === 'select2') {
+				const {logUri, uri, region} = message as { logUri: string, uri: string, region: _Region}
+
+				const validatedUri = await basing.translateArtifactToLocal(uri)
+				if (!validatedUri) return
+
+				await this.selectLocal(logUri, validatedUri, region)
+			}
 			if (command === 'setState') {
 				const oldState = Store.globalState.get('view', defaultState)
 				const {state} = message

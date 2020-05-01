@@ -1,35 +1,57 @@
 .svDetailsPane {
 	box-sizing: border-box;
 	flex: 0 0 auto;
+	display: grid;
+	grid-template-rows: auto 1fr;
 	
-	overflow-y: overlay;
-
 	.svDetailsBody {
-		padding: 12px 22px;
+		overflow-y: overlay;
+	
+		&.svDetailsInfo {
+			padding: 12px 22px;
 
-		&.svDetailsBodyCodeflow {
-			// margin: 0 -22px;
-			& > .svListItem {
-				// padding: 0 22px;
-				display: flex;
-				white-space: nowrap;
+			&.svDetailsGrid {
+				display: grid;
+				grid-template-columns: 130px auto;
+				grid-column-gap: 4px;
+				grid-row-gap: 4px;
+
+				& > * {
+					display: grid;
+					&:nth-child(odd) {
+						color: rgb(139, 139, 139); // svSecondary.
+					}
+				}
+
+				.svDetailsMessage {
+					margin-bottom: 16px;
+				}
 			}
 		}
 
-		.svDetailsMessage {
-			margin-bottom: 16px;
-		}
-	
-		.svDetailsInfo {
+		&.svDetailsCodeflow {
 			display: grid;
-			grid-template-columns: 130px auto;
-			grid-column-gap: 4px;
-			grid-row-gap: 4px;
 
-			& > * {
-				display: grid;
-				&:nth-child(odd) {
-					color: rgb(139, 139, 139); // svSecondary.
+			& > .svList {
+				padding: 12px 0px;
+				overflow: hidden;
+
+				& > .svListItem {
+					padding: 0 22px;
+					display: flex;
+					align-items: center;
+					white-space: nowrap;
+
+					& > * + * { margin-left: 6px; } // Standard
+					& > :first-child { flex: 1 1; }
+
+					.svLineNum {
+						line-height: 16px;
+						padding: 0 4px;
+						border-radius: 3px;
+						background-color: var(--vscode-badge-background);
+						color: var(--vscode-badge-foreground);
+					}
 				}
 			}
 		}

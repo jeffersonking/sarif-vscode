@@ -23,6 +23,7 @@ declare module 'sarif' {
 
 	interface Result {
 		_log?: Log
+		_run?: Run
 		_id?: ResultId
 		_logRegion?: _Region
 		_uri?: string
@@ -69,6 +70,7 @@ export function augmentLog(log: Log) {
 		let implicitBase = undefined as string[]
 		run.results.forEach((result, resultIndex) => {
 			result._log = log
+			result._run = run
 			result._id = [log._uri, runIndex, resultIndex]
 			result._logRegion = (() => {
 				const region = log._jsonMap?.[`/runs/${runIndex}/results/${resultIndex}`]
