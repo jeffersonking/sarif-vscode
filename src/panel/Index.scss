@@ -28,7 +28,7 @@ mark {
 }
 
 *:focus {
-	outline: 1px solid -webkit-focus-ring-color;
+	outline: 1px solid var(--vscode-focusBorder) !important; // Override VS Code defaultStyles which are not self-consistent.
 	outline-offset: -1px;
 }
 
