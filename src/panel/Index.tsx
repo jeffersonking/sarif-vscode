@@ -225,48 +225,10 @@ const levelToIcon = {
 		}
 	}
 
-	@action.bound private async onMessage(event: MessageEvent) {
-		// if (event.origin === 'http://localhost:8000') return
-		if (!event.data) return // Ignore mysterious empty message
-		if (event.data?.source) return // Ignore 'react-devtools-*'
-		if (event.data?.type) return // Ignore 'webpackOk'
-
-		const {store} = this.props
-		const command = event.data?.command
-
-		if (command === 'select') {
-			const {id} = event.data // id undefined means deselect.
-			if (!id) {
-				store.selectedItem = null
-			} else {
-				const [logUri, runIndex, resultIndex] = id
-				const result = store.logs.find(log => log._uri === logUri)?.runs[runIndex]?.results?.[resultIndex]
-				if (!result) throw new Error('Unexpected: result undefined')
-				store.selectedItem = store.items.find(item => item.data === result) ?? null
-				if (store.selectedItem?.group)
-					store.selectedItem.group.expanded = true
-			}
-		}
-
-		if (command === 'spliceLogs') {
-			for (const uri of event.data.removed) {
-				const i = store.logs.findIndex(log => log._uri === uri)
-				if (i >= 0) store.logs.splice(i, 1)
-			}
-			for (const {uri, uriUpgraded, webviewUri} of event.data.added) {
-				const response = await fetch(webviewUri)
-				const log = await response.json() as Log
-				log._uri = uri
-				log._uriUpgraded = uriUpgraded
-				store.logs.push(log)
-			}
-		}
-	}
-
 	private selectionAutoRunDisposer: IReactionDisposer
 
 	componentDidMount() {
-		addEventListener('message', this.onMessage)
+		addEventListener('message', this.props.store.onMessage)
 		this.selectionAutoRunDisposer = autorun(() => {
 			const result = this.props.store.selectedItem?.data
 			if (!result?._uri) return // Bail on no result or location-less result.
@@ -279,7 +241,7 @@ const levelToIcon = {
 	}
 
 	componentWillUnmount() {
-		removeEventListener('message', this.onMessage)
+		removeEventListener('message', this.props.store.onMessage)
 		this.selectionAutoRunDisposer()
 	}
 }
