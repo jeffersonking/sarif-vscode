@@ -92,7 +92,7 @@ export function augmentLog(log: Log) {
 					?? parts
 				const file = parts?.pop()
 				if (file && uri) {
-					fileAndUris.push([file, uri])
+					fileAndUris.push([file, uri.replace(/^\//, '')]) // Normalize leading slashes.
 				}
 			}
 			result._region = parseRegion(ploc?.region)
