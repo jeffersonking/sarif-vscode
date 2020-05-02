@@ -10,7 +10,7 @@ import { Store } from '.'
 import { augmentLog, JsonMap } from '../shared'
 
 export async function loadLogs(uris: Uri[]) {
-	const logs = uris.slice(0, 20)
+	const logs = uris
 		.map(uri => {
 			try {
 				const file = fs.readFileSync(uri.fsPath, 'utf8')  // Assume scheme file.
