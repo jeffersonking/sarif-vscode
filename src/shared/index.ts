@@ -82,8 +82,9 @@ export function augmentLog(log: Log) {
 			})()
 
 			const ploc = result.locations?.[0]?.physicalLocation
-			const uri = ploc?.artifactLocation?.uri
+			const [uri, uriContents] = parseArtifactLocation(result, ploc?.artifactLocation)
 			result._uri = uri
+			result._uriContents = uriContents
 			{
 				const parts = uri?.split('/')
 				implicitBase = // Base calc (inclusive of dash for now)
@@ -96,14 +97,6 @@ export function augmentLog(log: Log) {
 			}
 			result._region = parseRegion(ploc?.region)
 			result._line = result._region?.[0] ?? result._region ?? -1 // _line is sugar for _region
-			{ // Special handling of binary files.
-				const artIndex = ploc?.artifactLocation?.index
-				const artifact = run.artifacts?.[artIndex]
-				const contents = artifact?.contents
-				if (contents?.text || contents?.binary) {
-					result._uriContents = encodeURI(`sarif:${encodeURIComponent(log._uri)}/${runIndex}/${artIndex}/${artifact.location?.uri.file ?? 'Untitled'}`)
-				}
-			}
 
 			result._rule = run.tool.driver.rules?.[result.ruleIndex] // If result.ruleIndex is undefined, that's okay.
 			const message = result._rule?.messageStrings?.[result.message.id] ?? result.message
