@@ -37,8 +37,18 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './Index.widgets'
 						<span>Baseline State</span>		<span>{result.baselineState}</span>
 						<span>Locations</span>			<span>
 															{result.locations?.map((loc, i) => {
-																const uri = loc.physicalLocation?.artifactLocation?.uri.file
-																return <span key={i} className="ellipsis">{uri}</span>
+																const ploc = loc.physicalLocation
+																const [uri, uriContent] = parseArtifactLocation(result, ploc?.artifactLocation)
+																return <a key={i} href="#" className="ellipsis" title={uri}
+																	onClick={e => {
+																		e.preventDefault() // Cancel # nav.
+																		const log = result._log
+																		const logUri = log._uri
+																		const region = parseRegion(ploc?.region)
+																		vscode.postMessage({ command: 'select', logUri, uri: uriContent ?? uri, region })
+																	}}>
+																	{uri?.file ?? '-'}
+																</a>
 															}) ?? <span>—</span>}
 														</span>
 						<span>Log</span>				<a href="#" title={result._log._uri}
