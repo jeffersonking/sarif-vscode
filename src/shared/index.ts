@@ -1,4 +1,4 @@
-import { Log, Region } from 'sarif'
+import { ArtifactLocation, Log, Region, Result } from 'sarif'
 
 type JsonLocation = { line: number, column: number } // Unused: pos
 type JsonRange = { value: JsonLocation, valueEnd: JsonLocation } // Unused: key, keyEnd
@@ -18,6 +18,7 @@ declare module 'sarif' {
 	}
 
 	interface Run {
+		_index?: number
 		_implicitBase?: string
 	}
 
@@ -66,6 +67,7 @@ export function augmentLog(log: Log) {
 	log._augmented = true
 	const fileAndUris = [] as [string, string][]
 	log.runs.forEach((run, runIndex) => {
+		run._index = runIndex
 
 		let implicitBase = undefined as string[]
 		run.results?.forEach((result, resultIndex) => {
@@ -145,6 +147,19 @@ export function parseRegion(region: Region): _Region {
 		endLine ?? startLine,
 		endColumn ?? (startColumn + 1)
 	] as [number, number, number, number]
+}
+
+export function parseArtifactLocation(result: Result, anyArtLoc: ArtifactLocation) {
+	if (!anyArtLoc) return [undefined, undefined]
+	const runArt = result._run.artifacts?.[anyArtLoc.index ?? -1]
+	const runArtLoc = runArt?.location
+	const runArtCon = runArt?.contents
+
+	const uri = anyArtLoc.uri ?? runArtLoc?.uri // If index (§3.4.5) is absent, uri SHALL be present.
+	const uriContents = runArtCon?.text || runArtCon?.binary
+			? encodeURI(`sarif:${encodeURIComponent(result._log._uri)}/${result._run._index}/${anyArtLoc.index}/${uri.file ?? 'Untitled'}`)
+			: undefined
+	return [uri, uriContents]
 }
 
 export const filtersRow = {

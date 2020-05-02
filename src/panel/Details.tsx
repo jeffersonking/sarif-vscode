@@ -4,8 +4,8 @@ import { observer } from 'mobx-react'
 import * as React from 'react'
 import { Component } from 'react'
 import ReactMarkdown from 'react-markdown'
-import { Result } from 'sarif'
-import { parseRegion } from '../shared'
+import { Message, Region, Result, ThreadFlowLocation } from 'sarif'
+import { parseArtifactLocation, parseRegion } from '../shared'
 import './Details.scss'
 import { List, renderMessageWithEmbeddedLinks, TabPanel } from './Index.widgets'
 
@@ -53,12 +53,10 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './Index.widgets'
 				</div>
 				<div className="svDetailsBody svDetailsCodeflow">
 					{(() => {
-						const parseTFLoc = (tfLocation) => {
+						const parseTFLoc = (tfLocation: ThreadFlowLocation): [Message, string, Region] => {
 							const {message, physicalLocation} = tfLocation.location
-							const alocResult = physicalLocation?.artifactLocation
-							const alocRun = result._run.artifacts?.[alocResult.index ?? -1]?.location
-							const uri = alocRun?.uri ?? alocResult.uri
-							return [message, uri, physicalLocation?.region]
+							const [uri, uriContent] = parseArtifactLocation(result, physicalLocation?.artifactLocation)
+							return [message, uriContent ?? uri, physicalLocation?.region]
 						}
 
 						const items = result.codeFlows?.[0]?.threadFlows?.[0].locations
