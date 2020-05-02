@@ -93,36 +93,9 @@ export class Panel {
 				store.logs.removeWhere(log => log._uri === message.uri)
 			}
 			if (command === 'select') {
-				const [logUri, runIndex, resultIndex] = message.id as ResultId
-				const result = store.logs.find(log => log._uri === logUri)?.runs[runIndex]?.results?.[resultIndex]
-				if (!result) return
-
-				const [uri, region] = (() => {
-					if (message.gotoLog) {
-						const log = store.logs.find(log => log._uri === logUri)
-						return [log._uriUpgraded ?? log._uri, result._logRegion]
-					}
-
-					const relatedId = message.relatedLocationId as number
-					if (relatedId !== undefined) {
-						const rploc = result?.relatedLocations?.find(rloc => rloc.id === +relatedId)?.physicalLocation
-						return [rploc?.artifactLocation?.uri, parseRegion(rploc?.region)]
-					}
-					return [result._uriContents ?? result._uri, result._region]
-				})() as [string, _Region]
-				if (!uri) return
-
-				const validatedUri = await basing.translateArtifactToLocal(uri)
-				if (!validatedUri) return
-
-				await this.selectLocal(logUri, validatedUri, region)
-			}
-			if (command === 'select2') {
 				const {logUri, uri, region} = message as { logUri: string, uri: string, region: _Region}
-
 				const validatedUri = await basing.translateArtifactToLocal(uri)
 				if (!validatedUri) return
-
 				await this.selectLocal(logUri, validatedUri, region)
 			}
 			if (command === 'setState') {
@@ -162,6 +135,7 @@ export class Panel {
 			removed: removed.map(log => log._uri),
 			added: added.map(log => ({
 				uri: log._uri,
+				uriUpgraded: log._uriUpgraded,
 				webviewUri: this.panel?.webview.asWebviewUri(Uri.parse(log._uriUpgraded ?? log._uri)).toString(),
 			})),
 		})

@@ -5,6 +5,7 @@ import { Component, CSSProperties, PureComponent } from 'react'
 import { Result } from 'sarif'
 import { FilterKeywordContext } from './Index'
 import './Index.widgets.scss'
+import { parseArtifactLocation, parseRegion } from '../shared'
 
 export function css(...names: (string | false)[]) {
 	return names.filter(name => name).join(' ')
@@ -212,7 +213,11 @@ export function renderMessageWithEmbeddedLinks(result: Result, postMessage: (_: 
 					: <a key={i} tabIndex={-1} href="#" onClick={e => {
 						e.preventDefault() // Don't leave a # in the url.
 						e.stopPropagation()
-						postMessage({ command: 'select', id: result._id, relatedLocationId: +id })
+						const logUri = result._log._uri
+						const rploc = result?.relatedLocations?.find(rloc => rloc.id === +id)?.physicalLocation
+						const [uri, uriContent] = parseArtifactLocation(result, rploc?.artifactLocation)
+						const region = rploc.region
+						postMessage({ command: 'select', logUri, uri: uriContent ?? uri, region: parseRegion(region) })
 					}}>{text}</a>
 			})
 		: message

@@ -44,9 +44,13 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './Index.widgets'
 						<span>Log</span>				<a href="#" title={result._log._uri}
 															onClick={e => {
 																e.preventDefault() // Cancel # nav.
-																vscode.postMessage({ command: 'select', id: result._id, gotoLog: true })}
+																const log = result._log
+																const logUri = log._uri
+																const uri = log._uriUpgraded ?? log._uri
+																const region = result._logRegion
+																vscode.postMessage({ command: 'select', logUri, uri, region })}
 															}>
-															{result._log._uri.file}
+															{result._log._uri.file}{result._log._uriUpgraded && ' (upgraded)'}
 														</a>
 						{/* <span>Properties</span>		<span><pre><code>{JSON.stringify(selected.properties, null, '  ')}</code></pre></span> */}
 					</div>
@@ -64,9 +68,9 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './Index.widgets'
 
 						const selection = observable.box(items?.[0], { deep: false })
 						selection.observe(change => {
-							const [_, uri, region] = parseTFLoc(change.newValue)
 							const logUri = result._log._uri
-							vscode.postMessage({ command: 'select2', logUri, uri, region: parseRegion(region) })
+							const [_, uri, region] = parseTFLoc(change.newValue)
+							vscode.postMessage({ command: 'select', logUri, uri, region: parseRegion(region) })
 						})
 
 						const renderItem = (tfLocation, i) => { // ThreadflowLocation

@@ -253,10 +253,11 @@ const levelToIcon = {
 				const i = store.logs.findIndex(log => log._uri === uri)
 				if (i >= 0) store.logs.splice(i, 1)
 			}
-			for (const {uri, webviewUri} of event.data.added) {
+			for (const {uri, uriUpgraded, webviewUri} of event.data.added) {
 				const response = await fetch(webviewUri)
 				const log = await response.json() as Log
 				log._uri = uri
+				log._uriUpgraded = uriUpgraded
 				store.logs.push(log)
 			}
 		}
@@ -268,8 +269,12 @@ const levelToIcon = {
 		addEventListener('message', this.onMessage)
 		this.selectionAutoRunDisposer = autorun(() => {
 			const result = this.props.store.selectedItem?.data
-			if (!result) return
-			vscode.postMessage({ command: 'select', id: result._id })
+			if (!result?._uri) return // Bail on no result or location-less result.
+			const log = result._log
+			const logUri = log._uri
+			const uri = result._uriContents ?? result._uri
+			const region = result._region
+			vscode.postMessage({ command: 'select', logUri, uri, region })
 		})
 	}
 
