@@ -38,7 +38,7 @@ describe('augmentLog', () => {
 		result.locations[0].physicalLocation.artifactLocation.index = 0
 		log.runs[0].artifacts = [{
 			location: {
-				uri: '/folder/artifact.txt'
+				uri: '/folder/file.txt'
 			},
 			contents: {
 				text: 'abcdef'
@@ -46,7 +46,7 @@ describe('augmentLog', () => {
 		}]
 
 		augmentLog(log)
-		assert.strictEqual(result._uri, 'sarif:undefined/0/0/artifact.txt')
+		assert.strictEqual(result._uriContents, 'sarif:undefined/0/0/file.txt')
 	})
 })
 
