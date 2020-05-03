@@ -26,7 +26,7 @@ export class Panel {
 		})
 	}
 
-	public show() {
+	public async show() {
 		if (this.panel) {
 			if (!this.panel.active) this.panel.reveal(undefined, true)
 			return
@@ -105,7 +105,7 @@ export class Panel {
 			}
 		}, undefined, context.subscriptions)
 
-		this.spliceLogs([], store.logs)
+		await this.spliceLogs([], store.logs)
 	}
 
 	public async selectLocal(logUri: string, localUri: string, region: _Region) {
@@ -129,8 +129,8 @@ export class Panel {
 		this.panel?.webview.postMessage({ command: 'select', id: result?._id })
 	}
 
-	private spliceLogs(removed: Log[], added: Log[]) {
-		this.panel?.webview.postMessage({
+	private async spliceLogs(removed: Log[], added: Log[]) {
+		await this.panel?.webview.postMessage({
 			command: 'spliceLogs',
 			removed: removed.map(log => log._uri),
 			added: added.map(log => ({

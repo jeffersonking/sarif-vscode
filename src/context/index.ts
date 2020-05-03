@@ -84,7 +84,7 @@ export async function activate(context: ExtensionContext) {
 
 	// Panel
 	const panel = new Panel(context, basing, store)
-	if (uris.length) panel.show()
+	if (uris.length) await panel.show()
 	disposables.push(commands.registerCommand('sarif.showPanel', () => panel.show()))
 
 	// Suggest In-Project Sarif Files
