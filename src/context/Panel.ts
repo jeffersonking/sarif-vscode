@@ -98,6 +98,12 @@ export class Panel {
 				if (!validatedUri) return
 				await this.selectLocal(logUri, validatedUri, region)
 			}
+			if (command === 'selectLog') {
+				const [logUri, runIndex, resultIndex] = message.id as ResultId
+				const log = store.logs.find(log => log._uri === logUri)
+				const result = store.logs.find(log => log._uri === logUri)?.runs[runIndex]?.results?.[resultIndex]
+				await this.selectLocal(logUri, log._uriUpgraded ?? log._uri, result?._logRegion)
+			}
 			if (command === 'setState') {
 				const oldState = Store.globalState.get('view', defaultState)
 				const {state} = message

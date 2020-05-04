@@ -36,7 +36,7 @@ describe('activate', () => {
 		await postSelectLog(result)
 		assert.deepEqual(mockVscode.events.splice(0), [
 			'showTextDocument file:///.sarif/test.sarif',
-			// Fix: Region selection is missing.
+			'selection 0 75 0 215',
 		])
 	})
 })

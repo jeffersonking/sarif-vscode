@@ -239,9 +239,5 @@ export async function postSelectArtifact(result: Result, ploc: PhysicalLocation)
 }
 
 export async function postSelectLog(result: Result) {
-	const log = result._log
-	const logUri = log._uri
-	const uri = log._uriUpgraded ?? log._uri
-	const region = result._logRegion
-	await vscode.postMessage({ command: 'select', logUri, uri, region })
+	await vscode.postMessage({ command: 'selectLog', id: result._id })
 }
