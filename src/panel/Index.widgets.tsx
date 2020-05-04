@@ -79,8 +79,13 @@ export interface ListProps<T> {
 			: <div tabIndex={0} className={css('svList', selection.get() && 'svSelected' ,className)}
 				onClick={() => allowClear && selection.set(undefined)} onKeyDown={this.onKeyDown}>
 				{(items || []).map((item, i) => {
+					const isSelected = item === selection.get()
 					return <div key={i}
-						className={css('svListItem', item === selection.get() && 'svItemSelected')}
+						ref={ele => {
+							if (!isSelected || !ele) return
+							requestAnimationFrame(() => ele.scrollIntoView({ behavior: 'smooth', block: 'nearest' }))
+						}}
+						className={css('svListItem', isSelected && 'svItemSelected')}
 						onClick={e => { e.stopPropagation(); selection.set(item) }}>
 						{renderItem(item, i)}
 					</div>
@@ -89,6 +94,7 @@ export interface ListProps<T> {
 	}
 	@action.bound private onKeyDown(e: React.KeyboardEvent<Element>) {
 		e.stopPropagation()
+		e.preventDefault() // Prevent scrolling.
 		const {allowClear, items, selection} = this.props
 		const index = items.indexOf(selection.get())
 		const prev = () => selection.set(items[index - 1] ?? items[index])
