@@ -8,6 +8,10 @@
 		"esModuleInterop": true,
 		"jsx": "react",
 		"resolveJsonModule": true,
+
+		"noImplicitThis": true,
+		"strictBindCallApply": true,
+		"strictFunctionTypes": true,
 	},
 	"exclude": [
 		"node_modules",
