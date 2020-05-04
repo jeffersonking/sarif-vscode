@@ -120,6 +120,18 @@ mark {
 		margin-top: 12px - 4px; // 4px optical to compensate for TH line height.
 		scroll-padding: 48px 0;
 		display: grid;
+
+		// Closely related to svDetailsCodeflow.
+		& {
+			tr:hover { background-color: var(--vscode-list-hoverBackground); }
+		}
+		&.svSelected {
+			tr.svItemSelected { background: var(--vscode-list-inactiveSelectionBackground); }
+		}
+		&.svSelected:focus {
+			outline: none !important;
+			tr.svItemSelected { background: var(--vscode-list-activeSelectionBackground); }
+		}
 	}
 }
 
@@ -179,11 +191,6 @@ mark {
 		}
 	}
 
-	tbody tr {
-		// Redundant with .svListItem?
-		&:hover:not(.svItemSelected) { background-color: var(--vscode-list-hoverBackground); }
-	}
-
 	td {
 		padding: 0 0 0 8px;
 
@@ -219,14 +226,6 @@ mark {
 		align-items: baseline !important; // Override .svListTable td > .svCell
 		padding-right: 24px;
 		.svSecondary { font-size: .9em; line-height: 10px; }
-	}
-
-	.svListItem {
-		&:hover:not(.svItemSelected) { background-color: var(--vscode-list-hoverBackground); }
-	}
-
-	.svItemSelected {
-		background-color: var(--vscode-list-inactiveSelectionBackground);
 	}
 }
 

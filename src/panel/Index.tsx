@@ -68,7 +68,7 @@ const levelToIcon = {
 						onClick={() => store.groupsFilteredSorted.forEach(group => group.expanded = allCollapsed)} />
 					<Icon name="folder-opened" title="Open Log" onClick={() => vscode.postMessage({ command: 'open' })} />
 				</div>
-				<div className="svListTableScroller" tabIndex={0} onKeyDown={this.onKeyDown}>
+				<div className={css('svListTableScroller', selected && 'svSelected')} tabIndex={0} onKeyDown={this.onKeyDown}>
 					{selectedTab.get() === 'Logs'
 						? <div className="svLogsPane">
 							{logs.map((log, i) => {
