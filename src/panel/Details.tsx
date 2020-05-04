@@ -4,10 +4,11 @@ import { observer } from 'mobx-react'
 import * as React from 'react'
 import { Component } from 'react'
 import ReactMarkdown from 'react-markdown'
-import { Message, Region, Result, ThreadFlowLocation } from 'sarif'
-import { parseArtifactLocation, parseRegion } from '../shared'
+import { Result, ThreadFlowLocation } from 'sarif'
+import { parseArtifactLocation, parseLocation } from '../shared'
 import './Details.scss'
 import { List, renderMessageWithEmbeddedLinks, TabPanel } from './Index.widgets'
+import { postSelectArtifact, postSelectLog } from './Store'
 
 @observer export class Details extends Component<{ result: Result, height: IObservableValue<number> }> {
 	render() {
@@ -18,9 +19,9 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './Index.widgets'
 				: desc.text
 		}
 
-		const {result, height: detailsPaneHeight} = this.props
+		const {result, height} = this.props
 		const helpUri = result?._rule?.helpUri
-		return <div className="svDetailsPane" style={{ height: detailsPaneHeight.get() }}>
+		return <div className="svDetailsPane" style={{ height: height.get() }}>
 			{result && <TabPanel titles={['Info', 'Code Flows']}>
 				<div className="svDetailsBody svDetailsInfo">
 					<div className="svDetailsMessage">
@@ -38,14 +39,11 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './Index.widgets'
 						<span>Locations</span>			<span>
 															{result.locations?.map((loc, i) => {
 																const ploc = loc.physicalLocation
-																const [uri, uriContent] = parseArtifactLocation(result, ploc?.artifactLocation)
+																const [uri, _] = parseArtifactLocation(result, ploc?.artifactLocation)
 																return <a key={i} href="#" className="ellipsis" title={uri}
 																	onClick={e => {
 																		e.preventDefault() // Cancel # nav.
-																		const log = result._log
-																		const logUri = log._uri
-																		const region = parseRegion(ploc?.region)
-																		vscode.postMessage({ command: 'select', logUri, uri: uriContent ?? uri, region })
+																		postSelectArtifact(result, ploc)
 																	}}>
 																	{uri?.file ?? '-'}
 																</a>
@@ -54,12 +52,8 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './Index.widgets'
 						<span>Log</span>				<a href="#" title={result._log._uri}
 															onClick={e => {
 																e.preventDefault() // Cancel # nav.
-																const log = result._log
-																const logUri = log._uri
-																const uri = log._uriUpgraded ?? log._uri
-																const region = result._logRegion
-																vscode.postMessage({ command: 'select', logUri, uri, region })}
-															}>
+																postSelectLog(result)
+															}}>
 															{result._log._uri.file}{result._log._uriUpgraded && ' (upgraded)'}
 														</a>
 						{/* <span>Properties</span>		<span><pre><code>{JSON.stringify(selected.properties, null, '  ')}</code></pre></span> */}
@@ -67,28 +61,20 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './Index.widgets'
 				</div>
 				<div className="svDetailsBody svDetailsCodeflow">
 					{(() => {
-						const parseTFLoc = (tfLocation: ThreadFlowLocation): [Message, string, Region] => {
-							const {message, physicalLocation} = tfLocation.location
-							const [uri, uriContent] = parseArtifactLocation(result, physicalLocation?.artifactLocation)
-							return [message, uriContent ?? uri, physicalLocation?.region]
-						}
-
 						const items = result.codeFlows?.[0]?.threadFlows?.[0].locations
 							.filter(tfLocation => tfLocation.location)
 
 						const selection = observable.box(items?.[0], { deep: false })
 						selection.observe(change => {
-							const logUri = result._log._uri
-							const [_, uri, region] = parseTFLoc(change.newValue)
-							vscode.postMessage({ command: 'select', logUri, uri, region: parseRegion(region) })
+							const tfloc = change.newValue
+							postSelectArtifact(result, tfloc.location?.physicalLocation)
 						})
 
-						const renderItem = (tfLocation, i) => { // ThreadflowLocation
-							const [message, uri, region] = parseTFLoc(tfLocation)
-							const fileName = uri?.file ?? '—'
+						const renderItem = (tfLocation: ThreadFlowLocation) => {
+							const { message, uri, region } = parseLocation(result, tfLocation.location)
 							return <>
-								<div className="ellipsis">{message?.text ?? '—'}</div>
-								<div className="svSecondary">{fileName}</div>
+								<div className="ellipsis">{message ?? '—'}</div>
+								<div className="svSecondary">{uri?.file ?? '—'}</div>
 								<div className="svLineNum">{region.startLine}:1</div>
 							</>
 						}

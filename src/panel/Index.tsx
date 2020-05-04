@@ -2,14 +2,13 @@ import { action, autorun, IObservableValue, IReactionDisposer, observable } from
 import { observer } from 'mobx-react'
 import * as React from 'react'
 import { Component, Fragment } from 'react'
-import { Log } from 'sarif'
 import '../shared/extension'
 import './codicon.css'
 export const FilterKeywordContext = React.createContext('') // Must come before Details and Hi
 import { Details } from './Details'
 import './Index.scss'
 import { Badge, Checkrow, css, Hi, Icon, Popover, renderMessageWithEmbeddedLinks, ResizeHandle, TabBar } from './Index.widgets'
-import { column, Group, SortDir, Store } from './Store'
+import { column, Group, SortDir, Store, postSelectArtifact } from './Store'
 
 export * as React from 'react'
 export * as ReactDOM from 'react-dom'
@@ -232,11 +231,7 @@ const levelToIcon = {
 		this.selectionAutoRunDisposer = autorun(() => {
 			const result = this.props.store.selectedItem?.data
 			if (!result?._uri) return // Bail on no result or location-less result.
-			const log = result._log
-			const logUri = log._uri
-			const uri = result._uriContents ?? result._uri
-			const region = result._region
-			vscode.postMessage({ command: 'select', logUri, uri, region })
+			postSelectArtifact(result, result.locations?.[0]?.physicalLocation)
 		})
 	}
 

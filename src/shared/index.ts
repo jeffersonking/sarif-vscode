@@ -1,4 +1,4 @@
-import { ArtifactLocation, Log, Region, Result } from 'sarif'
+import { ArtifactLocation, Log, Location, Region, Result } from 'sarif'
 
 type JsonLocation = { line: number, column: number } // Unused: pos
 type JsonRange = { value: JsonLocation, valueEnd: JsonLocation } // Unused: key, keyEnd
@@ -119,6 +119,30 @@ export function augmentLog(log: Log) {
 	log._jsonMap = undefined // Free-up memory.
 }
 
+/*
+TfLoc
+   location: Loc
+
+Result
+   locations: Loc[]
+
+Loc
+   Message
+   PhyLoc
+      ArtLoc: Uri, Index
+      Region
+
+Run.artifacts: Art[]
+   location: ArtLoc
+   contents: ArtCon
+*/
+export function parseLocation(result: Result, loc?: Location) {
+	const message = loc?.message?.text
+	const [uri, uriContent] = parseArtifactLocation(result, loc?.physicalLocation?.artifactLocation)
+	const region = loc?.physicalLocation?.region
+	return { message, uri, uriContent, region }
+}
+
 export function parseRegion(region: Region): _Region {
 	if (!region) return undefined
 
@@ -142,6 +166,7 @@ export function parseRegion(region: Region): _Region {
 	] as [number, number, number, number]
 }
 
+// Improve: `result` purely used for `_run.artifacts`.
 export function parseArtifactLocation(result: Result, anyArtLoc: ArtifactLocation) {
 	if (!anyArtLoc) return [undefined, undefined]
 	const runArt = result._run.artifacts?.[anyArtLoc.index ?? -1]

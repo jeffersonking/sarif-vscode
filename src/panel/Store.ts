@@ -1,6 +1,6 @@
 import { action, computed, intercept, observable, observe, toJS, when } from 'mobx'
-import { Log, Result } from 'sarif'
-import { augmentLog, filtersColumn, filtersRow } from '../shared'
+import { Log, PhysicalLocation, Result } from 'sarif'
+import { augmentLog, filtersColumn, filtersRow, parseArtifactLocation, parseRegion } from '../shared'
 import '../shared/extension'
 
 export enum SortDir {
@@ -228,4 +228,20 @@ export class Store {
 			}
 		}
 	}
+}
+
+export async function postSelectArtifact(result: Result, ploc: PhysicalLocation) {
+	const log = result._log
+	const logUri = log._uri
+	const [uri, uriContent] = parseArtifactLocation(result, ploc?.artifactLocation)
+	const region = parseRegion(ploc?.region)
+	await vscode.postMessage({ command: 'select', logUri, uri: uriContent ?? uri, region })
+}
+
+export async function postSelectLog(result: Result) {
+	const log = result._log
+	const logUri = log._uri
+	const uri = log._uriUpgraded ?? log._uri
+	const region = result._logRegion
+	await vscode.postMessage({ command: 'select', logUri, uri, region })
 }

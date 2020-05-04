@@ -39,7 +39,7 @@ describe('loadLogs', () => {
 			`file:///Users/jeff/projects/sarif-vscode/samplesDemo/.sarif/oldLog.sarif`,
 		].map(path => Uri.parse(path))
 		const logs = await loadLogs(uris)
-		assert.strictEqual(logs.every(log => log.version === '2.1.0'), true)
+		assert.strictEqual(logs.every(log => log.version === '2.1.0'), true) // Currently broken.
 	})
 
 	// Known schemas:
