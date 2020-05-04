@@ -64,10 +64,10 @@ import { postSelectArtifact, postSelectLog } from './Store'
 						const items = result.codeFlows?.[0]?.threadFlows?.[0].locations
 							.filter(tfLocation => tfLocation.location)
 
-						const selection = observable.box(items?.[0], { deep: false })
+						const selection = observable.box(undefined as ThreadFlowLocation, { deep: false })
 						selection.observe(change => {
 							const tfloc = change.newValue
-							postSelectArtifact(result, tfloc.location?.physicalLocation)
+							postSelectArtifact(result, tfloc?.location?.physicalLocation)
 						})
 
 						const renderItem = (tfLocation: ThreadFlowLocation) => {
@@ -79,7 +79,7 @@ import { postSelectArtifact, postSelectLog } from './Store'
 							</>
 						}
 
-						return <List items={items} renderItem={renderItem} selection={selection}>
+						return <List items={items} renderItem={renderItem} selection={selection} allowClear>
 							<span className="svSecondary">No code flows in selected result.</span>
 						</List>
 					})()}

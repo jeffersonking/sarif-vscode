@@ -64,23 +64,24 @@ export class Hi extends React.Component<React.HTMLAttributes<HTMLDivElement>> {
 }
 
 export interface ListProps<T> {
+	allowClear?: boolean
 	className?: string
 	horiztonal?: boolean
 	items?: ReadonlyArray<T>
 	renderItem: (item: T, i: number) => React.ReactNode
-	selection?: IObservableValue<T>
+	selection: IObservableValue<T | undefined>
 }
 @observer export class List<T> extends PureComponent<ListProps<T>> {
-	private selection = this.props.selection ?? observable.box(this.props.items[0])
 	render() {
-		const {className, items, renderItem, children} = this.props
+		const {allowClear, className, items, renderItem, selection, children} = this.props
 		return !items?.length
 			? <div className={css('svList', 'svListZero', className)}>{children}</div>
-			: <div tabIndex={0} className={css('svList', className)} onKeyDown={this.onKeyDown}>
+			: <div tabIndex={0} className={css('svList', selection.get() && 'svSelected' ,className)}
+				onClick={() => allowClear && selection.set(undefined)} onKeyDown={this.onKeyDown}>
 				{(items || []).map((item, i) => {
 					return <div key={i}
-						className={css('svListItem', item === this.selection.get() && 'svItemSelected')}
-						onClick={() => this.selection.set(item)}>
+						className={css('svListItem', item === selection.get() && 'svItemSelected')}
+						onClick={e => { e.stopPropagation(); selection.set(item) }}>
 						{renderItem(item, i)}
 					</div>
 				})}
@@ -88,13 +89,14 @@ export interface ListProps<T> {
 	}
 	@action.bound private onKeyDown(e: React.KeyboardEvent<Element>) {
 		e.stopPropagation()
-		const {items, selection} = this.props
+		const {allowClear, items, selection} = this.props
 		const index = items.indexOf(selection.get())
 		const prev = () => selection.set(items[index - 1] ?? items[index])
 		const next = () => selection.set(items[index + 1] ?? items[index])
+		const clear = () => allowClear && selection.set(undefined)
 		const handlers = this.props.horiztonal
-			? { ArrowLeft: prev, ArrowRight: next }
-			: { ArrowUp: prev, ArrowDown: next }
+			? { ArrowLeft: prev, ArrowRight: next, Escape: clear }
+			: { ArrowUp: prev, ArrowDown: next, Escape: clear }
 		handlers[e.key]?.()
 	}
 }

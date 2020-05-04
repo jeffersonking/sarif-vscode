@@ -53,12 +53,17 @@
 						background-color: var(--vscode-badge-background);
 						color: var(--vscode-badge-foreground);
 					}
-
-					&:hover:not(.svItemSelected) { background-color: var(--vscode-list-hoverBackground); }
 				}
 
-				.svItemSelected {
-					background-color: var(--vscode-list-inactiveSelectionBackground);
+				& {
+					& > :hover { background-color: var(--vscode-list-hoverBackground); }
+				}
+				&.svSelected {
+					& > .svItemSelected { background: var(--vscode-list-inactiveSelectionBackground); }
+				}
+				&.svSelected:focus {
+					outline: none !important;
+					& > .svItemSelected { background: var(--vscode-list-activeSelectionBackground); }
 				}
 			}
 		}

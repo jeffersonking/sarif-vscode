@@ -230,7 +230,8 @@ export class Store {
 	}
 }
 
-export async function postSelectArtifact(result: Result, ploc: PhysicalLocation) {
+export async function postSelectArtifact(result: Result, ploc?: PhysicalLocation) {
+	if (!ploc) return
 	const log = result._log
 	const logUri = log._uri
 	const [uri, uriContent] = parseArtifactLocation(result, ploc?.artifactLocation)
