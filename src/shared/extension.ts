@@ -30,14 +30,14 @@ Object.defineProperty(Array, 'commonLength', {
 	}
 })
 
-!Array.prototype.hasOwnProperty('last') && 
+!Array.prototype.hasOwnProperty('last') &&
 Object.defineProperty(Array.prototype, 'last', {
 	get: function() {
 		return this[this.length - 1]
 	}
 })
 
-!Array.prototype.hasOwnProperty('removeWhere') && 
+!Array.prototype.hasOwnProperty('removeWhere') &&
 Object.defineProperty(Array.prototype, 'removeWhere', {
 	value: function(predicate: (T) => boolean) {
 		const i = this.findIndex(predicate)
@@ -57,14 +57,14 @@ Array.prototype.sortBy = function<T>(selector: Selector<T>, descending = false) 
 	return this
 }
 
-!String.prototype.hasOwnProperty('file') && 
+!String.prototype.hasOwnProperty('file') &&
 Object.defineProperty(String.prototype, 'file', {
 	get: function() {
 		return this.substring(this.lastIndexOf('/') + 1, this.length)
 	}
 })
 
-!String.prototype.hasOwnProperty('path') && 
+!String.prototype.hasOwnProperty('path') &&
 Object.defineProperty(String.prototype, 'path', {
 	get: function() {
 		return this.substring(0, this.lastIndexOf('/')).replace(/^\//g, '')
