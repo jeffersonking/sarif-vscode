@@ -1,6 +1,7 @@
 /// <reference path="../panel/global.d.ts" />
 /// Why is this also needed here.
 
+import { readFileSync } from 'fs'
 import mock from 'mock-require'
 import { Store } from '../panel/Store'
 import { filtersColumn, filtersRow } from '../shared'
@@ -25,6 +26,7 @@ class Uri {
 
 export const mockVscode = {
 	// Test-facing
+	mockReadFile: undefined as string,
 	mockFileSystem: undefined as string[],
 	events: [] as string[],
 	store: null as Store,
@@ -47,6 +49,7 @@ export const mockVscode = {
 		createDiagnosticCollection: () => {},
 		registerCodeActionsProvider: () => {},
 	},
+	ProgressLocation: { Notification: 15 },
 	Selection: class {
 		constructor(readonly a, readonly b, readonly c, readonly d) {}
 	},
@@ -89,6 +92,7 @@ export const mockVscode = {
 			return editor
 		},
 		visibleTextEditors: [],
+		withProgress: (options, task) => task({ report: () => {} })
 	},
 	workspace: {
 		getConfiguration: () => new Map(),
@@ -121,4 +125,8 @@ export const mockVscode = {
 	},
 }
 
+mock('fs', {
+	readFileSync: (path, options) => {
+		return mockVscode.mockReadFile ?? readFileSync(path, options)}
+})
 mock('vscode', mockVscode)

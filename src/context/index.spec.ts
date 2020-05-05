@@ -3,22 +3,14 @@
 /// Todo: Migrate to tsconfig.files
 
 import assert from 'assert'
-import mock from 'mock-require'
-import { log } from '../test/mockLog'
 import { mockVscode } from '../test/mockVscode'
-
-// Run before any tests. But only want this for 'activate',
-// and not affect preceeding tests such as Baser.
-// But, if executed `before activate`, then fs is already loaded.
-mock('fs', {
-	readFileSync: () => JSON.stringify(log)
-})
-
 import { activate } from '.'
 import { postSelectArtifact, postSelectLog } from '../panel/Store'
+import { log } from '../test/mockLog'
 
 describe('activate', () => {
 	before(async () => {
+		mockVscode.mockReadFile = JSON.stringify(log)
 		await mockVscode.activateExtension(activate)
 	})
 
@@ -38,5 +30,9 @@ describe('activate', () => {
 			'showTextDocument file:///.sarif/test.sarif',
 			'selection 0 75 0 215',
 		])
+	})
+
+	after(() => {
+		mockVscode.mockReadFile = undefined
 	})
 })

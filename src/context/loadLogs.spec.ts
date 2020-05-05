@@ -33,13 +33,12 @@ describe('loadLogs', () => {
 	it('loads', async () => {
 		const uris = [
 			`file:///Users/jeff/projects/sarif-vscode/samplesDemo/.sarif/Double.sarif`,
-			`file:///Users/jeff/projects/sarif-vscode/samplesDemo/.sarif/Single.sarif`,
 			`file:///Users/jeff/projects/sarif-vscode/samplesDemo/.sarif/EmbeddedContent.sarif`,
 			`file:///Users/jeff/projects/sarif-vscode/samplesDemo/.sarif/bad-eval-with-code-flow.sarif`,
 			`file:///Users/jeff/projects/sarif-vscode/samplesDemo/.sarif/oldLog.sarif`,
 		].map(path => Uri.parse(path))
 		const logs = await loadLogs(uris)
-		assert.strictEqual(logs.every(log => log.version === '2.1.0'), true) // Currently broken.
+		assert.strictEqual(logs.every(log => log.version === '2.1.0'), true)
 	})
 
 	// Known schemas:
