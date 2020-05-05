@@ -123,6 +123,7 @@ export async function activate(context: ExtensionContext) {
 	// Open Documents <-sync-> Store.logs
 	const syncActiveLog = async (doc: TextDocument) => {
 		if (!doc.fileName.match(/\.sarif$/i)) return
+		if (store.logs.some(log => log._uri === doc.uri.toString())) return
 		store.logs.push(...await loadLogs([doc.uri]))
 		panel.show()
 	}
