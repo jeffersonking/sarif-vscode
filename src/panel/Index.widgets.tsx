@@ -93,8 +93,6 @@ export interface ListProps<T> {
 			</div>
 	}
 	@action.bound private onKeyDown(e: React.KeyboardEvent<Element>) {
-		e.stopPropagation()
-		e.preventDefault() // Prevent scrolling.
 		const {allowClear, items, selection} = this.props
 		const index = items.indexOf(selection.get())
 		const prev = () => selection.set(items[index - 1] ?? items[index])
@@ -103,7 +101,12 @@ export interface ListProps<T> {
 		const handlers = this.props.horiztonal
 			? { ArrowLeft: prev, ArrowRight: next, Escape: clear }
 			: { ArrowUp: prev, ArrowDown: next, Escape: clear }
-		handlers[e.key]?.()
+		const handler = handlers[e.key]
+		if (handler) {
+			e.stopPropagation() // Don't eat up [tab] etc.
+			e.preventDefault() // Prevent scrolling.
+			handler()
+		}
 	}
 }
 
