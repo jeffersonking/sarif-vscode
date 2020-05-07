@@ -75,6 +75,16 @@ export class Store {
 		return this.runs.map(run => run.results || []).flat()
 	}
 
+	public tabs = ['Locations', 'Rules', 'Logs']
+	public selectedTab = observable.box(this.tabs[0])
+	public mapTabToGroup = {
+		Locations: 'File',
+		Rules: 'Rule',
+		Logs: 'File', // Temporary incorrect.
+	} as Record<string, column>
+
+	// Filters
+
 	@observable keywords = ''
 	@observable filtersRow = filtersRow
 	@observable filtersColumn = filtersColumn
@@ -88,16 +98,10 @@ export class Store {
 		}
 	}
 
+	// Args for List
+
 	@observable public sortColumn = 'Line' as column
 	@observable public sortDir = SortDir.Asc
-
-	public tabs = ['Locations', 'Rules', 'Logs']
-	public selectedTab = observable.box(this.tabs[0])
-	public mapTabToGroup = {
-		Locations: 'File',
-		Rules: 'Rule',
-		Logs: 'File', // Temporary incorrect.
-	} as Record<string, column>
 
 	@computed public get groupBy() {
 		return this.mapTabToGroup[this.selectedTab.get()]
@@ -124,6 +128,8 @@ export class Store {
 		'File': result => result._relativeUri?.file ?? '—',
 		'Line':	result => result._line,
 	} as Record<column, (_: Result) => number | string>
+
+	// List
 
 	@observable.ref public selectedItem = null as Item<Result>
 
