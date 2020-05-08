@@ -21,9 +21,11 @@ describe('Baser', () => {
 	it('Picker 1', async () => {
 		const artifact = 'a/b.c'
 		mockVscode.mockFileSystem = ['/x/y/a/b.c']
+		mockVscode.showOpenDialogResult = mockVscode.mockFileSystem
 		const baser = new Baser(new Map(), { distinctArtifactNames: new Map() })
 		const localPath = await baser.translateArtifactToLocal(artifact)
 		mockVscode.mockFileSystem = undefined
+		mockVscode.showOpenDialogResult = []
 
 		assert.strictEqual(localPath, '/x/y/a/b.c')
 	})
@@ -31,9 +33,11 @@ describe('Baser', () => {
 	it('Picker 2', async () => {
 		const artifact = '/a/b.c'
 		mockVscode.mockFileSystem = ['/x/y/a/b.c']
+		mockVscode.showOpenDialogResult = mockVscode.mockFileSystem
 		const baser = new Baser(new Map(), { distinctArtifactNames: new Map() })
 		const localPath = await baser.translateArtifactToLocal(artifact)
 		mockVscode.mockFileSystem = undefined
+		mockVscode.showOpenDialogResult = []
 
 		assert.strictEqual(localPath, '/x/y/a/b.c')
 	})
@@ -41,9 +45,11 @@ describe('Baser', () => {
 	it('Picker 3', async () => {
 		const artifact = '/d/e/f/x/y/a/b.c'
 		mockVscode.mockFileSystem = ['/x/y/a/b.c']
+		mockVscode.showOpenDialogResult = mockVscode.mockFileSystem
 		const baser = new Baser(new Map(), { distinctArtifactNames: new Map() })
 		const localRebased = await baser.translateArtifactToLocal(artifact)
 		mockVscode.mockFileSystem = undefined
+		mockVscode.showOpenDialogResult = []
 
 		assert.strictEqual(localRebased, '/x/y/a/b.c')
 	})

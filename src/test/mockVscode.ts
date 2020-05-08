@@ -29,6 +29,7 @@ export const mockVscode = {
 	mockReadFile: undefined as string,
 	mockFileSystem: undefined as string[],
 	events: [] as string[],
+	showOpenDialogResult: undefined as string[],
 	store: null as Store,
 	activateExtension: async (activate: Function) => {
 		const context = {
@@ -80,7 +81,7 @@ export const mockVscode = {
 		},
 		showErrorMessage: message => console.error(`showErrorMessage: '${message}'`),
 		showInformationMessage: async (message, ...choices) => choices[0], // = [0] => 'Locate...'
-		showOpenDialog: async () => mockVscode.mockFileSystem?.[0] ? [{ path: mockVscode.mockFileSystem?.[0] }] : [],
+		showOpenDialog: async () => mockVscode.showOpenDialogResult.map(path => ({ path })),
 		showTextDocument: doc => {
 			mockVscode.events.push(`showTextDocument ${doc.uri}`)
 			const editor = {
