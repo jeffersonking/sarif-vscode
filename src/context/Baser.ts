@@ -50,32 +50,31 @@ export class Baser {
 		return this.validatedPathsLocalToArtifact.get(localPath) ?? localPath
 	}
 
+	// Hacky.
+	// Note: Uri.parse()
+	// Uri.parse('a/b.c')	 => file:///a/b.c
+	// Uri.parse('/a/b.c')	 => file:///a/b.c
+	// Uri.parse('c:\a\b.c') => c:a%08.c
+	private async pathExists(path: string) {
+		try {
+			await workspace.openTextDocument(Uri.parse(path))
+		} catch (error) {
+			return false
+		}
+		return true
+	}
+
 	private activeInfoMessages = new Set<string>() // Prevent repeat message animations when arrowing through many results with the same uri.
 	public async translateArtifactToLocal(artifactPath: string) { // Retval is validated.
 		// Temp.
 		if (artifactPath.startsWith('sarif:')) return artifactPath
-
-		// Hacky.
-		// Note: Uri.parse()
-		// Uri.parse('a/b.c')	 => file:///a/b.c
-		// Uri.parse('/a/b.c')	 => file:///a/b.c
-		// Uri.parse('c:\a\b.c') => c:a%08.c
-		const pathExists = async (path: string) => {
-			try {
-				await workspace.openTextDocument(Uri.parse(path))
-			} catch (error) {
-				return false
-			}
-			return true
-		}
-
 		const validateUri = async () => {
 			// Cache
 			if (this.validatedPathsArtifactToLocal.has(artifactPath))
 				return this.validatedPathsArtifactToLocal.get(artifactPath)
 
 			// File System Exist
-			if (await pathExists(artifactPath))
+			if (await this.pathExists(artifactPath))
 				return artifactPath
 
 			// Known Bases
@@ -85,10 +84,15 @@ export class Baser {
 				const normalizedArtifactPath = `${artifactPath.startsWith('/') ? '' : '/'}${artifactPath}`
 				const localPath = normalizedArtifactPath.replace(artifactBase, localBase)
 
-				if (await pathExists(localPath)) {
+				if (await this.pathExists(localPath)) {
 					this.updateValidatedPaths(artifactPath, localPath)
 					return localPath
 				}
+			}
+
+			{ // API-injected baseUris
+				const localPath = await this.tryUriBases(artifactPath)
+				if (localPath) return localPath
 			}
 
 			// Distinct Project Items
@@ -124,7 +128,7 @@ export class Baser {
 					filters: { 'Matching file' : [extension] },
 					// Consider allowing folders.
 				})
-				if (!files) return // User cancelled.
+				if (!files?.length) return // User cancelled.
 
 				const partsOld = artifactPath.split('/')
 				const partsNew = files[0]?.path.split('/')
@@ -138,5 +142,30 @@ export class Baser {
 			validatedUri = await validateUri() // Try again
 		}
 		return validatedUri
+	}
+
+	public static *commonIndices(a: any[], b: any[]) { // Add comparator?
+		for (const [aIndex, aPart] of a.entries()) {
+			for (const [bIndex, bPart] of b.entries()) {
+				if (aPart === bPart) yield [aIndex, bIndex]
+			}
+		}
+	}
+
+	public uriBases = [] as string[]
+	private async tryUriBases(artifactPath: string) {
+		const artifactParts = artifactPath.split('/')
+		for (const localPath of this.uriBases) {
+			const localParts = localPath.split('/')
+			for (const [artifactIndex, localIndex] of Baser.commonIndices(artifactParts, localParts)) {
+				const rebased = [...localParts.slice(0, localIndex), ...artifactParts.slice(artifactIndex)].join('/')
+				if (await this.pathExists(rebased)) {
+					this.updateValidatedPaths(artifactPath, localPath)
+					this.updateBases(artifactParts, localParts)
+					return rebased
+				}
+			}
+		}
+		return undefined
 	}
 }
