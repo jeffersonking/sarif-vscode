@@ -1,7 +1,7 @@
 import { action, IObservableValue, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import * as React from 'react'
-import { Component, CSSProperties, PureComponent } from 'react'
+import { Component, CSSProperties, PureComponent, ReactNode } from 'react'
 import { Result } from 'sarif'
 import { FilterKeywordContext } from './Index'
 import './Index.widgets.scss'
@@ -138,22 +138,35 @@ export interface ListProps<T> {
 	}
 }
 
-@observer export class TabBar extends Component<{ titles: string[], selection: IObservableValue<string> }> {
+class OptionalDiv extends Component<React.HTMLAttributes<HTMLDivElement>> {
 	render() {
-		const {titles, selection} = this.props
-		const renderItem = title => <div>{title}</div>
-		return <List className="svTabs" horiztonal items={titles} renderItem={renderItem} selection={selection} />
+		const {children, ...divProps} = this.props
+		const nonEmptyChildren = React.Children.toArray(children).filter(c => c)
+		return nonEmptyChildren.length === 1
+			? children
+			: <div {...divProps}>{children}</div>
 	}
 }
 
-@observer export class TabPanel extends Component<{ titles: string[] }> {
+@observer export class TabBar extends Component<{ titles: string[], selection: IObservableValue<string>, extras?: ReactNode }> {
+	render() {
+		const {titles, selection, extras} = this.props
+		const renderItem = title => <div>{title}</div>
+		return <OptionalDiv className="svListHeader">{/* Abstraction break: svListHeader */}
+			<List className="svTabs" horiztonal items={titles} renderItem={renderItem} selection={selection} />
+			{extras}
+		</OptionalDiv>
+	}
+}
+
+@observer export class TabPanel extends Component<{ titles: string[], extras?: ReactNode }> {
 	private selection = observable.box(this.props.titles[0])
 	render() {
 		const {selection} = this
-		const {children, titles} = this.props
+		const {children, titles, extras} = this.props
 		const array = React.Children.toArray(children)
 		return <>
-			<TabBar titles={titles} selection={selection} />
+			<TabBar titles={titles} selection={selection} extras={extras} />
 			{array[titles.indexOf(selection.get())]}
 		</>
 	}
