@@ -74,45 +74,6 @@ mark {
 	display: flex;
 	flex-direction: column;
 	overflow: hidden;
-	outline: none;
-
-	.svListHeader {
-		display: flex;
-		align-items: center;
-		padding-right: 8px;
-
-		.codicon {
-			flex: 0 0 35px;
-			line-height: 35px;
-			cursor: pointer;
-			// &:hover { background-color: var(--vscode-list-hoverBackground); }
-		}
-
-		.svFilterCombo {
-			flex: 0 1 250px;
-			height: 22px;
-			margin-right: 8px;
-			display: grid;
-			& > * { grid-area: 1/1; }
-
-			input {
-				background-color: var(--vscode-input-background);
-				color: var(--vscode-input-foreground);
-				border: none;
-				padding: 4px 5px;
-				font-size: 12px;
-				overflow: hidden;
-			}
-
-			.codicon {
-				justify-self: end;
-				line-height: 22px;
-				width: 30px;
-				margin: 1px; // Allow parent outline to show.
-				background-color: var(--vscode-input-background); // Incase of overlap
-			}
-		}
-	}
 
 	.svListTableScroller {
 		flex: 1 1 auto;
@@ -131,6 +92,44 @@ mark {
 		&.svSelected:focus {
 			outline: none !important;
 			tr.svItemSelected { background: var(--vscode-list-activeSelectionBackground); }
+		}
+	}
+}
+
+.svListHeader {
+	display: flex;
+	align-items: center;
+	padding-right: 8px;
+
+	.codicon {
+		flex: 0 0 35px;
+		line-height: 35px;
+		cursor: pointer;
+		// &:hover { background-color: var(--vscode-list-hoverBackground); }
+	}
+
+	.svFilterCombo {
+		flex: 0 1 250px;
+		height: 22px;
+		margin-right: 8px;
+		display: grid;
+		& > * { grid-area: 1/1; }
+
+		input {
+			background-color: var(--vscode-input-background);
+			color: var(--vscode-input-foreground);
+			border: none;
+			padding: 4px 5px;
+			font-size: 12px;
+			overflow: hidden;
+		}
+
+		.codicon {
+			justify-self: end;
+			line-height: 22px;
+			width: 30px;
+			margin: 1px; // Allow parent outline to show.
+			background-color: var(--vscode-input-background); // Incase of overlap
 		}
 	}
 }
