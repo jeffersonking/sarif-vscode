@@ -17,7 +17,7 @@ export { Store } from './Store'
 const levelToIcon = {
 	error: 'error',
 	warning: 'warning',
-	info: 'info',
+	note: 'info',
 	none: 'issues',
 	undefined: 'question',
 }
