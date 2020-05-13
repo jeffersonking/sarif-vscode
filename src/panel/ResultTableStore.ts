@@ -4,6 +4,7 @@ import { Column, Row, TableStore } from './TableStore'
 
 export class ResultTableStore<G> extends TableStore<Result, G> {
 	constructor(
+		readonly groupName: string,
 		readonly groupBy: (item: Result) => G,
 		resultsSource: { results: ReadonlyArray<Result> },
 		readonly filtersSource: { keywords, filtersRow, filtersColumn },
@@ -13,13 +14,13 @@ export class ResultTableStore<G> extends TableStore<Result, G> {
 			resultsSource,
 			selection,
 		)
-		this.sortColumn = 'File'
+		this.sortColumn = this.columnsPermanent[0].name
 	}
 
 	// Columns
 	private columnsPermanent = [
-		new Column<Result>('File', 300, result => result._relativeUri),
 		new Column<Result>('Line', 50, result => result._line + ''),
+		new Column<Result>('File', 250, result => result._relativeUri),
 		new Column<Result>('Message', 300, result => result._message),
 	]
 	private columnsOptional = [
@@ -36,7 +37,7 @@ export class ResultTableStore<G> extends TableStore<Result, G> {
 			.filter(([_, state]) => state)
 			.map(([name, ]) => name)
 		return [
-			...this.columnsPermanent.filter(col => col.name !== 'File'), // Permanent GroupBy
+			...this.columnsPermanent.filter(col => col.name !== this.groupName),
 			...this.columnsOptional.filter(col => optionalColumnNames.includes(col.name))
 		]
 	}
