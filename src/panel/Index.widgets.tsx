@@ -215,7 +215,9 @@ export class ResizeHandle extends Component<{ size: IObservableValue<number>, ho
 				left: 0, right: 0
 			}
 
-		return <div onMouseDown={this.onMouseDown} style={style}></div>
+		return <div onMouseDown={this.onMouseDown} style={style}
+			onClick={e => e.stopPropagation() /* Prevent click in situations such as triggering a table header cell sort. */}
+			></div>
 	}
 }
 
