@@ -4,7 +4,7 @@ import * as React from 'react'
 import { Component, CSSProperties, PureComponent, ReactNode } from 'react'
 import { Result } from 'sarif'
 import { FilterKeywordContext } from './FilterKeywordContext'
-import './Index.widgets.scss'
+import './widgets.scss'
 import { postSelectArtifact } from './IndexStore'
 
 export function css(...names: (string | false)[]) {
