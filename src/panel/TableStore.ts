@@ -75,7 +75,7 @@ export class TableStore<T, G> {
 		items.sortBy(item => toString(item.item), sortDir === SortDir.Dsc)
 	}
 
-	@computed private get groupsFilteredSorted() {
+	@computed public get groupsFilteredSorted() {
 		const {groups, filter} = this
 		for (const group of groups) {
 			group.itemsFiltered = group.items.filter(item => filter?.(item.item) ?? true)

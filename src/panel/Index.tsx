@@ -33,7 +33,8 @@ export { IndexStore as Store } from './IndexStore'
 
 		const {logs, keywords} = store
 		const {showFilterPopup, detailsPaneHeight} = this
-		const allCollapsed = false // groupsFilteredSorted.every(group => !group.expanded)
+		const activeTableStore = store.selectedTab.get().store
+		const allCollapsed = activeTableStore?.groupsFilteredSorted.every(group => !group.expanded) ?? false
 		const selectedRow = store.selection.get()
 		const selected = selectedRow instanceof RowItem && selectedRow.item
 		return <FilterKeywordContext.Provider value={keywords ?? ''}>
@@ -49,7 +50,7 @@ export { IndexStore as Store } from './IndexStore'
 						</div>
 						<Icon name={allCollapsed ? 'expand-all' : 'collapse-all'}
 							title={allCollapsed ? 'Expand All' : 'Collapse All'}
-							onClick={() => {} /* store.groupsFilteredSorted.forEach(group => group.expanded = allCollapsed) */} />
+							onClick={() => activeTableStore?.groupsFilteredSorted.forEach(group => group.expanded = allCollapsed) } />
 						<Icon name="folder-opened" title="Open Log" onClick={() => vscode.postMessage({ command: 'open' })} />
 					</>}>
 					<ResultTable store={store.resultTableStoreByLocation} onClearFilters={() => store.clearFilters()}
