@@ -6,8 +6,6 @@ import { Row, RowItem } from './TableStore'
 import { ResultTableStore } from './ResultTableStore'
 
 export class IndexStore {
-	@observable.shallow public logs = [] as Log[]
-
 	constructor(state, defaultSelection?: boolean) {
 		this.filtersRow = state.filtersRow
 		this.filtersColumn = state.filtersColumn
@@ -38,15 +36,19 @@ export class IndexStore {
 		}
 	}
 
+	// Results
+	@observable.shallow public logs = [] as Log[]
 	@computed private get runs() {
 		return this.logs.map(log => log.runs).flat()
 	}
 	@computed public get results() {
 		return this.runs.map(run => run.results || []).flat()
 	}
+	selection = observable.box(undefined as Row)
+	resultTableStoreByLocation = new ResultTableStore(result => result._relativeUri, this, this, this.selection)
+	resultTableStoreByRule     = new ResultTableStore(result => result._rule,        this, this, this.selection)
 
 	// Filters
-
 	@observable keywords = ''
 	@observable filtersRow = filtersRow
 	@observable filtersColumn = filtersColumn
@@ -59,8 +61,7 @@ export class IndexStore {
 		}
 	}
 
-	selection = observable.box(undefined as Row)
-
+	// Messages
 	@action.bound public async onMessage(event: MessageEvent) {
 		// if (event.origin === 'http://localhost:8000') return
 		if (!event.data) return // Ignore mysterious empty message
@@ -95,9 +96,6 @@ export class IndexStore {
 			}
 		}
 	}
-
-	resultTableStoreByLocation = new ResultTableStore(result => result._relativeUri, this, this, this.selection)
-	resultTableStoreByRule     = new ResultTableStore(result => result._rule,        this, this, this.selection)
 }
 
 export async function postSelectArtifact(result: Result, ploc?: PhysicalLocation) {
