@@ -79,26 +79,6 @@ mark {
 	flex-direction: column;
 	overflow: hidden;
 
-	.svListTableScroller {
-		flex: 1 1 auto;
-		overflow-y: overlay;
-		margin-top: 12px - 4px; // 4px optical to compensate for TH line height.
-		scroll-padding: 48px 0;
-		display: grid;
-
-		// Closely related to svDetailsCodeflow.
-		& {
-			tr:hover { background-color: var(--vscode-list-hoverBackground); }
-		}
-		&.svSelected {
-			tr.svItemSelected { background: var(--vscode-list-inactiveSelectionBackground); }
-		}
-		&.svSelected:focus {
-			outline: none !important;
-			tr.svItemSelected { background: var(--vscode-list-activeSelectionBackground); }
-		}
-	}
-
 	.svTable {
 		flex: 1 1;
 	}
@@ -144,7 +124,6 @@ mark {
 
 .svListItem {
 	line-height: 22px;
-
 	cursor: pointer;
 }
 
@@ -173,66 +152,6 @@ mark {
 		.codicon {
 			cursor: pointer;
 		}
-	}
-}
-
-.svListTable {
-	width: 100%;
-	line-height: 22px;
-	border-spacing: 0;
-	table-layout: fixed; // Otherwise will overshoot 100%.
-	cursor: pointer;
-	user-select: none;
-	margin-bottom: 22px; // About one row's height.
-
-	thead {
-		td:hover { background-color: var(--vscode-list-hoverBackground); }
-
-		td {
-			position: relative; // For resize handle.
-			position: sticky;
-			top: 0;
-			background-color: var(--vscode-editor-background);
-
-			.svCell { padding-bottom: 2px; }
-		}
-	}
-
-	td {
-		padding: 0 0 0 8px;
-
-		&:first-child { padding-left: 16px; }
-
-		& > .svCell {
-			@extend .ellipsis;
-			display: flex;
-			align-items: center;
-	
-			& > * + * {
-				margin-left: 6px;
-			}
-
-			& > .twisties {
-				width: 20px;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				transform-origin: center;
-				color: inherit;
-				flex-shrink: 0;
-				align-self: center;
-			}
-		}
-	}
-
-	.svBadge {
-		margin-left: 10px;
-	}
-
-	.svGroup {
-		align-items: baseline !important; // Override .svListTable td > .svCell
-		padding-right: 24px;
-		.svSecondary { font-size: .9em; line-height: 10px; }
 	}
 }
 

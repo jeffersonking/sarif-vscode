@@ -91,4 +91,10 @@ export class TableStore<T, G> {
 		}
 		return rows
 	}
+
+	select(item: T) {
+		const row = this.rowItems.find(row => row.item === item)
+		this.selection.set(row)
+		if (row?.group) row.group.expanded = true
+	}
 }
