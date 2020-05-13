@@ -8,10 +8,10 @@ import './codicon.css'
 import { Details } from './Details'
 import { FilterKeywordContext } from './FilterKeywordContext'
 import './Index.scss'
-import { Checkrow, Icon, Popover, ResizeHandle, TabPanel } from './widgets'
+import { IndexStore, postSelectArtifact } from './IndexStore'
 import { ResultTable } from './ResultTable'
-import { postSelectArtifact, IndexStore } from './IndexStore'
 import { RowItem } from './TableStore'
+import { Checkrow, Icon, Popover, ResizeHandle, TabPanel } from './widgets'
 
 export * as React from 'react'
 export * as ReactDOM from 'react-dom'
@@ -38,7 +38,7 @@ export { IndexStore as Store } from './IndexStore'
 		const selected = selectedRow instanceof RowItem && selectedRow.item
 		return <FilterKeywordContext.Provider value={keywords ?? ''}>
 			<div className="svListPane">
-				<TabPanel titles={['Locations', 'Rules', 'Logs']}
+				<TabPanel tabs={store.tabs} selection={store.selectedTab}
 					extras={<>
 						<div className="flexFill"></div>
 						<div className="svFilterCombo">

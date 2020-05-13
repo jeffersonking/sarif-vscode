@@ -7,10 +7,11 @@ import ReactMarkdown from 'react-markdown'
 import { Result, ThreadFlowLocation } from 'sarif'
 import { parseArtifactLocation, parseLocation } from '../shared'
 import './Details.scss'
-import { List, renderMessageWithEmbeddedLinks, TabPanel } from './widgets'
 import { postSelectArtifact, postSelectLog } from './IndexStore'
+import { List, renderMessageWithEmbeddedLinks, TabPanel } from './widgets'
 
 @observer export class Details extends Component<{ result: Result, height: IObservableValue<number> }> {
+	private selectedTab = observable.box('Info')
 	render() {
 		const renderRuleDesc = (desc?: { text: string, markdown?: string }) => {
 			if (!desc) return '—'
@@ -22,7 +23,7 @@ import { postSelectArtifact, postSelectLog } from './IndexStore'
 		const {result, height} = this.props
 		const helpUri = result?._rule?.helpUri
 		return <div className="svDetailsPane" style={{ height: height.get() }}>
-			{result && <TabPanel titles={['Info', 'Code Flows']}>
+			{result && <TabPanel tabs={['Info', 'Code Flows']} selection={this.selectedTab}>
 				<div className="svDetailsBody svDetailsInfo">
 					<div className="svDetailsMessage">
 						{result._markdown

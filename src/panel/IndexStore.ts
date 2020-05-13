@@ -1,9 +1,9 @@
 import { action, computed, intercept, observable, observe, toJS, when } from 'mobx'
-import { Log, PhysicalLocation, Result } from 'sarif'
+import { Log, PhysicalLocation, ReportingDescriptor, Result } from 'sarif'
 import { augmentLog, filtersColumn, filtersRow, parseArtifactLocation, parseRegion } from '../shared'
 import '../shared/extension'
-import { Row, RowItem } from './TableStore'
 import { ResultTableStore } from './ResultTableStore'
+import { Row, RowItem } from './TableStore'
 
 export class IndexStore {
 	constructor(state, defaultSelection?: boolean) {
@@ -61,6 +61,14 @@ export class IndexStore {
 		}
 	}
 
+	// Tabs
+	tabs = [
+		{ toString: () => 'Locations', store: this.resultTableStoreByLocation },
+		{ toString: () => 'Rules', store: this.resultTableStoreByRule },
+		{ toString: () => 'Logs', store: undefined },
+	] as { store: ResultTableStore<string | ReportingDescriptor> }[]
+	selectedTab = observable.box(this.tabs[0], { deep: false })
+
 	// Messages
 	@action.bound public async onMessage(event: MessageEvent) {
 		// if (event.origin === 'http://localhost:8000') return
@@ -78,7 +86,7 @@ export class IndexStore {
 				const [logUri, runIndex, resultIndex] = id
 				const result = this.logs.find(log => log._uri === logUri)?.runs[runIndex]?.results?.[resultIndex]
 				if (!result) throw new Error('Unexpected: result undefined')
-				this.resultTableStoreByLocation.select(result)
+				this.selectedTab.get().store?.select(result)
 			}
 		}
 

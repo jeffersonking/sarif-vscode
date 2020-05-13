@@ -1,11 +1,11 @@
-import { action, IObservableValue, observable } from 'mobx'
+import { action, IObservableValue } from 'mobx'
 import { observer } from 'mobx-react'
 import * as React from 'react'
 import { Component, CSSProperties, PureComponent, ReactNode } from 'react'
 import { Result } from 'sarif'
 import { FilterKeywordContext } from './FilterKeywordContext'
-import './widgets.scss'
 import { postSelectArtifact } from './IndexStore'
+import './widgets.scss'
 
 export function css(...names: (string | false)[]) {
 	return names.filter(name => name).join(' ')
@@ -148,26 +148,17 @@ class OptionalDiv extends Component<React.HTMLAttributes<HTMLDivElement>> {
 	}
 }
 
-@observer export class TabBar extends Component<{ titles: string[], selection: IObservableValue<string>, extras?: ReactNode }> {
+@observer export class TabPanel<T> extends PureComponent<{ tabs: T[], selection: IObservableValue<T>, extras?: ReactNode }> {
 	render() {
-		const {titles, selection, extras} = this.props
-		const renderItem = title => <div>{title}</div>
-		return <OptionalDiv className="svListHeader">{/* Abstraction break: svListHeader */}
-			<List className="svTabs" horiztonal items={titles} renderItem={renderItem} selection={selection} />
-			{extras}
-		</OptionalDiv>
-	}
-}
-
-@observer export class TabPanel extends Component<{ titles: string[], extras?: ReactNode }> {
-	private selection = observable.box(this.props.titles[0])
-	render() {
-		const {selection} = this
-		const {children, titles, extras} = this.props
+		const {tabs, selection, extras, children} = this.props
 		const array = React.Children.toArray(children)
+		const renderItem = tab => <div>{tab + ''}</div>
 		return <>
-			<TabBar titles={titles} selection={selection} extras={extras} />
-			{array[titles.indexOf(selection.get())]}
+			<OptionalDiv className="svListHeader">{/* Abstraction break: svListHeader */}
+				<List className="svTabs" horiztonal items={tabs} renderItem={renderItem} selection={selection} />
+				{extras}
+			</OptionalDiv>
+			{array[tabs.indexOf(selection.get())]}
 		</>
 	}
 }
