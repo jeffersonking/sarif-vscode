@@ -2,6 +2,8 @@ import { action, computed, intercept, observable, observe, toJS, when } from 'mo
 import { Log, PhysicalLocation, Result } from 'sarif'
 import { augmentLog, filtersColumn, filtersRow, parseArtifactLocation, parseRegion } from '../shared'
 import '../shared/extension'
+import { Row } from './TableStore'
+import { ResultTableStore } from './ResultTableStore'
 
 export enum SortDir {
 	Asc = 'arrow-down',
@@ -132,6 +134,7 @@ export class Store {
 	// List
 
 	@observable.ref public selectedItem = null as Item<Result>
+	selection2 = observable.box(undefined as Row)
 
 	@computed({ keepAlive: true }) public get items() {
 		return this.results.map(result => new Item(result))
@@ -234,6 +237,9 @@ export class Store {
 			}
 		}
 	}
+
+	resultTableStoreByLocation = new ResultTableStore(result => result._relativeUri, this, this, this.selection2)
+	resultTableStoreByRule     = new ResultTableStore(result => result._rule,        this, this, this.selection2)
 }
 
 export async function postSelectArtifact(result: Result, ploc?: PhysicalLocation) {
