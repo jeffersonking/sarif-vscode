@@ -221,6 +221,12 @@ export async function activate(context: ExtensionContext) {
 		async closeAllLogs() {
 			store.logs.splice(0)
 		},
+		get uriBases() {
+			return basing.uriBases.map(path => Uri.file(path)) as ReadonlyArray<Uri>
+		},
+		set uriBases(values) {
+			basing.uriBases = values.map(uri => uri.path)
+		},
 	}
 }
 
