@@ -80,10 +80,10 @@ export async function activate(context: ExtensionContext) {
 	// Basing
 	const urisNonSarif = await workspace.findFiles('**/*', '.sarif') // Ignore folders?
 	const fileAndUris = urisNonSarif.map(uri => [uri.path.split('/').pop(), uri.path])  as [string, string][]
-	const basing = new Baser(mapDistinct(fileAndUris), store)
+	const baser = new Baser(mapDistinct(fileAndUris), store)
 
 	// Panel
-	const panel = new Panel(context, basing, store)
+	const panel = new Panel(context, baser, store)
 	if (uris.length) await panel.show()
 	disposables.push(commands.registerCommand('sarif.showPanel', () => panel.show()))
 
@@ -102,7 +102,7 @@ export async function activate(context: ExtensionContext) {
 	const diagsAll = languages.createDiagnosticCollection('sarif')
 	const setDiags = (doc: TextDocument) => {
 		if (doc.fileName.endsWith('.git')) return
-		const artifactPath = basing.translateLocalToArtifact(doc.uri.path)
+		const artifactPath = baser.translateLocalToArtifact(doc.uri.path)
 		const diags = store.results
 			.filter(result => result._uri === artifactPath)
 			.map(result => ({
@@ -222,10 +222,10 @@ export async function activate(context: ExtensionContext) {
 			store.logs.splice(0)
 		},
 		get uriBases() {
-			return basing.uriBases.map(path => Uri.file(path)) as ReadonlyArray<Uri>
+			return baser.uriBases.map(path => Uri.file(path)) as ReadonlyArray<Uri>
 		},
 		set uriBases(values) {
-			basing.uriBases = values.map(uri => uri.path)
+			baser.uriBases = values.map(uri => uri.path)
 		},
 	}
 }
