@@ -40,10 +40,6 @@ mark {
 	flex-direction: column;
 	background-color: var(--vscode-editor-background); // Restore from pre-body
 	overflow: hidden;
-
-	& > :nth-child(1) {
-		border-bottom: 1px solid var(--vscode-editorGroup-border);
-	}
 }
 
 .flexFill { flex: 1 1 }
