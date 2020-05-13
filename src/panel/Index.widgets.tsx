@@ -3,7 +3,7 @@ import { observer } from 'mobx-react'
 import * as React from 'react'
 import { Component, CSSProperties, PureComponent, ReactNode } from 'react'
 import { Result } from 'sarif'
-import { FilterKeywordContext } from './Index'
+import { FilterKeywordContext } from './FilterKeywordContext'
 import './Index.widgets.scss'
 import { postSelectArtifact } from './Store'
 
