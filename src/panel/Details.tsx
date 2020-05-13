@@ -8,7 +8,7 @@ import { Result, ThreadFlowLocation } from 'sarif'
 import { parseArtifactLocation, parseLocation } from '../shared'
 import './Details.scss'
 import { List, renderMessageWithEmbeddedLinks, TabPanel } from './Index.widgets'
-import { postSelectArtifact, postSelectLog } from './Store'
+import { postSelectArtifact, postSelectLog } from './IndexStore'
 
 @observer export class Details extends Component<{ result: Result, height: IObservableValue<number> }> {
 	render() {

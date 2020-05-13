@@ -5,7 +5,7 @@
 import assert from 'assert'
 import { mockVscode } from '../test/mockVscode'
 import { activate } from '.'
-import { postSelectArtifact, postSelectLog } from '../panel/Store'
+import { postSelectArtifact, postSelectLog } from '../panel/IndexStore'
 import { log } from '../test/mockLog'
 
 describe('activate', () => {

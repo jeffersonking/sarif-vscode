@@ -10,14 +10,14 @@ import { FilterKeywordContext } from './FilterKeywordContext'
 import './Index.scss'
 import { Checkrow, Icon, Popover, ResizeHandle, TabPanel } from './Index.widgets'
 import { ResultTable } from './ResultTable'
-import { postSelectArtifact, Store } from './Store'
+import { postSelectArtifact, IndexStore } from './IndexStore'
 import { RowItem } from './TableStore'
 
 export * as React from 'react'
 export * as ReactDOM from 'react-dom'
-export { Store } from './Store'
+export { IndexStore as Store } from './IndexStore'
 
-@observer export class Index extends Component<{ store: Store }> {
+@observer export class Index extends Component<{ store: IndexStore }> {
 	private showFilterPopup = observable.box(false)
 	private detailsPaneHeight = observable.box(300)
 

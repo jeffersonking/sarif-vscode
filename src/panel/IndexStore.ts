@@ -5,7 +5,7 @@ import '../shared/extension'
 import { Row, RowItem } from './TableStore'
 import { ResultTableStore } from './ResultTableStore'
 
-export class Store {
+export class IndexStore {
 	@observable.shallow public logs = [] as Log[]
 
 	constructor(state, defaultSelection?: boolean) {

@@ -3,7 +3,7 @@
 
 import { readFileSync } from 'fs'
 import mock from 'mock-require'
-import { Store } from '../panel/Store'
+import { IndexStore } from '../panel/IndexStore'
 import { filtersColumn, filtersRow } from '../shared'
 import { log } from './mockLog'
 
@@ -30,7 +30,7 @@ export const mockVscode = {
 	mockFileSystem: undefined as string[],
 	events: [] as string[],
 	showOpenDialogResult: undefined as string[],
-	store: null as Store,
+	store: null as IndexStore,
 	activateExtension: async (activate: Function) => {
 		const context = {
 			globalState: new Map(),
@@ -66,7 +66,7 @@ export const mockVscode = {
 				filtersRow,
 				filtersColumn,
 			}
-			mockVscode.store = new Store(defaultState)
+			mockVscode.store = new IndexStore(defaultState)
 			return {
 				onDidDispose: () => {},
 				webview: {
