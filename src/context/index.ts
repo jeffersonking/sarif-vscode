@@ -9,7 +9,6 @@ import '../shared/extension'
 import { Baser } from './Baser'
 import { loadLogs } from './loadLogs'
 import { Panel } from './Panel'
-import { update } from './update'
 
 declare module 'vscode' {
 	interface Diagnostic {
@@ -203,9 +202,6 @@ export async function activate(context: ExtensionContext) {
 			token.isCancellationRequested = true
 		}
 	})
-
-	// Update
-	commands.registerCommand('sarif.updateExtension', async () => await update())
 
 	// API
 	commands.registerCommand('sarif.apiOpenLogs', async () => {

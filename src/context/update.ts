@@ -7,6 +7,8 @@ import { tmpNameSync } from 'tmp'
 import { commands, ProgressLocation, Uri, window } from 'vscode'
 import '../shared/extension'
 
+// Usage:
+// commands.registerCommand('sarif.updateExtension', async () => await update())
 export async function update() {
 	const fileName = tmpNameSync({ postfix: '.vsix' })
 	const stream = fs.createWriteStream(fileName)
