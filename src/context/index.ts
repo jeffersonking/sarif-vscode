@@ -1,7 +1,7 @@
 import { computed, IArrayWillSplice, intercept, observable, observe } from 'mobx'
 import { Log, Result } from 'sarif'
 import { commands, DiagnosticSeverity, ExtensionContext, extensions, languages, Memento, Range, Selection, TextDocument, ThemeColor, Uri, window, workspace } from 'vscode'
-import { mapDistinct, _Region } from '../shared'
+import { mapDistinct, _Region, parseRegion } from '../shared'
 import '../shared/extension'
 import { Baser } from './Baser'
 import { loadLogs } from './loadLogs'
@@ -136,8 +136,13 @@ export async function activate(context: ExtensionContext) {
 	})
 
 	// Actions/Decorations for Call Trees
-	const decorationType = window.createTextEditorDecorationType({
+	const decorationTypeCallout = window.createTextEditorDecorationType({
 		after: { color: new ThemeColor('problemsWarningIcon.foreground') }
+	})
+	const decorationTypeHighlight = window.createTextEditorDecorationType({
+		border: '1px',
+		borderStyle: 'solid',
+		borderColor: new ThemeColor('problemsWarningIcon.foreground'),
 	})
 	languages.registerCodeActionsProvider('*', {
 		provideCodeActions: (doc, _range, context) => {
@@ -147,20 +152,31 @@ export async function activate(context: ExtensionContext) {
 
 			const editor = window.visibleTextEditors.find(editor => editor.document === doc)
 			if (!editor) return // When would editor be undef?
-			const lines = result?.codeFlows?.[0]?.threadFlows?.[0]?.locations.map(tfl => tfl.location?.physicalLocation?.region?.startLine) ?? [] // Can do region conversion here.
-			const ranges = lines.map(lineNo => {
-				const max = Number.MAX_SAFE_INTEGER
-				const line = Math.max(0, lineNo - 1)
-				return editor.document.validateRange(new Range(line, max, line, max))
-			})
-			const maxEol = Math.max(...ranges.map(range => range.end.character)) + 4 // + for Padding
-			const options = ranges.map((range, i) => ({ // Hoist?
-				range,
-				hoverMessage: `Frame ${i}`,
-				renderOptions: { after: { contentText: ` ${'┄'.repeat(maxEol - range.end.character)} Frame ${i}`, } }, // ←
-			}))
-			editor.setDecorations(decorationType, options)
+			if (!result) return // Don't clear the decorations until the next result is selected.
 
+			const locations = result?.codeFlows?.[0]?.threadFlows?.[0]?.locations ?? []
+			const messages = locations.map((tfl, i) => {
+				const text = tfl.location?.message?.text
+				return `Step ${i + 1}${text ? `: ${text}` : ''}`
+			})
+			const ranges = locations.map(tfl => regionToSelection(doc, parseRegion(tfl.location?.physicalLocation?.region)))
+			const rangesEnd = ranges.map(range => {
+				const endPos = doc.lineAt(range.end.line).range.end
+				return new Range(endPos, endPos)
+			})
+			const rangesEndAdj = rangesEnd.map(range => {
+				const tabCount = doc.lineAt(range.end.line).text.match(/\t/g)?.length ?? 0
+				const tabCharAdj = tabCount * (editor.options.tabSize as number - 1) // Intra-character tabs are counted wrong.
+				return range.end.character + tabCharAdj
+			})
+			const maxRangeEnd = Math.max(...rangesEndAdj) + 2 // + for Padding
+			const decorCallouts = rangesEnd.map((range, i) => ({
+				range,
+				hoverMessage: messages[i],
+				renderOptions: { after: { contentText: ` ${'┄'.repeat(maxRangeEnd - rangesEndAdj[i])} ${messages[i]}`, } }, // ←
+			}))
+			editor.setDecorations(decorationTypeCallout, decorCallouts)
+			editor.setDecorations(decorationTypeHighlight, ranges)
 			return []
 		}
 	})
