@@ -1,5 +1,5 @@
 
-import { IObservableValue, observable } from 'mobx'
+import { autorun, computed, IObservableValue, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import * as React from 'react'
 import { Component } from 'react'
@@ -12,6 +12,17 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './widgets'
 
 @observer export class Details extends Component<{ result: Result, height: IObservableValue<number> }> {
 	private selectedTab = observable.box('Info')
+	@computed private get threadFlowLocations() {
+		return this.props.result?.codeFlows?.[0]?.threadFlows?.[0].locations
+			.filter(tfLocation => tfLocation.location)
+	}
+	constructor(props) {
+		super(props)
+		autorun(() => {
+			const hasThreadFlows = !!this.threadFlowLocations?.length
+			this.selectedTab.set(hasThreadFlows ? 'Code Flows' : 'Info')
+		})
+	}
 	render() {
 		const renderRuleDesc = (desc?: { text: string, markdown?: string }) => {
 			if (!desc) return '—'
@@ -62,8 +73,7 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './widgets'
 				</div>
 				<div className="svDetailsBody svDetailsCodeflow">
 					{(() => {
-						const items = result.codeFlows?.[0]?.threadFlows?.[0].locations
-							.filter(tfLocation => tfLocation.location)
+						const items = this.threadFlowLocations
 
 						const selection = observable.box(undefined as ThreadFlowLocation, { deep: false })
 						selection.observe(change => {
