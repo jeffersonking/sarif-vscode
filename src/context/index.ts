@@ -1,4 +1,4 @@
-import { computed, IArrayWillSplice, intercept, observable } from 'mobx'
+import { computed, IArrayWillSplice, intercept, observable, observe } from 'mobx'
 import { Log, Result } from 'sarif'
 import { commands, DiagnosticSeverity, ExtensionContext, extensions, languages, Memento, Range, Selection, TextDocument, ThemeColor, Uri, window, workspace } from 'vscode'
 import { mapDistinct, _Region } from '../shared'
@@ -119,6 +119,7 @@ export async function activate(context: ExtensionContext) {
 	workspace.textDocuments.forEach(setDiags)
 	workspace.onDidOpenTextDocument(setDiags)
 	workspace.onDidCloseTextDocument(doc => diagsAll.delete(doc.uri)) // Spurious *.git deletes don't hurt.
+	observe(store.logs, change => workspace.textDocuments.forEach(setDiags))
 
 	// Open Documents <-sync-> Store.logs
 	const syncActiveLog = async (doc: TextDocument) => {
