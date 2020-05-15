@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 import { computed, IArrayWillSplice, intercept, observable, observe } from 'mobx'
 import { Log, Result } from 'sarif'
 import { commands, DiagnosticSeverity, ExtensionContext, extensions, languages, Memento, Range, Selection, TextDocument, ThemeColor, Uri, window, workspace } from 'vscode'

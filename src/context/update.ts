@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 import { https } from 'follow-redirects'
 import fs from 'fs'
 import { tmpNameSync } from 'tmp'

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 import { ArtifactLocation, Log, Location, Region, Result } from 'sarif'
 
 type JsonLocation = { line: number, column: number } // Unused: pos

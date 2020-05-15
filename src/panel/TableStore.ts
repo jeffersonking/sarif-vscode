@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 import { action, computed, IObservableValue, observable } from 'mobx'
 
 export class Column<T> {

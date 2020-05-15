@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 export {}
 
 // Causing colorization issues if placed above Array.prototype...

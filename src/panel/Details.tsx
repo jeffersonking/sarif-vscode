@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
 
 import { autorun, computed, IObservableValue, observable } from 'mobx'
 import { observer } from 'mobx-react'

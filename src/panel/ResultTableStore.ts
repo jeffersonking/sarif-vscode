@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 import { computed, IObservableValue } from 'mobx'
 import { Result } from 'sarif'
 import { Column, Row, TableStore } from './TableStore'

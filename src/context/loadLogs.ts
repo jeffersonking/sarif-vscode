@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 import { execSync } from 'child_process'
 import * as fs from 'fs'
 import jsonMap from 'json-source-map'

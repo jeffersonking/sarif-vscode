@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 /// <reference path="../panel/global.d.ts" />
 /// Why is this also needed here.
 

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 import assert from 'assert'
 import { Log } from 'sarif'
 import { augmentLog } from '.'

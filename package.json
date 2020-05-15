@@ -52,8 +52,9 @@
 		"start": "webpack --watch",
 		"server": "webpack-dev-server -d",
 		"test": "mocha",
-		"package": "npx vsce package",
-		"vscode:prepublish": "webpack"
+		"package": "vsce package",
+		"vscode:prepublish": "webpack",
+		"lint": "tslint -c tslint.json 'src/**/*.ts{,x}'"
 	},
 	"devDependencies": {
 		"@actions/core": "1.2.3",

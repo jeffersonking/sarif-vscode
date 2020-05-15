@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 import { action, computed, intercept, observable, observe, toJS, when } from 'mobx'
 import { Log, PhysicalLocation, ReportingDescriptor, Result } from 'sarif'
 import { augmentLog, filtersColumn, filtersRow, parseArtifactLocation, parseRegion } from '../shared'

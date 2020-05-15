@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 import { autorun, IReactionDisposer, observable } from 'mobx'
 import { observer } from 'mobx-react'
 import * as React from 'react'
