@@ -4,7 +4,8 @@ export class Column<T> {
 	width = null as IObservableValue<number>
 	constructor(
 		readonly name: string, width,
-		readonly toString: (item: T) => string) {
+		readonly toString: (item: T) => string,
+		readonly toNumber?: (item: T) => number /* For sorting */) {
 		this.width = observable.box(width)
 	}
 }
@@ -71,8 +72,9 @@ export class TableStore<T, G> {
 	}
 	sort(items: RowItem<T>[]) {
 		const {columns, sortColumn, sortDir} = this
-		const {toString} = columns.find(col => col.name === sortColumn)
-		items.sortBy(item => toString(item.item), sortDir === SortDir.Dsc)
+		const {toNumber, toString} = columns.find(col => col.name === sortColumn)
+		const toSortable = toNumber ?? toString
+		items.sortBy(item => toSortable(item.item), sortDir === SortDir.Dsc)
 	}
 
 	@computed public get groupsFilteredSorted() {
