@@ -21,7 +21,7 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './widgets'
 	@computed private get stackFrameLoctions() {
 		let locations : Array<Location> = [];
 		this.props.result?.stacks?.[0]?.frames.forEach(function (stackFrame: StackFrame) {
-			locations.push(stackFrame.location)
+			if (stackFrame.hasOwnProperty("location")) locations.push(stackFrame.location)
 		})
 		return locations;
 	}
