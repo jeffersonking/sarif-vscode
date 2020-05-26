@@ -87,7 +87,7 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './widgets'
 						{/* <span>Properties</span>		<span><pre><code>{JSON.stringify(selected.properties, null, '  ')}</code></pre></span> */}
 					</div>
 				</div>
-				<div className="svDetailsBody svDetailsCodeflow">
+				<div className="svDetailsBody svDetailsCodeflowAndStacks">
 					{(() => {
 						const items = this.threadFlowLocations
 						
@@ -102,7 +102,7 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './widgets'
 						</List>
 					})()}
 				</div>
-				<div className="svDetailsBody svDetailsStacks">
+				<div className="svDetailsBody svDetailsCodeflowAndStacks">
 					{(() => {
 						const items = this.stackFrameLocations
 
