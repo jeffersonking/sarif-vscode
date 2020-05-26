@@ -93,8 +93,8 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './widgets'
 						
 						const selection = observable.box(undefined as Location, { deep: false })
 						selection.observe(change => {
-							const threadFlowLocation = change.newValue
-							postSelectArtifact(result, threadFlowLocation?.physicalLocation)
+							const location = change.newValue
+							postSelectArtifact(result, location?.physicalLocation)
 						})
 
 						return <List items={items} renderItem={renderItem} selection={selection} allowClear>
@@ -108,8 +108,8 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './widgets'
 
 						const selection = observable.box(undefined as Location, { deep: false })
 						selection.observe(change => {
-							const stackFrameLocation = change.newValue
-							postSelectArtifact(result, stackFrameLocation?.physicalLocation)
+							const location = change.newValue
+							postSelectArtifact(result, location?.physicalLocation)
 						})
 
 						return <List items={items} renderItem={renderItem} selection={selection} allowClear>
