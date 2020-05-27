@@ -6,7 +6,7 @@ import { observer } from 'mobx-react'
 import * as React from 'react'
 import { Component } from 'react'
 import ReactMarkdown from 'react-markdown'
-import { Result, ThreadFlowLocation } from 'sarif'
+import { Result, ThreadFlowLocation, Location, StackFrame } from 'sarif'
 import { parseArtifactLocation, parseLocation } from '../shared'
 import './Details.scss'
 import { postSelectArtifact, postSelectLog } from './IndexStore'
@@ -16,7 +16,13 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './widgets'
 	private selectedTab = observable.box('Info')
 	@computed private get threadFlowLocations() {
 		return this.props.result?.codeFlows?.[0]?.threadFlows?.[0].locations
-			.filter(tfLocation => tfLocation.location)
+			.map(threadFlowLocation => threadFlowLocation.location)
+			.filter(locations => locations)
+	}
+	@computed private get stackFrameLocations() {
+		return this.props.result?.stacks?.[0]?.frames
+			.map(stackFrame => stackFrame.location)
+			.filter(location => location)
 	}
 	constructor(props) {
 		super(props)
@@ -35,8 +41,16 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './widgets'
 
 		const {result, height} = this.props
 		const helpUri = result?._rule?.helpUri
+		const renderItem = (location: Location) => {
+			const { message, uri, region } = parseLocation(result, location)
+			return <>
+				<div className="ellipsis">{message ?? '—'}</div>
+				<div className="svSecondary">{uri?.file ?? '—'}</div>
+				<div className="svLineNum">{region.startLine}:1</div>
+			</>
+		}
 		return <div className="svDetailsPane" style={{ height: height.get() }}>
-			{result && <TabPanel tabs={['Info', 'Code Flows']} selection={this.selectedTab}>
+			{result && <TabPanel tabs={['Info', 'Code Flows', 'Stacks']} selection={this.selectedTab}>
 				<div className="svDetailsBody svDetailsInfo">
 					<div className="svDetailsMessage">
 						{result._markdown
@@ -73,27 +87,33 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './widgets'
 						{/* <span>Properties</span>		<span><pre><code>{JSON.stringify(selected.properties, null, '  ')}</code></pre></span> */}
 					</div>
 				</div>
-				<div className="svDetailsBody svDetailsCodeflow">
+				<div className="svDetailsBody svDetailsCodeflowAndStacks">
 					{(() => {
 						const items = this.threadFlowLocations
-
-						const selection = observable.box(undefined as ThreadFlowLocation, { deep: false })
+						
+						const selection = observable.box(undefined as Location, { deep: false })
 						selection.observe(change => {
-							const tfloc = change.newValue
-							postSelectArtifact(result, tfloc?.location?.physicalLocation)
+							const location = change.newValue
+							postSelectArtifact(result, location?.physicalLocation)
 						})
-
-						const renderItem = (tfLocation: ThreadFlowLocation) => {
-							const { message, uri, region } = parseLocation(result, tfLocation.location)
-							return <>
-								<div className="ellipsis">{message ?? '—'}</div>
-								<div className="svSecondary">{uri?.file ?? '—'}</div>
-								<div className="svLineNum">{region.startLine}:1</div>
-							</>
-						}
 
 						return <List items={items} renderItem={renderItem} selection={selection} allowClear>
 							<span className="svSecondary">No code flows in selected result.</span>
+						</List>
+					})()}
+				</div>
+				<div className="svDetailsBody svDetailsCodeflowAndStacks">
+					{(() => {
+						const items = this.stackFrameLocations
+
+						const selection = observable.box(undefined as Location, { deep: false })
+						selection.observe(change => {
+							const location = change.newValue
+							postSelectArtifact(result, location?.physicalLocation)
+						})
+
+						return <List items={items} renderItem={renderItem} selection={selection} allowClear>
+							<span className="svSecondary">No stacks in selected result.</span>
 						</List>
 					})()}
 				</div>
