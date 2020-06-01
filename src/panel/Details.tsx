@@ -6,7 +6,7 @@ import { observer } from 'mobx-react'
 import * as React from 'react'
 import { Component } from 'react'
 import ReactMarkdown from 'react-markdown'
-import { Result, ThreadFlowLocation, Location, StackFrame } from 'sarif'
+import { Result, ThreadFlowLocation, Location, StackFrame, Stack } from 'sarif'
 import { parseArtifactLocation, parseLocation } from '../shared'
 import './Details.scss'
 import { postSelectArtifact, postSelectLog } from './IndexStore'
@@ -20,9 +20,13 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './widgets'
 			.filter(locations => locations)
 	}
 	@computed private get stackFrameLocations() {
-		return this.props.result?.stacks?.[0]?.frames
+		return this.props.result?.stacks?.map(stack => stack.frames)
+			.flat()
 			.map(stackFrame => stackFrame.location)
-			.filter(location => location)
+			.filter(location => location)		
+	}
+	@computed private get stacks() {
+		return this.props.result?.stacks
 	}
 	constructor(props) {
 		super(props)
@@ -47,6 +51,28 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './widgets'
 				<div className="ellipsis">{message ?? '—'}</div>
 				<div className="svSecondary">{uri?.file ?? '—'}</div>
 				<div className="svLineNum">{region.startLine}:1</div>
+			</>
+		}
+		const renderStack = (stack: Stack) => {
+			const locations = stack?.frames
+				.map(stackFrame => stackFrame.location)
+				.filter(location => location)
+
+			const selection = observable.box(undefined as Location, { deep: false })
+			selection.observe(change => {
+				const location = change.newValue
+				postSelectArtifact(result, location?.physicalLocation)
+			})
+
+			return <>
+				<div>
+					<div className="svDetailsMessage">
+						{stack?.message?.text}
+					</div>
+					<div className="svDetailsBody svDetailsCodeflowAndStacks">
+						<List items={locations} renderItem={renderItem} selection={selection} allowClear />
+					</div>
+				</div>
 			</>
 		}
 		return <div className="svDetailsPane" style={{ height: height.get() }}>
@@ -103,18 +129,14 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './widgets'
 					})()}
 				</div>
 				<div className="svDetailsBody svDetailsCodeflowAndStacks">
-					{(() => {
-						const items = this.stackFrameLocations
+				{(() => {
+						const items = this.stacks
 
-						const selection = observable.box(undefined as Location, { deep: false })
-						selection.observe(change => {
-							const location = change.newValue
-							postSelectArtifact(result, location?.physicalLocation)
-						})
+						const selection = observable.box(undefined as Stack, { deep: false })
 
-						return <List items={items} renderItem={renderItem} selection={selection} allowClear>
-							<span className="svSecondary">No stacks in selected result.</span>
-						</List>
+						return <List items={items} renderItem={renderStack} selection={selection} allowClear>
+								<span className="svSecondary">No stacks in selected result.</span>
+							</List>
 					})()}
 				</div>
 			</TabPanel>}
