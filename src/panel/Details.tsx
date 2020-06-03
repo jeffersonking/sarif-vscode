@@ -53,28 +53,6 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './widgets'
 				<div className="svLineNum">{region.startLine}:1</div>
 			</>
 		}
-		const renderStack = (stack: Stack) => {
-			const locations = stack?.frames
-				.map(stackFrame => stackFrame.location)
-				.filter(location => location)
-
-			const selection = observable.box(undefined as Location, { deep: false })
-			selection.observe(change => {
-				const location = change.newValue
-				postSelectArtifact(result, location?.physicalLocation)
-			})
-
-			return <>
-				<div>
-					<div className="svDetailsMessage">
-						{stack?.message?.text}
-					</div>
-					<div className="svDetailsBody svDetailsCodeflowAndStacks">
-						<List items={locations} renderItem={renderItem} selection={selection} allowClear />
-					</div>
-				</div>
-			</>
-		}
 		return <div className="svDetailsPane" style={{ height: height.get() }}>
 			{result && <TabPanel tabs={['Info', 'Code Flows', 'Stacks']} selection={this.selectedTab}>
 				<div className="svDetailsBody svDetailsInfo">
@@ -128,15 +106,38 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './widgets'
 						</List>
 					})()}
 				</div>
-				<div className="svDetailsBody svDetailsCodeflowAndStacks">
-				{(() => {
-						const items = this.stacks
-
-						const selection = observable.box(undefined as Stack, { deep: false })
-
-						return <List items={items} renderItem={renderStack} selection={selection} allowClear>
-								<span className="svSecondary">No stacks in selected result.</span>
-							</List>
+				<div className="svDetailsBody">
+					{(() => {
+						if (this.stacks && this.stacks.length) 
+						{
+							return this.stacks.map(stack => {
+								const locations = stack?.frames
+									.map(stackFrame => stackFrame.location)
+									.filter(location => location)
+	
+								const selection = observable.box(undefined as Location, { deep: false })
+								selection.observe(change => {
+									const location = change.newValue
+									postSelectArtifact(result, location?.physicalLocation)
+								})
+								return <>
+									<div className="svStackContainer">
+										<div className="svStacksMessageContainer">
+											{stack?.message?.text}
+										</div>
+										<div className="svDetailsBody svDetailsCodeflowAndStacks">
+											<List items={locations} renderItem={renderItem} selection={selection} allowClear />
+										</div>
+									</div>
+								</>
+							})
+						} else {
+							return <>
+								<div className="svNoStacksContainer">
+									<span className="svSecondary">No stacks in selected result.</span>
+								</div>
+							</>
+						}
 					})()}
 				</div>
 			</TabPanel>}
