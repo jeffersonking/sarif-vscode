@@ -69,5 +69,21 @@
 				}
 			}
 		}
+
+		.svStackContainer {
+			margin-top: 10px;
+		}
+
+		.svStacksMessageContainer {
+			padding-left: 22px;
+			margin-bottom: -10px;
+		}
+
+		.svNoStacksContainer{
+			text-align: center;
+			position: relative;
+			top: 50%;
+			transform: translateY(-50%);
+		}
 	}
 }
