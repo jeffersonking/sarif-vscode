@@ -71,7 +71,7 @@ export interface ListProps<T> {
 	className?: string
 	horiztonal?: boolean
 	items?: ReadonlyArray<T>
-	renderItem: (item: any, i: number) => React.ReactNode
+	renderItem: (item: T, i: number) => React.ReactNode
 	selection: IObservableValue<T | undefined>
 }
 @observer export class List<T> extends PureComponent<ListProps<T>> {
