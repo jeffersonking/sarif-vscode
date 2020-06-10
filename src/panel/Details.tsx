@@ -58,8 +58,8 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './widgets'
 			const location = stackFrame?.location
 			const logicalLocation = stackFrame?.location?.logicalLocations[0]
 			const { message, uri, region } = parseLocation(result, location)
-			const locationMessageText = message ? message + " - ": ""
-			const text = logicalLocation?.fullyQualifiedName ? locationMessageText + logicalLocation.fullyQualifiedName : locationMessageText 
+			const locationMessageText = message ? `${message} -` : ``
+			const text = logicalLocation?.fullyQualifiedName ? `${locationMessageText} ${logicalLocation.fullyQualifiedName}` : `${locationMessageText}`
 			return <>
 				<div className="ellipsis">{text ?? '—'}</div>
 				<div className="svSecondary">{uri?.file ?? '—'}</div>
