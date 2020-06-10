@@ -115,7 +115,7 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './widgets'
 				<div className="svDetailsBody">
 					{(() => {
 						if (!this.stacks?.length) 
-							return <div className="svNoStacksContainer">
+							return <div className="svZeroData">
 								<span className="svSecondary">No stacks in selected result.</span>
 							</div>
 
@@ -128,7 +128,7 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './widgets'
 								postSelectArtifact(result, location?.physicalLocation)
 							})
 							if (stack.message?.text) {
-								return <div className="svStackContainer">
+								return <div className="svStack">
 									<div className="svStacksMessage">
 										{stack?.message?.text}
 									</div>

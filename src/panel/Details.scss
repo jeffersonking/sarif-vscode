@@ -6,6 +6,7 @@
 	
 	.svDetailsBody {
 		overflow-y: overlay;
+		display: grid;
 	
 		&.svDetailsInfo {
 			padding: 12px 22px;
@@ -70,20 +71,13 @@
 			}
 		}
 
-		.svStackContainer {
+		.svStack {
 			margin-top: 10px;
 		}
 
 		.svStacksMessage {
 			padding-left: 22px;
 			margin-bottom: -10px;
-		}
-
-		.svNoStacksContainer{
-			text-align: center;
-			position: relative;
-			top: 50%;
-			transform: translateY(-50%);
 		}
 	}
 }
