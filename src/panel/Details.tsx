@@ -6,9 +6,10 @@ import { observer } from 'mobx-react'
 import * as React from 'react'
 import { Component } from 'react'
 import ReactMarkdown from 'react-markdown'
-import { Result, ThreadFlowLocation, Location, StackFrame } from 'sarif'
+import { Location, Result, StackFrame } from 'sarif'
 import { parseArtifactLocation, parseLocation } from '../shared'
 import './Details.scss'
+import './Index.scss'
 import { postSelectArtifact, postSelectLog } from './IndexStore'
 import { List, renderMessageWithEmbeddedLinks, TabPanel } from './widgets'
 
@@ -19,10 +20,8 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './widgets'
 			.map(threadFlowLocation => threadFlowLocation.location)
 			.filter(locations => locations)
 	}
-	@computed private get stackFrameLocations() {
-		return this.props.result?.stacks?.[0]?.frames
-			.map(stackFrame => stackFrame.location)
-			.filter(location => location)
+	@computed private get stacks() {
+		return this.props.result?.stacks
 	}
 	constructor(props) {
 		super(props)
@@ -45,6 +44,17 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './widgets'
 			const { message, uri, region } = parseLocation(result, location)
 			return <>
 				<div className="ellipsis">{message ?? '—'}</div>
+				<div className="svSecondary">{uri?.file ?? '—'}</div>
+				<div className="svLineNum">{region.startLine}:1</div>
+			</>
+		}
+		const renderStack = (stackFrame: StackFrame) => {
+			const location = stackFrame.location
+			const logicalLocation = stackFrame.location?.logicalLocations[0]
+			const { message, uri, region } = parseLocation(result, location)
+			const text = `${message ?? ''} ${logicalLocation?.fullyQualifiedName ?? ''}`
+			return <>
+				<div className="ellipsis">{text ?? '—'}</div>
 				<div className="svSecondary">{uri?.file ?? '—'}</div>
 				<div className="svLineNum">{region.startLine}:1</div>
 			</>
@@ -102,19 +112,32 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './widgets'
 						</List>
 					})()}
 				</div>
-				<div className="svDetailsBody svDetailsCodeflowAndStacks">
+				<div className="svDetailsBody">
 					{(() => {
-						const items = this.stackFrameLocations
+						if (!this.stacks?.length) 
+							return <div className="svZeroData">
+								<span className="svSecondary">No stacks in selected result.</span>
+							</div>
 
-						const selection = observable.box(undefined as Location, { deep: false })
-						selection.observe(change => {
-							const location = change.newValue
-							postSelectArtifact(result, location?.physicalLocation)
+						return this.stacks.map(stack => {
+							const stackFrames = stack.frames
+
+							const selection = observable.box(undefined as Location, { deep: false })
+							selection.observe(change => {
+								const location = change.newValue
+								postSelectArtifact(result, location?.physicalLocation)
+							})
+							if (stack.message?.text) {
+								return <div className="svStack">
+									<div className="svStacksMessage">
+										{stack?.message?.text}
+									</div>
+									<div className="svDetailsBody svDetailsCodeflowAndStacks">
+										<List items={stackFrames} renderItem={renderStack} selection={selection} allowClear />
+									</div>
+								</div>
+							}
 						})
-
-						return <List items={items} renderItem={renderItem} selection={selection} allowClear>
-							<span className="svSecondary">No stacks in selected result.</span>
-						</List>
 					})()}
 				</div>
 			</TabPanel>}
