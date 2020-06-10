@@ -6,7 +6,7 @@ import { observer } from 'mobx-react'
 import * as React from 'react'
 import { Component } from 'react'
 import ReactMarkdown from 'react-markdown'
-import { Result, ThreadFlowLocation, Location, StackFrame, Stack } from 'sarif'
+import { Location, Result, StackFrame } from 'sarif'
 import { parseArtifactLocation, parseLocation } from '../shared'
 import './Details.scss'
 import './Index.scss'
@@ -19,12 +19,6 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './widgets'
 		return this.props.result?.codeFlows?.[0]?.threadFlows?.[0].locations
 			.map(threadFlowLocation => threadFlowLocation.location)
 			.filter(locations => locations)
-	}
-	@computed private get stackFrameLocations() {
-		return this.props.result?.stacks?.map(stack => stack.frames)
-			.flat()
-			.map(stackFrame => stackFrame.location)
-			.filter(location => location)		
 	}
 	@computed private get stacks() {
 		return this.props.result?.stacks
@@ -55,11 +49,10 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './widgets'
 			</>
 		}
 		const renderStack = (stackFrame: StackFrame) => {
-			const location = stackFrame?.location
-			const logicalLocation = stackFrame?.location?.logicalLocations[0]
+			const location = stackFrame.location
+			const logicalLocation = stackFrame.location?.logicalLocations[0]
 			const { message, uri, region } = parseLocation(result, location)
-			const locationMessageText = message ? `${message} -` : ``
-			const text = logicalLocation?.fullyQualifiedName ? `${locationMessageText} ${logicalLocation.fullyQualifiedName}` : `${locationMessageText}`
+			const text = `${message ?? ''} ${logicalLocation?.fullyQualifiedName ?? ''}`
 			return <>
 				<div className="ellipsis">{text ?? '—'}</div>
 				<div className="svSecondary">{uri?.file ?? '—'}</div>
@@ -121,27 +114,29 @@ import { List, renderMessageWithEmbeddedLinks, TabPanel } from './widgets'
 				</div>
 				<div className="svDetailsBody">
 					{(() => {
-						if (!this.stacks || !this.stacks.length) 
+						if (!this.stacks?.length) 
 							return <div className="svNoStacksContainer">
 								<span className="svSecondary">No stacks in selected result.</span>
 							</div>
 
 						return this.stacks.map(stack => {
-							const stackFrames = stack?.frames
+							const stackFrames = stack.frames
 
 							const selection = observable.box(undefined as Location, { deep: false })
 							selection.observe(change => {
 								const location = change.newValue
 								postSelectArtifact(result, location?.physicalLocation)
 							})
-							return <div className="svStackContainer">
-								<div className="svStacksMessage">
-									{stack?.message?.text}
+							if (stack.message?.text) {
+								return <div className="svStackContainer">
+									<div className="svStacksMessage">
+										{stack?.message?.text}
+									</div>
+									<div className="svDetailsBody svDetailsCodeflowAndStacks">
+										<List items={stackFrames} renderItem={renderStack} selection={selection} allowClear />
+									</div>
 								</div>
-								<div className="svDetailsBody svDetailsCodeflowAndStacks">
-									<List items={stackFrames} renderItem={renderStack} selection={selection} allowClear />
-								</div>
-							</div>
+							}
 						})
 					})()}
 				</div>
